@@ -9,10 +9,6 @@ class Material:
 
     # Set Methods
 
-    def setID(self, newID):
-        self.id = newID
-        # Call DB
-
     def setColour(self, newColour):
         self.colour = newColour
         # Call DB

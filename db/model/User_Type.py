@@ -7,10 +7,6 @@ class User_Type:
 
     # Set Methods
 
-    def setID(self, newID):
-        self.id = newID
-        # Call DB
-
     def setName(self, newName):
         self.name = newName
         # Call DB

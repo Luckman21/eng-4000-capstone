@@ -7,10 +7,6 @@ class Shelf:
         self.temperature_cel = temperature_cel
     
     # Set Methods
-
-    def setID(self, newID):
-        self.id = newID
-        # Call DB
     
     def setHumidityPCT(self, newHumidPCT):
         self.humidity_pct = newHumidPCT

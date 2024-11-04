@@ -11,10 +11,6 @@ class User:
 
     # Set Methods
 
-    def setID(self, newID):
-        self.id = newID
-        # Call DB
-
     def setUsername(self, newUsername):
         self.username = newUsername
         # Call DB
