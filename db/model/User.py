@@ -19,6 +19,25 @@ class User:
         Sets the username of the current instance of user.
         """
         self.username = newUsername
+
+        # Update name in the databsae based on the ID
+        try:
+            conn = sqlite3.connect('../capstone_db.db')
+            cursor = conn.cursor()
+
+            data = "UPDATE user SET username = '"+newUsername+"' WHERE id = '"+self.id+"'"
+            cursor.execute(data)
+            conn.commit()
+            print("Set new username for User class successful.")
+            cursor.close()
+
+        except sqlite3.Error as e:
+            print("Error while setting username data from User class", e)
+        
+        finally:
+            if (conn):
+                conn.close()
+                print("Connection from User class closed.")
         
 
     def setHPass(self, newHashedPassword):
@@ -26,21 +45,76 @@ class User:
         Sets the Hashed Password of the current instance of user.
         """
         self.hashed_password = newHashedPassword
-        # Call DB
+
+        # Update hashed password in the database based on ID
+        # Update name in the databsae based on the ID
+        try:
+            conn = sqlite3.connect('../capstone_db.db')
+            cursor = conn.cursor()
+
+            data = "UPDATE user SET password = '"+newHashedPassword+"' WHERE id = '"+self.id+"'"
+            cursor.execute(data)
+            conn.commit()
+            print("Set new password for User class successful.")
+            cursor.close()
+
+        except sqlite3.Error as e:
+            print("Error while setting password data from User class", e)
+        
+        finally:
+            if (conn):
+                conn.close()
+                print("Connection from User class closed.")
 
     def setEmail(self, newEmail):
         """
         Sets the email address of the current instance of user.
         """
         self.email = newEmail
-        # Call DB
+        
+        # Update email in the databsae based on the ID
+        try:
+            conn = sqlite3.connect('../capstone_db.db')
+            cursor = conn.cursor()
+
+            data = "UPDATE user SET email = '"+newEmail+"' WHERE id = '"+self.id+"'"
+            cursor.execute(data)
+            conn.commit()
+            print("Set new email address for User class successful.")
+            cursor.close()
+
+        except sqlite3.Error as e:
+            print("Error while setting email address data from User class", e)
+        
+        finally:
+            if (conn):
+                conn.close()
+                print("Connection from User class closed.")
     
     def setUserTypeID(self, newUTID):
         """
         Sets the user type ID of the current instance of user.
         """
         self.user_type_id = newUTID
-        # Call DB
+
+        # Update user type ID in the databsae based on the ID
+        try:
+            conn = sqlite3.connect('../capstone_db.db')
+            cursor = conn.cursor()
+
+            data = "UPDATE user SET user_type_id = '"+newUTID+"' WHERE id = '"+self.id+"'"
+            cursor.execute(data)
+            conn.commit()
+            print("Set new user_type_id for User class successful.")
+            cursor.close()
+
+        except sqlite3.Error as e:
+            print("Error while setting user_type_id data from User class", e)
+        
+        finally:
+            if (conn):
+                conn.close()
+                print("Connection from User class closed.")
 
     # For reference on this part https://youtu.be/fKXhuOvjQQ8?si=-KNLP-ykp-mbCfJ2
     def getAll():
@@ -49,17 +123,27 @@ class User:
         """
         result = [] # An array to store all the results
 
-        # Connect to the database (it will create the file if it doesn't exist)
-        conn = sqlite3.connect('../capstone_db.db')
-        cursor = conn.cursor()
+        try:
+            # Connect to the database (it will create the file if it doesn't exist)
+            conn = sqlite3.connect('../capstone_db.db')
+            cursor = conn.cursor()
 
-        data = "SELECT * FROM user" # Select all from the user table
-        cursor.execute(data)        # Set the cursor to execute this instruction
-        rows = cursor.fetchall()    # Fetch all the rows from the user table
+            data = "SELECT * FROM user" # Select all from the user table
+            cursor.execute(data)        # Set the cursor to execute this instruction
+            rows = cursor.fetchall()    # Fetch all the rows from the user table
 
-        for x in rows:  # For each row, append the element to the result array
-            result.append(x)
+            for x in rows:  # For each row, append the element to the result array
+                result.append(x)
 
-        # Return the result array after closing the connection
-        conn.close()
+            # Return the result array after closing the connection
+            conn.close()
+
+        except sqlite3.Error as e:
+            print("Error while getting all data from User class", e)
+        
+        finally:
+            if (conn):
+                conn.close()
+                print("Connection from User class closed.")
+
         return result

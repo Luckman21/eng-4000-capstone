@@ -13,15 +13,69 @@ class Material:
 
     def setColour(self, newColour):
         self.colour = newColour
-        # Call DB
+        
+        # Update colour in the databsae based on the ID
+        try:
+            conn = sqlite3.connect('../capstone_db.db')
+            cursor = conn.cursor()
+
+            data = "UPDATE material SET colour = '"+newColour+"' WHERE id = '"+self.id+"'"
+            cursor.execute(data)
+            conn.commit()
+            print("Set new colour for Material class successful.")
+            cursor.close()
+
+        except sqlite3.Error as e:
+            print("Error while setting colour data from Material class", e)
+        
+        finally:
+            if (conn):
+                conn.close()
+                print("Connection from Material class closed.")
 
     def setName(self, newName):
         self.name = newName
-        # Call DB
+
+        # Update name in the databsae based on the ID
+        try:
+            conn = sqlite3.connect('../capstone_db.db')
+            cursor = conn.cursor()
+
+            data = "UPDATE material SET name = '"+newName+"' WHERE id = '"+self.id+"'"
+            cursor.execute(data)
+            conn.commit()
+            print("Set new name for Material class successful.")
+            cursor.close()
+
+        except sqlite3.Error as e:
+            print("Error while setting name data from Material class", e)
+        
+        finally:
+            if (conn):
+                conn.close()
+                print("Connection from Material class closed.")
 
     def setMaterialTypeID(self, newMTID):
         self.material_type_id = newMTID
-        # Call DB
+
+        # Update Material Type ID in the databsae based on the ID
+        try:
+            conn = sqlite3.connect('../capstone_db.db')
+            cursor = conn.cursor()
+
+            data = "UPDATE material SET material_type_id = '"+newMTID+"' WHERE id = '"+self.id+"'"
+            cursor.execute(data)
+            conn.commit()
+            print("Set new Material Type ID for Material class successful.")
+            cursor.close()
+
+        except sqlite3.Error as e:
+            print("Error while setting Material Type ID data from Material class", e)
+        
+        finally:
+            if (conn):
+                conn.close()
+                print("Connection from Material class closed.")
 
     # For reference on this part https://youtu.be/fKXhuOvjQQ8?si=-KNLP-ykp-mbCfJ2
     def getAll():
@@ -30,17 +84,27 @@ class Material:
         """
         result = [] # An array to store all the results
 
-        # Connect to the database (it will create the file if it doesn't exist)
-        conn = sqlite3.connect('../capstone_db.db')
-        cursor = conn.cursor()
+        try:
+            # Connect to the database (it will create the file if it doesn't exist)
+            conn = sqlite3.connect('../capstone_db.db')
+            cursor = conn.cursor()
 
-        data = "SELECT * FROM material" # Select all from the material table
-        cursor.execute(data)        # Set the cursor to execute this instruction
-        rows = cursor.fetchall()    # Fetch all the rows from the material table
+            data = "SELECT * FROM material" # Select all from the material table
+            cursor.execute(data)        # Set the cursor to execute this instruction
+            rows = cursor.fetchall()    # Fetch all the rows from the material table
 
-        for x in rows:  # For each row, append the element to the result array
-            result.append(x)
+            for x in rows:  # For each row, append the element to the result array
+                result.append(x)
 
-        # Return the result array after closing the connection
-        conn.close()
+            # Return the result array after closing the connection
+            conn.close()
+
+        except sqlite3.Error as e:
+            print("Error while getting all data from Material class", e)
+        
+        finally:
+            if (conn):
+                conn.close()
+                print("Connection from Material class closed.")
+
         return result
