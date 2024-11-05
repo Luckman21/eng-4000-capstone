@@ -36,7 +36,7 @@ CREATE TABLE shelf (
 )
 ''')
 
-# User Type Table
+# User Table
 cursor.execute('''
 CREATE TABLE user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -48,7 +48,7 @@ CREATE TABLE user (
 )
 ''')
 
-# User Table
+# User Type Table
 cursor.execute('''
 CREATE TABLE user_type (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
