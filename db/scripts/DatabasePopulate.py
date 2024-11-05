@@ -1,8 +1,10 @@
 import sqlite3
 
+# Connecting to the database
 conn = sqlite3.connect('../capstone_db.db')
 cursor = conn.cursor()
 
+# Populating the different material types
 material_type = [
     (1, "FDM"),
     (2, "SLA"),
@@ -16,8 +18,9 @@ material_type = [
     (10, "NYLON")
 ]
 
-cursor.executemany("INSERT INTO material_type (id_type, name) VALUES (?, ?)", material_type)
+cursor.executemany("INSERT INTO material_type (id_type, name) VALUES (?, ?)", material_type) # inserting data into material type class
 
+# Populating the different materials
 material = [
     (1, "Black", "Smokey Black", 2),
     (2, "Blue", "Sky Blue", 4),
@@ -28,6 +31,7 @@ material = [
 
 cursor.executemany("INSERT INTO material (id_type, colour, name, material_type_id) VALUES (?, ?, ?, ?)", material)
 
+# Populating different shelves with different humidity and temperature values
 shelves = [
     (1, 935, 13.5),
     (2, 950, 18),
@@ -38,6 +42,7 @@ shelves = [
 
 cursor.executemany("INSERT INTO shelf (id_type, humidity_pct, temp_cel) VALUES (?, ?, ?)", shelves)
 
+# Populating with different user types
 user_type = [
     (1, "Admin"),
     (2, "Super_Admin")
@@ -45,7 +50,7 @@ user_type = [
 
 cursor.executemany("INSERT INTO user_type (id_type, name) VALUES (?, ?)", user_type)
 
-
+# Populating with 6 different users
 users = [
     (1, "james7", "jones7788", "jj7@gmail.com", 2),
     (2, "hugh_55", "pecan7275", "hugh_p55@hotmail.com", 1),
