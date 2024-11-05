@@ -22,16 +22,16 @@ class Material:
             data = "UPDATE material SET colour = '"+newColour+"' WHERE id = '"+self.id+"'"
             cursor.execute(data)
             conn.commit()
-            print("Set new colour for Material class successful.")
+            print("Set new colour for Material class successful.")  # TODO: Remove print statement before deployment
             cursor.close()
 
         except sqlite3.Error as e:
-            print("Error while setting colour data from Material class", e)
+            print("Error while setting colour data from Material class", e) # TODO: Remove print statement before deployment
         
         finally:
             if (conn):
                 conn.close()
-                print("Connection from Material class closed.")
+                print("Connection from Material class closed.") # TODO: Remove print statement before deployment
 
     def setName(self, newName):
         self.name = newName
@@ -44,16 +44,16 @@ class Material:
             data = "UPDATE material SET name = '"+newName+"' WHERE id = '"+self.id+"'"
             cursor.execute(data)
             conn.commit()
-            print("Set new name for Material class successful.")
+            print("Set new name for Material class successful.")    # TODO: Remove print statement before deployment
             cursor.close()
 
         except sqlite3.Error as e:
-            print("Error while setting name data from Material class", e)
+            print("Error while setting name data from Material class", e)   # TODO: Remove print statement before deployment
         
         finally:
             if (conn):
                 conn.close()
-                print("Connection from Material class closed.")
+                print("Connection from Material class closed.") # TODO: Remove print statement before deployment
 
     def setMaterialTypeID(self, newMTID):
         self.material_type_id = newMTID
@@ -100,11 +100,11 @@ class Material:
             conn.close()
 
         except sqlite3.Error as e:
-            print("Error while getting all data from Material class", e)
+            print("Error while getting all data from Material class", e)    # TODO: Remove print statement before deployment
         
         finally:
             if (conn):
                 conn.close()
-                print("Connection from Material class closed.")
+                print("Connection from Material class closed.") # TODO: Remove print statement before deployment
 
         return result

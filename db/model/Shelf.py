@@ -8,52 +8,6 @@ class Shelf:
         self.humidity_pct = humidity_pct
         self.temperature_cel = temperature_cel
     
-    # Set Methods
-    
-    def setHumidityPCT(self, newHumidPCT):
-        self.humidity_pct = newHumidPCT
-
-        # Update humidity pct in the databsae based on the ID
-        try:
-            conn = sqlite3.connect('../capstone_db.db')
-            cursor = conn.cursor()
-
-            data = "UPDATE shelf SET humidity_pct = '"+newHumidPCT+"' WHERE id = '"+self.id+"'"
-            cursor.execute(data)
-            conn.commit()
-            print("Set new Humidity PCT for User class successful.")
-            cursor.close()
-
-        except sqlite3.Error as e:
-            print("Error while setting Humidity PCT data from Shelf class", e)
-        
-        finally:
-            if (conn):
-                conn.close()
-                print("Connection from Shelf class closed.")
-    
-    def setTemperatureCel(self, newTempCel):
-        self.temperature_cel = newTempCel
-
-        # Update Temperature Cel in the databsae based on the ID
-        try:
-            conn = sqlite3.connect('../capstone_db.db')
-            cursor = conn.cursor()
-
-            data = "UPDATE shelf SET temperature_cel = '"+newTempCel+"' WHERE id = '"+self.id+"'"
-            cursor.execute(data)
-            conn.commit()
-            print("Set new temperature cel for Shelf class successful.")
-            cursor.close()
-
-        except sqlite3.Error as e:
-            print("Error while setting temperature cel data from Shelf class", e)
-        
-        finally:
-            if (conn):
-                conn.close()
-                print("Connection from Shelf class closed.")
-    
     # For reference on this part https://youtu.be/fKXhuOvjQQ8?si=-KNLP-ykp-mbCfJ2
     def getAll():
         """

@@ -28,16 +28,16 @@ class User:
             data = "UPDATE user SET username = '"+newUsername+"' WHERE id = '"+self.id+"'"
             cursor.execute(data)
             conn.commit()
-            print("Set new username for User class successful.")
+            print("Set new username for User class successful.")    # TODO: Remove print statement before deployment
             cursor.close()
 
         except sqlite3.Error as e:
-            print("Error while setting username data from User class", e)
+            print("Error while setting username data from User class", e)   # TODO: Remove print statement before deployment
         
         finally:
             if (conn):
                 conn.close()
-                print("Connection from User class closed.")
+                print("Connection from User class closed.") # TODO: Remove print statement before deployment
         
 
     def setHPass(self, newHashedPassword):
@@ -55,16 +55,16 @@ class User:
             data = "UPDATE user SET password = '"+newHashedPassword+"' WHERE id = '"+self.id+"'"
             cursor.execute(data)
             conn.commit()
-            print("Set new password for User class successful.")
+            print("Set new password for User class successful.")    # TODO: Remove print statement before deployment
             cursor.close()
 
         except sqlite3.Error as e:
-            print("Error while setting password data from User class", e)
+            print("Error while setting password data from User class", e)   # TODO: Remove print statement before deployment
         
         finally:
             if (conn):
                 conn.close()
-                print("Connection from User class closed.")
+                print("Connection from User class closed.") # TODO: Remove print statement before deployment
 
     def setEmail(self, newEmail):
         """
@@ -80,16 +80,16 @@ class User:
             data = "UPDATE user SET email = '"+newEmail+"' WHERE id = '"+self.id+"'"
             cursor.execute(data)
             conn.commit()
-            print("Set new email address for User class successful.")
+            print("Set new email address for User class successful.")   # TODO: Remove print statement before deployment
             cursor.close()
 
         except sqlite3.Error as e:
-            print("Error while setting email address data from User class", e)
+            print("Error while setting email address data from User class", e)  # TODO: Remove print statement before deployment
         
         finally:
             if (conn):
                 conn.close()
-                print("Connection from User class closed.")
+                print("Connection from User class closed.") # TODO: Remove print statement before deployment
     
     def setUserTypeID(self, newUTID):
         """
@@ -105,16 +105,16 @@ class User:
             data = "UPDATE user SET user_type_id = '"+newUTID+"' WHERE id = '"+self.id+"'"
             cursor.execute(data)
             conn.commit()
-            print("Set new user_type_id for User class successful.")
+            print("Set new user_type_id for User class successful.")    # TODO: Remove print statement before deployment
             cursor.close()
 
         except sqlite3.Error as e:
-            print("Error while setting user_type_id data from User class", e)
+            print("Error while setting user_type_id data from User class", e)   # TODO: Remove print statement before deployment
         
         finally:
             if (conn):
                 conn.close()
-                print("Connection from User class closed.")
+                print("Connection from User class closed.") # TODO: Remove print statement before deployment
 
     # For reference on this part https://youtu.be/fKXhuOvjQQ8?si=-KNLP-ykp-mbCfJ2
     def getAll():
@@ -139,11 +139,11 @@ class User:
             conn.close()
 
         except sqlite3.Error as e:
-            print("Error while getting all data from User class", e)
+            print("Error while getting all data from User class", e)    # TODO: Remove print statement before deployment
         
         finally:
             if (conn):
                 conn.close()
-                print("Connection from User class closed.")
+                print("Connection from User class closed.") # TODO: Remove print statement before deployment
 
         return result
