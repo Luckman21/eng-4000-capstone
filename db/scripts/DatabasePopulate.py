@@ -4,63 +4,88 @@ import sqlite3
 conn = sqlite3.connect('../capstone_db.db')
 cursor = conn.cursor()
 
-# Populating the different material types
+# Populating the different material types given by Pantheon
 material_type = [
-    (1, "FDM"),
-    (2, "SLA"),
-    (3, "PLA"),
-    (4, "Silk PLA"),
-    (5, "PETG"),
-    (6, "TPU"),
-    (7, "ABS"),
-    (8, "ASA"),
-    (9, "PAHT CF"),
-    (10, "NYLON")
+    ("FDM"),
+    ("SLA"),
+    ("PLA"),
+    ("Silk PLA"),
+    ("PETG"),
+    ("TPU"),
+    ("ABS"),
+    ("ASA"),
+    ("PAHT CF"),
+    ("NYLON")
 ]
 
-cursor.executemany("INSERT INTO material_type (id_type, name) VALUES (?, ?)", material_type) # inserting data into material type class
+cursor.executemany("INSERT INTO material_type (name) VALUES (?)", material_type) # inserting the names into material type class
 
-# Populating the different materials
+# Populating the different materials that are connected with each material type
 material = [
-    (1, "Black", "Smokey Black", 2),
-    (2, "Blue", "Sky Blue", 4),
-    (3, "Green", "Mother Earth", 7),
-    (4, "Red", "Sunset", 1),
-    (5, "Yellow", "Sunrise", 8)
+    ("Black", "Smokey Black", 1),
+    ("Blue", "Sky Blue", 1),
+    ("Green", "Mother Earth", 2),
+    ("Red", "Sunset", 2),
+    ("Yellow", "Sunrise", 3)
+    ("White", "Surface Moon", 3),
+    ("Brown", "Dirt Ground", 4),
+    ("Teal", "Seaweed", 4),
+    ("Silver", "Starry Night", 5),
+    ("Purple", "Barney", 5),
+    ("Gray", "Cloudy Day", 6),
+    ("Orange", "Pumpkin", 6),
+    ("Maroon", "Oakwood", 7),
+    ("Aquamarine", "Poolside", 7),
+    ("Lime", "Sprite", 8),
+    ("Crimson", "Lobster", 8),
+    ("Pink", "Barbie", 9),
+    ("Magenta", "Uniqua", 9),
+    ("Gold", "Olympics", 10),
+    ("Black", "Night Sky", 10)
+
 ]
 
-cursor.executemany("INSERT INTO material (id_type, colour, name, material_type_id) VALUES (?, ?, ?, ?)", material)
+cursor.executemany("INSERT INTO material (colour, name, material_type_id) VALUES (?, ?, ?)", material) # This will insert the material values into the material class
 
 # Populating different shelves with different humidity and temperature values
 shelves = [
-    (1, 935, 13.5),
-    (2, 950, 18),
-    (3, 1050, 24.5),
-    (4, 1025, 22.5),
-    (5, 1100, 26)
+    (935, 13.5),
+    (950, 18),
+    (1050, 24.5),
+    (1025, 22.5),
+    (1100, 26)
+    (800, 10),
+    (1200, 29),
+    (1000, 22),
+    (975, 20),
+    (850, 11.5)
 ]
 
-cursor.executemany("INSERT INTO shelf (id_type, humidity_pct, temp_cel) VALUES (?, ?, ?)", shelves)
+cursor.executemany("INSERT INTO shelf (humidity_pct, temp_cel) VALUES (?, ?)", shelves) # Inserting shelf values into the class
 
 # Populating with different user types
 user_type = [
-    (1, "Admin"),
-    (2, "Super_Admin")
+    ("Admin"),
+    ("Super_Admin")
 ]
 
-cursor.executemany("INSERT INTO user_type (id_type, name) VALUES (?, ?)", user_type)
+cursor.executemany("INSERT INTO user_type (name) VALUES (?)", user_type) # Inserting the two user types into the user_type class
 
-# Populating with 6 different users
+# Populating with multiple users to test our users table
 users = [
-    (1, "james7", "jones7788", "jj7@gmail.com", 2),
-    (2, "hugh_55", "pecan7275", "hugh_p55@hotmail.com", 1),
-    (3, "scream777", "scary4578", "scream33@hotmail.com", 1),
-    (4, "water_123", "Gucci2001", "water7@gmail.com", 2),
-    (5, "peter_g7", "griff4508", "peterg@hotmail.com", 2),
-    (6, "jake_99", "laugh0910", "jake_p@gmail.com", 1),
+    ("james7", "jones7788", "jj7@gmail.com", 2),
+    ("hugh_55", "pecan7275", "hugh_p55@hotmail.com", 1),
+    ("scream777", "scary4578", "scream33@hotmail.com", 1),
+    ("water_123", "Gucci2001", "water7@gmail.com", 2),
+    ("peter_g7", "griff4508", "peterg@hotmail.com", 2),
+    ("jake_99", "laugh0910", "jake_p@gmail.com", 1),
+    ("josh_z", "sides2525", "josh_23@gmail.com", 2),
+    ("simonM", "bball0710", "simon_M@hotmail.com", 1),
+    ("Tyler23", "Igors1998", "TytheC@gmail.com", 2),
+    ("Drizzy6", "Drake2334", "Drake23@hotmail.com", 1)
 ]
 
-cursor.executemany("INSERT INTO user (id_type, username, password, email, user_type_id) VALUES (?, ?, ?, ?, ?)", users)
+cursor.executemany("INSERT INTO user (username, password, email, user_type_id) VALUES (?, ?, ?, ?)", users) # inserting the values of the user into the user class
 
 conn.commit()
 conn.close()
