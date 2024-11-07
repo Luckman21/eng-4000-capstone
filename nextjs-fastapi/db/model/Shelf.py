@@ -1,12 +1,20 @@
 import sqlite3
+from sqlalchemy import Column, Integer, Float
+from .base import Base  # Import Base from a separate file
 
-class Shelf:
+
+class Shelf(Base):
     # Constructor
 
-    def __init__(self, id, humidity_pct, temperature_cel):
-        self.id = id
-        self.humidity_pct = humidity_pct
-        self.temperature_cel = temperature_cel
+    __tablename__ = 'shelf'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    humidity_pct = Column(Float, nullable=False)
+    temperature_cel = Column(Float, nullable=False)
+
+    def __repr__(self):
+        return f"<Shelf(id={self.id}, humidity_pct={self.humidity_pct}, temperature_cel={self.temperature_cel})>"
+
     
     # For reference on this part https://youtu.be/fKXhuOvjQQ8?si=-KNLP-ykp-mbCfJ2
     def getAll():

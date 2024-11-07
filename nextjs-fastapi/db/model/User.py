@@ -1,16 +1,25 @@
 import sqlite3
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
+from .User_Type import UserType  # Import UserType from user_type.py
+from .base import Base  # Import Base from a separate file
 
-class User:
+class User(Base):
+
     # Constructor
-    def __init__(self, id, username, hashed_password, email, user_type_id):
-        """
-        Constructor for the User class.
-        """
-        self.id = id
-        self.username = username
-        self.hashed_password = hashed_password
-        self.email = email
-        self.user_type_id = user_type_id
+    __tablename__ = 'user'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    username = Column(String, nullable=False, unique=True)
+    password = Column(String, nullable=False) # HASHED
+    email = Column(String, nullable=False, unique=True)
+
+    user_type_id = Column(Integer, ForeignKey('user_type.id'))
+
+    user_type = relationship('UserType', backref='users', cascade='all, delete')
+
+    def __repr__(self):
+        return f"<User(id={self.id}, username={self.username}, email={self.email})>"
 
     # Set Methods
 

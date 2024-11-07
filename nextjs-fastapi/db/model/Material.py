@@ -1,13 +1,37 @@
 import sqlite3
+from sqlalchemy import create_engine, Column, Integer, String, Float, CheckConstraint, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, relationship
+from .Material_Type import MaterialType
+from .base import Base  # Import Base from a separate file
 
-class Material:
-    # Constructor
+# Base class for SQLAlchemy (this is the table essentially)
 
-    def __init__(self, id, colour, name, material_type_id):
-        self.id = id
-        self.colour = colour
-        self.name = name
-        self.material_type_id = material_type_id
+
+class Material(Base):
+    __tablename__ = 'materials'
+
+    # Attributes
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    colour = Column(String, nullable=False)
+    name = Column(String, nullable=False)
+    mass = Column(Float, nullable=False)
+
+    # Foreign Key
+    material_type_id = Column(Integer, ForeignKey('material_types.id'), nullable=False)
+
+    # Enforce the CHECK constraint (mass >= 0)
+    __table_args__ = (
+        CheckConstraint('mass >= 0', name='check_mass_non_negative'),
+    )
+
+    material_type = relationship("MaterialType", backref="materials", cascade='all, delete')
+
+
+    def __init__(self, db_url='sqllite:///capstone_db.db'):
+        self.engine = create_engine(db_url, echo=True)
+        self.Session = sessionmaker(bind=self.engine)
+        base.metadata.create_all(self.engine) # Create tables if not exist
 
     # Set Methods
 

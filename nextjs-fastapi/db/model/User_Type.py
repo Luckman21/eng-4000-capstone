@@ -1,11 +1,19 @@
 import sqlite3
+from sqlalchemy import Column, Integer, String
+from .base import Base  # Import Base from a separate file
 
-class User_Type:
+
+class UserType(Base):
     # Constructor
 
-    def __init__(self, id, name):
-        self.id = id
-        self.name = name
+    __tablename__ = 'user_type'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    type_name = Column(String, nullable=False, unique=True)
+
+    def __repr__(self):
+        return f"<UserType(id={self.id}, type_name={self.type_name})>"
+
 
     # Set Methods
 
