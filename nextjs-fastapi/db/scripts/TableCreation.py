@@ -22,6 +22,7 @@ CREATE TABLE material (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     colour TEXT NOT NULL,
     name TEXT NOT NULL, 
+    mass FLOAT NOT NULL,
     material_type_id INTEGER,
     FOREIGN KEY (material_type_id) REFERENCES material_type(id) ON DELETE CASCADE
 )
