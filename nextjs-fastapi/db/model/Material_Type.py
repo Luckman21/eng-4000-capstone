@@ -7,7 +7,7 @@ from .base import Base  # Import Base from a separate file
 
 class MaterialType(Base):
 
-    __tablename__ = 'material_type'
+    __tablename__ = 'material_types'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     type_name = Column(String, nullable=False, unique=True)

@@ -6,7 +6,7 @@ from .base import Base  # Import Base from a separate file
 class UserType(Base):
     # Constructor
 
-    __tablename__ = 'user_type'
+    __tablename__ = 'user_types'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     type_name = Column(String, nullable=False, unique=True)

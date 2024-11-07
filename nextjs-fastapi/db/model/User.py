@@ -7,14 +7,14 @@ from .base import Base  # Import Base from a separate file
 class User(Base):
 
     # Constructor
-    __tablename__ = 'user'
+    __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False) # HASHED
     email = Column(String, nullable=False, unique=True)
 
-    user_type_id = Column(Integer, ForeignKey('user_type.id'))
+    user_type_id = Column(Integer, ForeignKey('user_types.id'))
 
     user_type = relationship('UserType', backref='users', cascade='all, delete')
 

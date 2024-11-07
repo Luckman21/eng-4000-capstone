@@ -18,7 +18,7 @@ material_type = [
     ("NYLON")
 ]
 
-cursor.executemany("INSERT INTO material_type (name) VALUES (?)", material_type) # inserting the names into material type class
+cursor.executemany("INSERT INTO material_types (name) VALUES (?)", material_type) # inserting the names into material type class
 
 # Populating the different materials that are connected with each material type
 material = [
@@ -45,7 +45,7 @@ material = [
 
 ]
 
-cursor.executemany("INSERT INTO material (colour, name, mass, material_type_id) VALUES (?, ?, ?, ?)", material) # This will insert the material values into the material class
+cursor.executemany("INSERT INTO materials (colour, name, mass, material_type_id) VALUES (?, ?, ?, ?)", material) # This will insert the material values into the material class
 
 # Populating different shelves with different humidity and temperature values
 shelves = [
@@ -61,7 +61,7 @@ shelves = [
     (850, 11.5)
 ]
 
-cursor.executemany("INSERT INTO shelf (humidity_pct, temp_cel) VALUES (?, ?)", shelves) # Inserting shelf values into the class
+cursor.executemany("INSERT INTO shelfs (humidity_pct, temp_cel) VALUES (?, ?)", shelves) # Inserting shelf values into the class
 
 # Populating with different user types
 user_type = [
@@ -69,7 +69,7 @@ user_type = [
     ("Super_Admin")
 ]
 
-cursor.executemany("INSERT INTO user_type (name) VALUES (?)", user_type) # Inserting the two user types into the user_type class
+cursor.executemany("INSERT INTO user_types (name) VALUES (?)", user_type) # Inserting the two user types into the user_type class
 
 # Populating with multiple users to test our users table
 users = [
@@ -85,7 +85,7 @@ users = [
     ("Drizzy6", "Drake2334", "Drake23@hotmail.com", 1)
 ]
 
-cursor.executemany("INSERT INTO user (username, password, email, user_type_id) VALUES (?, ?, ?, ?)", users) # inserting the values of the user into the user class
+cursor.executemany("INSERT INTO users (username, password, email, user_type_id) VALUES (?, ?, ?, ?)", users) # inserting the values of the user into the user class
 
 conn.commit()
 conn.close()

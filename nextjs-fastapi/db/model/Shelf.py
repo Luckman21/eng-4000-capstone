@@ -6,7 +6,7 @@ from .base import Base  # Import Base from a separate file
 class Shelf(Base):
     # Constructor
 
-    __tablename__ = 'shelf'
+    __tablename__ = 'shelfs'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     humidity_pct = Column(Float, nullable=False)

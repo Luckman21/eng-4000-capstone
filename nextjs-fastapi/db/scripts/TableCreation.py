@@ -8,7 +8,7 @@ cursor = conn.cursor()
 # Material Type Creation
 
 cursor.execute('''
-CREATE TABLE material_type (
+CREATE TABLE material_types (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     type_name TEXT NOT NULL UNIQUE
 )
@@ -18,7 +18,7 @@ CREATE TABLE material_type (
 # autoincrement allows us to consistently increment each ID by 1
 
 cursor.execute('''
-CREATE TABLE material (
+CREATE TABLE materials (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     colour TEXT NOT NULL,
     name TEXT NOT NULL, 
@@ -30,7 +30,7 @@ CREATE TABLE material (
 
 # Shelf Table
 cursor.execute('''
-CREATE TABLE shelf (
+CREATE TABLE shelfs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     humidity_pct REAL NOT NULL,
     temperature_cel REAL NOT NULL 
@@ -39,7 +39,7 @@ CREATE TABLE shelf (
 
 # User Table
 cursor.execute('''
-CREATE TABLE user (
+CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL, 
@@ -51,7 +51,7 @@ CREATE TABLE user (
 
 # User Type Table
 cursor.execute('''
-CREATE TABLE user_type (
+CREATE TABLE user_types (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     type_name TEXT NOT NULL UNIQUE
 )
