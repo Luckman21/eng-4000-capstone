@@ -2,8 +2,9 @@ import sqlite3
 from sqlalchemy import create_engine, Column, Integer, String, Float, CheckConstraint, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-from .Material_Type import MaterialType
+from sqlalchemy.exc import IntegrityError, DataError, SQLAlchemyError
 from .base import Base  # Import Base from a separate file
+from .Material_Type import MaterialType
 
 # Base class for SQLAlchemy (this is the table essentially)
 
@@ -27,79 +28,25 @@ class Material(Base):
 
     material_type = relationship("MaterialType", backref="materials", cascade='all, delete')
 
-
-    def __init__(self, db_url='sqllite:///capstone_db.db'):
-        self.engine = create_engine(db_url, echo=True)
-        self.Session = sessionmaker(bind=self.engine)
-        base.metadata.create_all(self.engine) # Create tables if not exist
-
     # Set Methods
 
     def setColour(self, newColour):
+        if type(newColour) is not str:
+            raise ValueError("colour must be string")
         self.colour = newColour
-        
-        # Update colour in the databsae based on the ID
-        try:
-            conn = sqlite3.connect('../capstone_db.db')
-            cursor = conn.cursor()
-
-            data = "UPDATE material SET colour = '"+newColour+"' WHERE id = '"+self.id+"'"
-            cursor.execute(data)
-            conn.commit()
-            print("Set new colour for Material class successful.")  # TODO: Remove print statement before deployment
-            cursor.close()
-
-        except sqlite3.Error as e:
-            print("Error while setting colour data from Material class", e) # TODO: Remove print statement before deployment
-        
-        finally:
-            if (conn):
-                conn.close()
-                print("Connection from Material class closed.") # TODO: Remove print statement before deployment
 
     def setName(self, newName):
+        if type(newName) is not str:
+            raise ValueError("name must be string")
         self.name = newName
 
-        # Update name in the databsae based on the ID
-        try:
-            conn = sqlite3.connect('../capstone_db.db')
-            cursor = conn.cursor()
+    def setMaterialTypeID(self, type):
 
-            data = "UPDATE material SET name = '"+newName+"' WHERE id = '"+self.id+"'"
-            cursor.execute(data)
-            conn.commit()
-            print("Set new name for Material class successful.")    # TODO: Remove print statement before deployment
-            cursor.close()
-
-        except sqlite3.Error as e:
-            print("Error while setting name data from Material class", e)   # TODO: Remove print statement before deployment
-        
-        finally:
-            if (conn):
-                conn.close()
-                print("Connection from Material class closed.") # TODO: Remove print statement before deployment
-
-    def setMaterialTypeID(self, newMTID):
-        self.material_type_id = newMTID
-
-        # Update Material Type ID in the databsae based on the ID
-        try:
-            conn = sqlite3.connect('../capstone_db.db')
-            cursor = conn.cursor()
-
-            data = "UPDATE material SET material_type_id = '"+newMTID+"' WHERE id = '"+self.id+"'"
-            cursor.execute(data)
-            conn.commit()
-            print("Set new Material Type ID for Material class successful.")
-            cursor.close()
-
-        except sqlite3.Error as e:
-            print("Error while setting Material Type ID data from Material class", e)
-        
-        finally:
-            if (conn):
-                conn.close()
-                print("Connection from Material class closed.")
+        if isinstance(type, MaterialType):
+            self.material_type = type
+            self.material_type_id = type.id
+        else:
+            raise ValueError("Type can only be of UserType for Users")
 
     # For reference on this part https://youtu.be/fKXhuOvjQQ8?si=-KNLP-ykp-mbCfJ2
     def getAll():

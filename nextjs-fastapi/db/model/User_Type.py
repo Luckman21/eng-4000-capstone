@@ -18,26 +18,10 @@ class UserType(Base):
     # Set Methods
 
     def setName(self, newName):
+
+        if type(newName) is not str:
+            raise ValueError("name must be string")
         self.name = newName
-        
-        # Update type name in the databsae based on the ID
-        try:
-            conn = sqlite3.connect('../capstone_db.db')
-            cursor = conn.cursor()
-
-            data = "UPDATE user_type SET type_name = '"+newName+"' WHERE id = '"+self.id+"'"
-            cursor.execute(data)
-            conn.commit()
-            print("Set new type name for User class successful.") # TODO: Remove print statement before deployment
-            cursor.close()
-
-        except sqlite3.Error as e:
-            print("Error while setting type name data from User Type class", e) # TODO: Remove print statement before deployment
-        
-        finally:
-            if (conn):
-                conn.close()
-                print("Connection from User Type class closed.")    # TODO: Remove print statement before deployment
 
     # For reference on this part https://youtu.be/fKXhuOvjQQ8?si=-KNLP-ykp-mbCfJ2
     def getAll():
