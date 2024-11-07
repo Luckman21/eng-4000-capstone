@@ -22,30 +22,30 @@ cursor.executemany("INSERT INTO material_type (name) VALUES (?)", material_type)
 
 # Populating the different materials that are connected with each material type
 material = [
-    ("Black", "Smokey Black", 1),
-    ("Blue", "Sky Blue", 1),
+    ("Black", "Smokey Black", 3.2, 1),
+    ("Blue", "Sky Blue", 100.0, 1),
     ("Green", "Mother Earth", 2),
-    ("Red", "Sunset", 2),
-    ("Yellow", "Sunrise", 3)
-    ("White", "Surface Moon", 3),
-    ("Brown", "Dirt Ground", 4),
-    ("Teal", "Seaweed", 4),
-    ("Silver", "Starry Night", 5),
-    ("Purple", "Barney", 5),
-    ("Gray", "Cloudy Day", 6),
-    ("Orange", "Pumpkin", 6),
-    ("Maroon", "Oakwood", 7),
-    ("Aquamarine", "Poolside", 7),
-    ("Lime", "Sprite", 8),
-    ("Crimson", "Lobster", 8),
-    ("Pink", "Barbie", 9),
-    ("Magenta", "Uniqua", 9),
-    ("Gold", "Olympics", 10),
-    ("Black", "Night Sky", 10)
+    ("Red", "Sunset", 300.4, 2),
+    ("Yellow", "Sunrise", 2.0, 3)
+    ("White", "Surface Moon", 49.0 ,3),
+    ("Brown", "Dirt Ground", 1000.0, 4),
+    ("Teal", "Seaweed", 50.3, 4),
+    ("Silver", "Starry Night", 50.3, 5),
+    ("Purple", "Barney", 50.3, 5),
+    ("Gray", "Cloudy Day", 50.3, 6),
+    ("Orange", "Pumpkin", 50.3, 6),
+    ("Maroon", "Oakwood", 50.3, 7),
+    ("Aquamarine", "Poolside", 505.3, 7),
+    ("Lime", "Sprite", 30.3, 8),
+    ("Crimson", "Lobster", 70.6, 8),
+    ("Pink", "Barbie", 50.0, 9),
+    ("Magenta", "Uniqua", 49.9, 9),
+    ("Gold", "Olympics", 50.3, 10),
+    ("Black", "Night Sky", 50.3, 10)
 
 ]
 
-cursor.executemany("INSERT INTO material (colour, name, material_type_id) VALUES (?, ?, ?)", material) # This will insert the material values into the material class
+cursor.executemany("INSERT INTO material (colour, name, mass, material_type_id) VALUES (?, ?, ?, ?)", material) # This will insert the material values into the material class
 
 # Populating different shelves with different humidity and temperature values
 shelves = [
