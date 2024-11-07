@@ -24,7 +24,7 @@ cursor.executemany("INSERT INTO material_type (name) VALUES (?)", material_type)
 material = [
     ("Black", "Smokey Black", 3.2, 1),
     ("Blue", "Sky Blue", 100.0, 1),
-    ("Green", "Mother Earth", 2),
+    ("Green", "Mother Earth", 100.0, 2),
     ("Red", "Sunset", 300.4, 2),
     ("Yellow", "Sunrise", 2.0, 3)
     ("White", "Surface Moon", 49.0 ,3),
