@@ -1,0 +1,19 @@
+FEATURE TEST
+
+Tests which assess the effectiveness of our webpage features by using the local host
+
+UNIT TEST
+
+Tests which only assess a singular class / method
+
+INTEGRATION TEST
+
+Tests which involve a combination of method calls from other classes (think controller tests)
+
+
+
+WHAT WILL WE BE USING TO TEST?
+
+Integration / Unit - PyTest
+
+Feature - TBD (thinking Selenium but a wrapper would be nice if it exists)
