@@ -18,34 +18,34 @@ material_type = [
     ("NYLON")
 ]
 
-cursor.executemany("INSERT INTO material_type (name) VALUES (?)", material_type) # inserting the names into material type class
+cursor.executemany("INSERT INTO material_types (name) VALUES (?)", material_type) # inserting the names into material type class
 
 # Populating the different materials that are connected with each material type
 material = [
-    ("Black", "Smokey Black", 1),
-    ("Blue", "Sky Blue", 1),
-    ("Green", "Mother Earth", 2),
-    ("Red", "Sunset", 2),
-    ("Yellow", "Sunrise", 3)
-    ("White", "Surface Moon", 3),
-    ("Brown", "Dirt Ground", 4),
-    ("Teal", "Seaweed", 4),
-    ("Silver", "Starry Night", 5),
-    ("Purple", "Barney", 5),
-    ("Gray", "Cloudy Day", 6),
-    ("Orange", "Pumpkin", 6),
-    ("Maroon", "Oakwood", 7),
-    ("Aquamarine", "Poolside", 7),
-    ("Lime", "Sprite", 8),
-    ("Crimson", "Lobster", 8),
-    ("Pink", "Barbie", 9),
-    ("Magenta", "Uniqua", 9),
-    ("Gold", "Olympics", 10),
-    ("Black", "Night Sky", 10)
+    ("Black", "Smokey Black", 3.2, 1),
+    ("Blue", "Sky Blue", 100.0, 1),
+    ("Green", "Mother Earth", 100.0, 2),
+    ("Red", "Sunset", 300.4, 2),
+    ("Yellow", "Sunrise", 2.0, 3)
+    ("White", "Surface Moon", 49.0 ,3),
+    ("Brown", "Dirt Ground", 1000.0, 4),
+    ("Teal", "Seaweed", 50.3, 4),
+    ("Silver", "Starry Night", 50.3, 5),
+    ("Purple", "Barney", 50.3, 5),
+    ("Gray", "Cloudy Day", 50.3, 6),
+    ("Orange", "Pumpkin", 50.3, 6),
+    ("Maroon", "Oakwood", 50.3, 7),
+    ("Aquamarine", "Poolside", 505.3, 7),
+    ("Lime", "Sprite", 30.3, 8),
+    ("Crimson", "Lobster", 70.6, 8),
+    ("Pink", "Barbie", 50.0, 9),
+    ("Magenta", "Uniqua", 49.9, 9),
+    ("Gold", "Olympics", 50.3, 10),
+    ("Black", "Night Sky", 50.3, 10)
 
 ]
 
-cursor.executemany("INSERT INTO material (colour, name, material_type_id) VALUES (?, ?, ?)", material) # This will insert the material values into the material class
+cursor.executemany("INSERT INTO materials (colour, name, mass, material_type_id) VALUES (?, ?, ?, ?)", material) # This will insert the material values into the material class
 
 # Populating different shelves with different humidity and temperature values
 shelves = [
@@ -61,7 +61,7 @@ shelves = [
     (850, 11.5)
 ]
 
-cursor.executemany("INSERT INTO shelf (humidity_pct, temp_cel) VALUES (?, ?)", shelves) # Inserting shelf values into the class
+cursor.executemany("INSERT INTO shelfs (humidity_pct, temp_cel) VALUES (?, ?)", shelves) # Inserting shelf values into the class
 
 # Populating with different user types
 user_type = [
@@ -69,7 +69,7 @@ user_type = [
     ("Super_Admin")
 ]
 
-cursor.executemany("INSERT INTO user_type (name) VALUES (?)", user_type) # Inserting the two user types into the user_type class
+cursor.executemany("INSERT INTO user_types (name) VALUES (?)", user_type) # Inserting the two user types into the user_type class
 
 # Populating with multiple users to test our users table
 users = [
@@ -85,7 +85,7 @@ users = [
     ("Drizzy6", "Drake2334", "Drake23@hotmail.com", 1)
 ]
 
-cursor.executemany("INSERT INTO user (username, password, email, user_type_id) VALUES (?, ?, ?, ?)", users) # inserting the values of the user into the user class
+cursor.executemany("INSERT INTO users (username, password, email, user_type_id) VALUES (?, ?, ?, ?)", users) # inserting the values of the user into the user class
 
 conn.commit()
 conn.close()
