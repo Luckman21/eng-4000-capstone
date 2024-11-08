@@ -1,4 +1,3 @@
-import sqlite3
 from sqlalchemy import Column, Integer, String
 from .base import Base  # Import Base from a separate file
 
