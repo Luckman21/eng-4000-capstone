@@ -19,7 +19,7 @@ def populate_db():
         ("NYLON")
     ]
 
-    cursor.executemany("INSERT INTO material_type (name) VALUES (?)", material_type) # inserting the names into material type class
+    cursor.executemany("INSERT INTO material_types (name) VALUES (?)", material_type) # inserting the names into material type class
 
     # Populating the different materials that are connected with each material type
     material = [
@@ -27,7 +27,7 @@ def populate_db():
         ("Blue", "Sky Blue", 1),
         ("Green", "Mother Earth", 2),
         ("Red", "Sunset", 2),
-        ("Yellow", "Sunrise", 3)
+        ("Yellow", "Sunrise", 3),
         ("White", "Surface Moon", 3),
         ("Brown", "Dirt Ground", 4),
         ("Teal", "Seaweed", 4),
@@ -46,7 +46,7 @@ def populate_db():
 
     ]
 
-    cursor.executemany("INSERT INTO material (colour, name, material_type_id) VALUES (?, ?, ?)", material) # This will insert the material values into the material class
+    cursor.executemany("INSERT INTO materials (colour, name, material_type_id) VALUES (?, ?, ?)", material) # This will insert the material values into the material class
 
     # Populating different shelves with different humidity and temperature values
     shelves = [
@@ -54,7 +54,7 @@ def populate_db():
         (950, 18),
         (1050, 24.5),
         (1025, 22.5),
-        (1100, 26)
+        (1100, 26),
         (800, 10),
         (1200, 29),
         (1000, 22),
@@ -62,7 +62,7 @@ def populate_db():
         (850, 11.5)
     ]
 
-    cursor.executemany("INSERT INTO shelf (humidity_pct, temp_cel) VALUES (?, ?)", shelves) # Inserting shelf values into the class
+    cursor.executemany("INSERT INTO shelfs (humidity_pct, temp_cel) VALUES (?, ?)", shelves) # Inserting shelf values into the class
 
     # Populating with different user types
     user_type = [
@@ -70,7 +70,7 @@ def populate_db():
         ("Super_Admin")
     ]
 
-    cursor.executemany("INSERT INTO user_type (name) VALUES (?)", user_type) # Inserting the two user types into the user_type class
+    cursor.executemany("INSERT INTO user_types (name) VALUES (?)", user_type) # Inserting the two user types into the user_type class
 
     # Populating with multiple users to test our users table
     users = [
@@ -86,7 +86,7 @@ def populate_db():
         ("Drizzy6", "Drake2334", "Drake23@hotmail.com", 1)
     ]
 
-    cursor.executemany("INSERT INTO user (username, password, email, user_type_id) VALUES (?, ?, ?, ?)", users) # inserting the values of the user into the user class
+    cursor.executemany("INSERT INTO users (username, password, email, user_type_id) VALUES (?, ?, ?, ?)", users) # inserting the values of the user into the user class
 
     conn.commit()
     conn.close()
