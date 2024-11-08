@@ -23,26 +23,26 @@ def populate_db():
 
     # Populating the different materials that are connected with each material type
     material = [
-        ("Black", "Smokey Black", 1),
-        ("Blue", "Sky Blue", 1),
-        ("Green", "Mother Earth", 2),
-        ("Red", "Sunset", 2),
-        ("Yellow", "Sunrise", 3),
-        ("White", "Surface Moon", 3),
-        ("Brown", "Dirt Ground", 4),
-        ("Teal", "Seaweed", 4),
-        ("Silver", "Starry Night", 5),
-        ("Purple", "Barney", 5),
-        ("Gray", "Cloudy Day", 6),
-        ("Orange", "Pumpkin", 6),
-        ("Maroon", "Oakwood", 7),
-        ("Aquamarine", "Poolside", 7),
-        ("Lime", "Sprite", 8),
-        ("Crimson", "Lobster", 8),
-        ("Pink", "Barbie", 9),
-        ("Magenta", "Uniqua", 9),
-        ("Gold", "Olympics", 10),
-        ("Black", "Night Sky", 10)
+        ("Black", "Smokey Black", 500.0, 1),
+        ("Blue", "Sky Blue", 17.8, 1),
+        ("Green", "Mother Earth", 94.5, 2),
+        ("Red", "Sunset", 72.6, 2),
+        ("Yellow", "Sunrise", 72.6, 3),
+        ("White", "Surface Moon", 72.6, 3),
+        ("Brown", "Dirt Ground", 72.6, 4),
+        ("Teal", "Seaweed", 50.0, 4),
+        ("Silver", "Starry Night", 90.0, 5),
+        ("Purple", "Barney", 72.6, 5),
+        ("Gray", "Cloudy Day", 72.6, 6),
+        ("Orange", "Pumpkin", 723.6, 6),
+        ("Maroon", "Oakwood", 100.6, 7),
+        ("Aquamarine", "Poolside", 724.6, 7),
+        ("Lime", "Sprite", 72.6, 8),
+        ("Crimson", "Lobster", 72.6, 8),
+        ("Pink", "Barbie", 72.6, 9),
+        ("Magenta", "Uniqua", 72.6, 9),
+        ("Gold", "Olympics", 72.6, 10),
+        ("Black", "Night Sky", 72.6, 10)
 
     ]
 
