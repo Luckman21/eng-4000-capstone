@@ -22,7 +22,7 @@ def populate_db():
     cursor.executemany("INSERT INTO material_type (name) VALUES (?)", material_type) # inserting the names into material type class
 
     # Populating the different materials that are connected with each material type
-    material = [
+    materials = [
         ("Black", "Smokey Black", 1),
         ("Blue", "Sky Blue", 1),
         ("Green", "Mother Earth", 2),
@@ -46,7 +46,7 @@ def populate_db():
 
     ]
 
-    cursor.executemany("INSERT INTO material (colour, name, material_type_id) VALUES (?, ?, ?)", material) # This will insert the material values into the material class
+    cursor.executemany("INSERT INTO materials (colour, name, material_type_id) VALUES (?, ?, ?)", materials) # This will insert the material values into the material class
 
     # Populating different shelves with different humidity and temperature values
     shelves = [
