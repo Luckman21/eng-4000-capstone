@@ -26,6 +26,6 @@ class UserType(Base):
     # Class Method
     def getAll(cls, session):
         """
-        Returns all the instances of User_Type stored in the user table.
+        Returns all the instances of User_Type stored in the user_type table.
         """
         return session.query(cls).all()
