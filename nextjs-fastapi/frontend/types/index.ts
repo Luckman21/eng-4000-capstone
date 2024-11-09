@@ -1,8 +1,9 @@
 export interface Material {
-    id: number;
-  color: string;
+  id: number;
+  colour: string;
   name: string;
-  mass: number;
+  weight: number;
+  status: string;
 }
 
 export interface MaterialType {

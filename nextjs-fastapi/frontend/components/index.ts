@@ -1,4 +1,4 @@
-import Table from "./Table";
+import TableComponent from "./TableComponent";
 
 
-export { Table };
+export { TableComponent };

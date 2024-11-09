@@ -23,6 +23,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["frontend/next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["frontend/next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "components/TableComponent.jsx"],
   "exclude": ["node_modules"]
 }
