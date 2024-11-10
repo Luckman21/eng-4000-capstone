@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Material,MaterialType } from '@/types';
 import axios from 'axios';
+import {useAsyncList} from "@react-stately/data";
 
 
 
@@ -35,6 +36,30 @@ const TableComponent = () => {
 
     fetchMaterials();
   }, []);
+  
+  
+  let list = useAsyncList({
+    async load() {
+     
+      return {items: materials};
+    },
+    async sort({items, sortDescriptor}) {
+      return {
+        items: items.sort((a, b) => {
+          let first = a[sortDescriptor.column];
+          let second = b[sortDescriptor.column];
+          let cmp = (parseInt(first) || first) < (parseInt(second) || second) ? -1 : 1;
+
+          if (sortDescriptor.direction === "descending") {
+            cmp *= -1;
+          }
+
+          return cmp;
+        }),
+      };
+    },
+  });
+
 
 const renderCell = React.useCallback((material, columnKey) => {
   const cellValue = material[columnKey];
@@ -67,15 +92,33 @@ const renderCell = React.useCallback((material, columnKey) => {
 }, []);
 
 return (
-<Table isStriped>
+<Table 
+  aria-label="Visualize information through table"
+  isStriped 
+  onSortChange={list.sort} 
+  sortDescriptor={list.sortDescriptor}  
+  >
     <TableHeader columns={columns}>
-      {(column) => (
-        <TableColumn key={column.uid} >
-          {column.name}
-        </TableColumn>
-      )}
+      <TableColumn allowsSorting key="id" >
+          ID
+      </TableColumn>
+      <TableColumn allowsSorting key="colour" >
+          COLOUR
+      </TableColumn>
+      <TableColumn allowsSorting key="name" >
+          NAME
+      </TableColumn>
+      <TableColumn allowsSorting key="weight" >
+          Weight (g)
+      </TableColumn>
+      <TableColumn  key="status" >
+          STATUS
+      </TableColumn>
+      <TableColumn  key="actions" >
+          ACTIONS
+      </TableColumn>
     </TableHeader>
-    <TableBody items={materials}>
+    <TableBody items={list.items}>
       {(item) => (
         <TableRow key={item.id}>
           {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
