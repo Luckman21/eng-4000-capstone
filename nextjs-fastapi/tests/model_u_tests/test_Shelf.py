@@ -1,17 +1,17 @@
-import unittest
-import Shelf
+import pytest
+from Shelf.py import Shelf
 
 # TODO: Test classes
-class test_Shelf(unittest.TestCase):
+class test_Shelf():
 
     def test_id(self):
         p1 = Shelf(self)
-        self.assertEquals(p1.id == 1)   # TODO: Fill in type
+        assert p1.id == 1
 
     def test_humid(self):
         p1 = Shelf(self)
-        self.assertEquals(p1.humidity_pct == 1.0)   # TODO: Fill in type
+        assert p1.humidity_pct == 20
 
     def test_temp(self):
         p1 = Shelf(self)
-        self.assertEquals(p1.temperature_cel == 1.0)    # TODO: Fill in type
+        assert p1.temperature_cel == 10

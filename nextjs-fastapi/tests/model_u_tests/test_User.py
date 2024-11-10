@@ -1,29 +1,29 @@
-import unittest
-import User
+import pytest
+from model import User
 
 # TODO: Test classes
-class test_User(unittest.TestCase):
+class test_User():
 
     def test_id(self):
         p1 = User(self)
-        self.assertEquals(p1.id == 1)   # TODO: Fill in type
+        assert p1.id == 1
 
     def test_username(self):
         p1 = User(self)
-        self.assertEquals(p1.username == "John")
+        assert p1.username == "John"
 
     def test_password(self):
         p1 = User(self)
-        self.assertEquals(p1.password == "abc123")
+        assert p1.password == "abc123"
 
     def test_email(self):
         p1 = User(self)
-        self.assertEquals(p1.email == "john@york.ca")
+        assert p1.email == "john@p3d.ca"
 
     def test_user_type_id(self):
         p1 = User(self)
-        self.assertEquals(p1.user_type_id == 1) # TODO: Fill in type
+        assert p1.user_type_id == 1
 
     def test_user_type(self):
         p1 = User(self)
-        self.assertEquals(p1.user_type == "") # TODO: Fill in type
+        assert p1.user_type == "Admin"

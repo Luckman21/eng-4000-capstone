@@ -1,13 +1,13 @@
-import unittest
-import User_Type
+import pytest
+from User_Type.py import User_Type
 
 # TODO: Test classes
-class test_User_Type(unittest.TestCase):
+class test_User_Type():
 
     def test_id(self):
         p1 = User_Type(self)
-        self.assertEquals(p1.id == 1)   # TODO: Fill in type
+        assert p1.id == 1
 
     def test_typename(self):
         p1 = User_Type(self)
-        self.assertEquals(p1.user_type == "")   # TODO: Fill in type
+        assert p1.user_type == "Admin"
