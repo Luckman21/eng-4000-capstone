@@ -7,41 +7,41 @@ import {useAsyncList} from "@react-stately/data";
 
 
 import React from "react";
-import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Chip, Tooltip, getKeyValue} from "@nextui-org/react";
+import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Chip, Tooltip, getKeyValue, Spinner} from "@nextui-org/react";
 
 import { EditIcon } from '@/constants/EditIcon';
 import { DeleteIcon } from '@/constants/DeleteIcon';
-import { columns, hardcodedMaterials } from '@/constants/data';
+import { columns,  } from '@/constants/data';
 
 const statusColorMap = {
   "In Stock": "success",
-  "Out of Stock": "danger",
   "Low Stock": "warning",
 };
 
 
 
 const TableComponent = () => {
-  const [materials, setMaterials] = useState<Material[]>(hardcodedMaterials);
-  useEffect(() => {
-    const fetchMaterials = async () => {
-      try {
-        const response = await axios.get<Material[]>("http://localhost:8000/materials");
-        setMaterials(response.data); // Set API materials if fetch is successful
-      } catch (error) {
-        console.error("Failed to fetch materials. Using hardcoded data.", error);
-        
-      }
-    };
-
-    fetchMaterials();
-  }, []);
+  const [materials, setMaterials] = useState<Material[]>();
+  const [isLoading, setIsLoading] = React.useState(true);
   
   
   let list = useAsyncList({
-    async load() {
-     
-      return {items: materials};
+    async load({signal}) {
+      let res = await fetch('http://localhost:8000/materials', {
+        signal,
+      });
+      
+      let json = await res.json();
+      console.log(json);
+      const updatedMaterials = json.map((material) => ({
+        ...material,
+        status: material.mass <= 50 ? "Low Stock" : "In Stock",
+      }));
+      setIsLoading(false);
+
+      return {
+        items: updatedMaterials,
+      };
     },
     async sort({items, sortDescriptor}) {
       return {
@@ -108,7 +108,7 @@ return (
       <TableColumn allowsSorting key="name" >
           NAME
       </TableColumn>
-      <TableColumn allowsSorting key="weight" >
+      <TableColumn allowsSorting key="mass" >
           Weight (g)
       </TableColumn>
       <TableColumn  key="status" >
@@ -118,7 +118,11 @@ return (
           ACTIONS
       </TableColumn>
     </TableHeader>
-    <TableBody items={list.items}>
+    <TableBody 
+    items={list.items}
+    isLoading={isLoading}
+    loadingContent = {<Spinner label='Loading...' />} 
+    >
       {(item) => (
         <TableRow key={item.id}>
           {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
