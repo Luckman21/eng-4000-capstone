@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.exc import IntegrityError, DataError, SQLAlchemyError
 from .base import Base  # Import Base from a separate file
-from .Material_Type import MaterialType
+from .MaterialType import MaterialType
 
 # Base class for SQLAlchemy (this is the table essentially)
 
