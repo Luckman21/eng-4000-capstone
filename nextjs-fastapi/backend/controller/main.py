@@ -11,6 +11,7 @@ from db.schemas import MaterialSchema
 from db.model.Material import Material
 from db.scripts.DatabasePopulate import populate_db
 from fastapi.middleware.cors import CORSMiddleware
+from db.repositories.MaterialRepository import MaterialRepository
 
 app = FastAPI()
 origins = [
@@ -29,7 +30,8 @@ app.add_middleware(
 # Now define your API routes
 @app.get("/materials", response_model=list[MaterialSchema])
 async def get_Allmaterials(db: Session = Depends(get_db)):
-    return Material.getAll(Material,db)
+    repo = MaterialRepository(db)
+    return repo.get_all_materials()
 
 
 # @app.get("/materials/{material_type}")
