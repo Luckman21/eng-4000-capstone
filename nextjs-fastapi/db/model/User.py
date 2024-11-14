@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-from .User_Type import UserType  # Import UserType from user_type.py
+from .UserType import UserType  # Import UserType from user_type.py
 from .base import Base  # Import Base from a separate file
 
 class User(Base):
