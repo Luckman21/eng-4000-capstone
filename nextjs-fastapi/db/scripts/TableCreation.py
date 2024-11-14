@@ -24,7 +24,7 @@ CREATE TABLE materials (
     name TEXT NOT NULL, 
     mass FLOAT NOT NULL,
     material_type_id INTEGER,
-    FOREIGN KEY (material_type_id) REFERENCES material_type(id) ON DELETE CASCADE
+    FOREIGN KEY (material_type_id) REFERENCES material_types(id) ON DELETE CASCADE
 )
 ''')
 
@@ -45,7 +45,7 @@ CREATE TABLE users (
     password TEXT NOT NULL, 
     email TEXT NOT NULL UNIQUE,
     user_type_id INTEGER,
-    FOREIGN KEY (user_type_id) REFERENCES user_type(id) ON DELETE SET NULL
+    FOREIGN KEY (user_type_id) REFERENCES user_types(id) ON DELETE SET NULL
 )
 ''')
 

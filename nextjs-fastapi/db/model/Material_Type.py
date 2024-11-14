@@ -1,4 +1,3 @@
-import sqlite3
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from .base import Base  # Import Base from a separate file
