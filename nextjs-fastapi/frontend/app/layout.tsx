@@ -1,23 +1,21 @@
-
-import './globals.css'
-
+import './globals.css';
 export const metadata = {
-    title: 'Car Hub',
+    title: 'Pantheon Inventory Management',
     description: 'Discover the best cars in the world',
+    
 }
 
-export default function RootLayout({
-    children,
-}: {
-    children: React.ReactNode
-}) {
-    return (
-        <html lang="en">
-            <body className="relative">
-               
-                {children}
-               
-            </body>
-        </html>
-    )
+
+import { Providers } from './Providers';
+
+export default function RootLayout({children}: { children: React.ReactNode }) {
+  return (
+    <html lang="en" className='dark'>
+      <body>
+        <Providers>
+          {children}
+        </Providers>
+      </body>
+    </html>
+  );
 }
