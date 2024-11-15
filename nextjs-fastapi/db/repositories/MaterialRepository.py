@@ -4,7 +4,7 @@ from db.model.Material import Material
 from db.model.MaterialType import MaterialType
 
 
-class UserRepository:
+class MaterialRepository:
 
     def __init__(self, session: Session):
         self.session = session
