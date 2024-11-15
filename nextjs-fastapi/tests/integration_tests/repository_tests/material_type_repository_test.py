@@ -47,7 +47,7 @@ def test_get_material_type_by_id(setup_database):
     session = setup_database
 
     # Fetch an existing material and update its data
-    material_type = session.query(MaterialType).filter_by(name="Plastic").first()
+    material_type = session.query(MaterialType).filter_by(type_name="Plastic").first()
 
     repository = MaterialTypeRepository(session)
 
@@ -82,14 +82,14 @@ def test_update_material_type(setup_database):
 
     queried_material_type = repository.get_material_type_by_id(material_type.id)
 
-    assert queried_material_type.name == "dummy1"
+    assert queried_material_type.type_name == "dummy1"
 
     # Destroy
     session.query(MaterialType).filter_by(type_name="dummy1").delete()
     session.commit()
 
 
-def test_delete_material(setup_database):
+def test_delete_material_type(setup_database):
     # Get the session from the fixture
     session = setup_database
     repository = MaterialTypeRepository(session)
@@ -97,9 +97,11 @@ def test_delete_material(setup_database):
     material_type = repository.create_material_type("dummy")
     queried_material_type = repository.get_material_type_by_id(material_type.id)
 
-    assert queried_material_type.name is not None
+    assert queried_material_type is not None
 
     repository.delete_material_type(queried_material_type)
+
+    queried_material_type = repository.get_material_type_by_id(material_type.id)
 
     assert queried_material_type is None
 

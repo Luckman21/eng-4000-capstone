@@ -33,7 +33,7 @@ class MaterialTypeRepository:
             self.session.rollback()
             raise ValueError(f"Unexpected error: {e}")
 
-    def get_material_by_id(self, material_type_id: int) -> MaterialType:
+    def get_material_type_by_id(self, material_type_id: int) -> MaterialType:
         """
         Retrieve a material_type by its ID.
         """
