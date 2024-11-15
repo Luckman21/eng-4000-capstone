@@ -20,7 +20,7 @@ class UserType(Base):
 
         if type(newName) is not str:
             raise ValueError("name must be string")
-        self.name = newName
+        self.type_name = newName
 
     # Class Method
     def getAll(cls, session):

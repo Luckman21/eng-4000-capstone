@@ -121,7 +121,7 @@ def test_delete_material(setup_database):
 
     repository.delete_material(user)
 
-    queried_user = repository.get_material_by_id(user.id)
+    queried_user = repository.get_user_by_id(user.id)
 
     assert queried_user is None
 
