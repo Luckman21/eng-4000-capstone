@@ -1,30 +1,30 @@
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String
 from .base import Base  # Import Base from a separate file
 
 
+class UserType(Base):
+    # Constructor
 
-class MaterialType(Base):
-
-    __tablename__ = 'material_types'
+    __tablename__ = 'user_types'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     type_name = Column(String, nullable=False, unique=True)
 
     def __repr__(self):
-        return f"<MaterialType(id={self.id}, type_name={self.type_name})>"
+        return f"<UserType(id={self.id}, type_name={self.type_name})>"
 
 
     # Set Methods
 
     def setName(self, newName):
+
         if type(newName) is not str:
             raise ValueError("name must be string")
-        self.name = newName
+        self.type_name = newName
 
     # Class Method
     def getAll(cls, session):
         """
-        Returns all the instances of Material Type stored in table.
+        Returns all the instances of User_Type stored in the user_type table.
         """
         return session.query(cls).all()
