@@ -10,6 +10,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from db.repositories.MaterialRepository import MaterialRepository
 from backend.controller.schemas import MassUpdateRequest, MassUpdateResponse
 
+
+
 app = FastAPI()
 origins = [
     "http://localhost:3000",
@@ -32,9 +34,8 @@ async def get_Allmaterials(db: Session = Depends(get_db)):
 
 # @app.get("/materials/{material_type}")
 
-@app.put("/update_mass/{entity_id}", response_model=MassUpdateResponse)
+@app.put("/update_mass/{entity_id}")
 async def update_mass(entity_id: int, request: MassUpdateRequest, db: Session = Depends(get_db)):
-
     repo = MaterialRepository(db)
 
     # Check if the entity exists
@@ -52,8 +53,15 @@ async def update_mass(entity_id: int, request: MassUpdateRequest, db: Session = 
 
     material = repo.get_material_by_id(entity_id)
 
-    return MassUpdateResponse(message="Mass updated successfully", new_mass=material.mass)
+    return {'message': "Mass updated successfully", 'new_mass' : material.mass}
 
 
 def get_app():
     return app
+
+
+from pydantic import BaseModel
+
+
+class MassUpdateRequest(BaseModel):
+    mass: float

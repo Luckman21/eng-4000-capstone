@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 from backend.controller.main import get_app
 
 # Initialize the TestClient to simulate schemas
-client = TestClient(get_app)
+client = TestClient(get_app())
 
 # Test valid mass update
 def test_update_mass_success():
