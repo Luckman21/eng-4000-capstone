@@ -1,8 +1,10 @@
 # tests/test_update_mass.py
-
+import sys
+from pathlib import Path
+sys.path.append(str(Path().resolve().parent.parent.parent))
 import pytest
 from fastapi.testclient import TestClient
-from backend.controller.main import get_app  # Import your FastAPI app
+from backend.controller.main import get_app
 
 # Initialize the TestClient to simulate schemas
 client = TestClient(get_app)
