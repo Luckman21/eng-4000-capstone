@@ -38,7 +38,7 @@ def setup_database(request):
 
     # Register a finalizer to clean up the data after the test
     def cleanup():
-        session.query(User).filter_by(name="Tom Jones").delete()
+        session.query(User).filter_by(username="Tom Jones").delete()
         session.query(UserType).filter_by(type_name="Cheese").delete()
         session.commit()
         assert db_count == session.query(User).count()
@@ -57,7 +57,7 @@ def test_get_user_by_id(setup_database):
     session = setup_database
 
     # Fetch an existing material and update its data
-    user = session.query(User).filter_by(name="Tom Jones").first()
+    user = session.query(User).filter_by(username="Tom Jones").first()
 
     repository = UserRepository(session)
 
@@ -72,54 +72,54 @@ def test_create_user(setup_database):
     repository = UserRepository(session)
     user_type = session.query(UserType).filter_by(type_name="Cheese").first()
 
-    user = repository.create_material("James", "cheesewhiz", "fake@email.com", user_type.id)
+    user = repository.create_user("James", "cheesewhiz", "fake@email.com", user_type.id)
     queried_user = repository.get_user_by_id(user.id)
 
     assert queried_user is not None
 
 
     # Destroy
-    session.query(User).filter_by(name="James").delete()
+    session.query(User).filter_by(username="James").delete()
     session.commit()
 
 
-def test_update_material(setup_database):
+def test_update_user(setup_database):
     # Get the session from the fixture
     session = setup_database
     repository = UserRepository(session)
     user_type = session.query(UserType).filter_by(type_name="Cheese").first()
 
     # Fetch an existing material and update its data
-    user = repository.create_material("James", "cheesewhiz", "fake@email.com", user_type.id)
+    user = repository.create_user("James", "cheesewhiz", "fake@email.com", user_type.id)
 
     queried_user = repository.get_user_by_id(user.id)
 
     assert queried_user.email == "fake@email.com"
 
-    repository.update_material(user, email="fake@email.ca")
+    repository.update_user(user, email="fake@email.ca")
 
     new_queried_user = repository.get_user_by_id(user.id)
 
-    assert new_queried_user.colour == "fake@email.ca"
+    assert new_queried_user.email == "fake@email.ca"
 
     # Destroy
-    session.query(User).filter_by(name="James").delete()
+    session.query(User).filter_by(username="James").delete()
     session.commit()
 
-def test_delete_material(setup_database):
+def test_delete_user(setup_database):
     # Get the session from the fixture
     session = setup_database
     repository = UserRepository(session)
     user_type = session.query(UserType).filter_by(type_name="Cheese").first()
 
     # Fetch an existing material and update its data
-    user = repository.create_material("James", "cheesewhiz", "fake@email.com", user_type.id)
+    user = repository.create_user("James", "cheesewhiz", "fake123@email.com", user_type.id)
 
-    queried_user = repository.get_material_by_id(user.id)
+    queried_user = repository.get_user_by_id(user.id)
 
     assert queried_user is not None
 
-    repository.delete_material(user)
+    repository.delete_user(user)
 
     queried_user = repository.get_user_by_id(user.id)
 
