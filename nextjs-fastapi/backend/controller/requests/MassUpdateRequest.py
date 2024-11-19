@@ -1,0 +1,2 @@
+class MassUpdateRequest:
+    mass: float
