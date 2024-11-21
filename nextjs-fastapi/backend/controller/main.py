@@ -8,7 +8,12 @@ from db.schemas import MaterialSchema
 from db.model.Material import Material
 from fastapi.middleware.cors import CORSMiddleware
 from db.repositories.MaterialRepository import MaterialRepository
-from backend.controller.schemas import MassUpdateRequest, MassUpdateResponse
+# from backend.controller.schemas import MassUpdateRequest, MassUpdateResponse
+from pydantic import BaseModel
+
+
+class MassUpdateRequest(BaseModel):
+    mass: float
 
 
 
@@ -60,8 +65,4 @@ def get_app():
     return app
 
 
-from pydantic import BaseModel
 
-
-class MassUpdateRequest(BaseModel):
-    mass: float
