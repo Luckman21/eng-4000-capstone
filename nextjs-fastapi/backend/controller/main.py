@@ -12,7 +12,6 @@ from db.repositories.MaterialRepository import MaterialRepository
 from pydantic import BaseModel
 from sqlalchemy import event
 from controller import listener
-
 class MassUpdateRequest(BaseModel):
     mass: float
 
@@ -29,6 +28,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Register listeners on application startup
+@app.on_event("startup")
+async def on_startup():
+    # Now register the listener for Material updates
+    event.listen(Material, 'after_update', listener.job_complete_listener)
+
 # Now define your API routes
 @app.get("/materials", response_model=list[MaterialSchema])
 async def get_Allmaterials(db: Session = Depends(get_db)):
@@ -37,7 +42,26 @@ async def get_Allmaterials(db: Session = Depends(get_db)):
 
 # @app.get("/materials/{material_type}")
 
-if __name__ == "__main__":
-    db: Session = Depends(get_db)
+@app.put("/update_mass/{entity_id}")
+async def update_mass(entity_id: int, request: MassUpdateRequest, db: Session = Depends(get_db)):
     repo = MaterialRepository(db)
-    event.listen(repo, 'after_update', listener.job_complete_listener)
+
+    # Check if the entity exists
+    if not repo.material_exists(entity_id):
+        raise HTTPException(status_code=404, detail="Mass entity not found")
+
+    # Call the update method
+    material = repo.get_material_by_id(entity_id)
+
+    try:
+        # Call the setter method to update the mass
+        repo.update_material(material, mass=request.mass)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    material = repo.get_material_by_id(entity_id)
+
+    return {'message': "Mass updated successfully", 'new_mass' : material.mass}
+
+def get_app():
+    return app

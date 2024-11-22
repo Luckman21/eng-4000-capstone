@@ -1,4 +1,3 @@
-
 from sqlalchemy.orm import Session
 from db.connect import session
 from sqlalchemy import event
@@ -26,8 +25,6 @@ def quantity_poll(materials):
 
     return alert # return an array of materials with mass below 50g
 
-
 def job_complete_listener(mRepo):
     materials = mRepo.get_all_materials()
-    print("bwa bwa bwa bwa bwa")
     return quantity_poll(materials)
