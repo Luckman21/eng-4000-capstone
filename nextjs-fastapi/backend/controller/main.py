@@ -8,6 +8,9 @@ from db.schemas import MaterialSchema
 from db.model.Material import Material
 from fastapi.middleware.cors import CORSMiddleware
 from db.repositories.MaterialRepository import MaterialRepository
+from sqlalchemy import event
+import listener
+from time import sleep
 
 app = FastAPI()
 origins = [
@@ -29,5 +32,9 @@ async def get_Allmaterials(db: Session = Depends(get_db)):
     repo = MaterialRepository(db)
     return repo.get_all_materials()
 
-
 # @app.get("/materials/{material_type}")
+
+if __name__ == "__main__":
+    db: Session = Depends(get_db)
+    repo = MaterialRepository(db)
+    event.listen(repo, 'after_update', listener.job_complete_listener)
