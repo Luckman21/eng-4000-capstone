@@ -11,7 +11,7 @@ from db.repositories.MaterialRepository import MaterialRepository
 # from backend.controller.schemas import MassUpdateRequest, MassUpdateResponse
 from pydantic import BaseModel
 from sqlalchemy import event
-import listener
+from controller import listener
 
 class MassUpdateRequest(BaseModel):
     mass: float
@@ -36,3 +36,8 @@ async def get_Allmaterials(db: Session = Depends(get_db)):
     return repo.get_all_materials()
 
 # @app.get("/materials/{material_type}")
+
+if __name__ == "__main__":
+    db: Session = Depends(get_db)
+    repo = MaterialRepository(db)
+    event.listen(repo, 'after_update', listener.job_complete_listener)
