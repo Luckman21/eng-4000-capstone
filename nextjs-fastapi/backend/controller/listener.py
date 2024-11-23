@@ -36,7 +36,7 @@ async def quantity_poll(materials):
     for material in materials:
         if material.mass < THRESHOLD:
             alert.append(material)
-            #print({material.name}) # debugging statement
+
     return alert # return an array of materials with mass below 50g
 
 async def job_complete_listener(mapper, connection, target):
@@ -59,8 +59,6 @@ async def job_complete_listener(mapper, connection, target):
 
     # Retrieve all materials with a mass below the threshold
     alert_materials = await quantity_poll(materials)
-
-    #print(f"Alert: {len(alert_materials)} materials with low mass.")   # For debugging
     
     session.close() # Close the session once we are done
 
