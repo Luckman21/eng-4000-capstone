@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from db.repositories.MaterialRepository import MaterialRepository
 # from backend.controller.schemas import MassUpdateRequest, MassUpdateResponse
 from pydantic import BaseModel
+import asyncio
 from sqlalchemy import event
 from controller import listener
 class MassUpdateRequest(BaseModel):
@@ -28,11 +29,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Register listeners on application startup
-@app.on_event("startup")
-async def on_startup():
-    # Now register the listener for Material updates
-    event.listen(Material, 'after_update', listener.job_complete_listener)
+# Register listener to trigger after an insert to Material
+@event.listens_for(Material, "after_update")
+def low_inventory_listener(mapper, connection, target):
+    print(f"Low inventory listener triggered for {target.name}!")
+
+    sess = connection._session
+    repo = MaterialRepository(sess)
+
+    print("still running")
+    asyncio.create_task(listener.job_complete_listener(repo)) 
 
 # Now define your API routes
 @app.get("/materials", response_model=list[MaterialSchema])

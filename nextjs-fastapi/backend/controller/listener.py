@@ -3,7 +3,7 @@ from db.connect import session
 from sqlalchemy import event
 import smtplib
 from email.mime.text import MIMEText
-from time import sleep
+import asyncio
 
 THRESHOLD = 50  # 50g threshold
 
@@ -16,15 +16,15 @@ def send_email(material):
 """
 
 # A polling function to check the mass of each material in the table
-def quantity_poll(materials):
+async def quantity_poll(materials):
     alert = []  # create an array for materials with a mass below 50g
 
     for material in materials:
         if material.mass < THRESHOLD:
             alert.append(material)
-
     return alert # return an array of materials with mass below 50g
 
-def job_complete_listener(mRepo):
+async def job_complete_listener(mRepo):
+    await asyncio.sleep(2)
     materials = mRepo.get_all_materials()
     return quantity_poll(materials)
