@@ -29,16 +29,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Register listener to trigger after an insert to Material
-@event.listens_for(Material, "after_update")
-def low_inventory_listener(mapper, connection, target):
-    print(f"Low inventory listener triggered for {target.name}!")
+# Set up listeners on startup
+@app.on_event("startup")
+def setup_listeners():
+    low_stock_listener()
 
-    sess = connection._session
-    repo = MaterialRepository(sess)
+# Create a listener that triggers when the Material table is updated, checks for Materials with a mass below the threshold
+def low_stock_listener():
+    def listener_wrapper(mapper, connection, target):
+        asyncio.create_task(listener.job_complete_listener(mapper, connection, target))
 
-    print("still running")
-    asyncio.create_task(listener.job_complete_listener(repo)) 
+    event.listen(Material, 'after_update', listener_wrapper)
 
 # Now define your API routes
 @app.get("/materials", response_model=list[MaterialSchema])
