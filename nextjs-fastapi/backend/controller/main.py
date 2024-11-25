@@ -12,7 +12,7 @@ from db.repositories.MaterialRepository import MaterialRepository
 from pydantic import BaseModel
 import asyncio
 from sqlalchemy import event
-from controller import listener
+from backend.controller import listener
 class MassUpdateRequest(BaseModel):
     mass: float
 
