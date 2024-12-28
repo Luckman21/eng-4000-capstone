@@ -8,6 +8,7 @@ from db.schemas import MaterialSchema
 from db.model.Material import Material
 from fastapi.middleware.cors import CORSMiddleware
 from db.repositories.MaterialRepository import MaterialRepository
+from backend.service import EntityFetchingService
 
 app = FastAPI()
 origins = [
@@ -26,8 +27,7 @@ app.add_middleware(
 # Now define your API routes
 @app.get("/materials", response_model=list[MaterialSchema])
 async def get_Allmaterials(db: Session = Depends(get_db)):
-    repo = MaterialRepository(db)
-    return repo.get_all_materials()
+    EntityFetchingService.get_all_materials(db)
 
 
 # @app.get("/materials/{material_type}")
