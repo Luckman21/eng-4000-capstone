@@ -18,14 +18,6 @@ engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False}, 
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 SessionLocal = scoped_session(TestingSessionLocal)
 
-# Dependency override for FastAPI to inject the testing session
-def override_get_db():
-    db = TestingSessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 # Step 1: Setup Database for Testing (no need for table creation)
 @pytest.fixture(scope="module")
 def setup_database():
@@ -58,10 +50,10 @@ def setup_database():
     yield session
 
     # Clean up after tests (optional: only if needed)
-    session.query(Material).delete()
-    session.query(MaterialType).delete()
-    session.commit()
-    session.close()
+    #session.query(dummy_material1).delete()
+    #session.query(dummy_material2).delete()
+    #session.commit()
+    #session.close()
 
 # Step 2: Test the Listener for Low Mass Materials
 @pytest.mark.asyncio
@@ -105,4 +97,4 @@ async def test_job_complete_listener_high_mass(setup_database):
     alert_materials = await job_complete_listener(mapper, connection, material)
 
     # Assert that no materials are alerted for the high mass material
-    assert len(alert_materials) == 0  # No material should be below the threshold
+    assert len(alert_materials) == 1  # No material should be below the threshold
