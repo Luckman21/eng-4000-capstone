@@ -19,25 +19,31 @@ def driver():
     yield driver
     driver.quit()
 
-def test_material_table(driver):
+def test_material_table_header(driver):
     driver.get("http://localhost:3000")
     time.sleep(3)
 
+    # ID Header
     element = driver.find_element(By.ID, "react-aria-:R2fj6:-id")
     assert element.text == "ID"
 
+    # Colour Header
     element = driver.find_element(By.ID, "react-aria-:R2fj6:-colour")
     assert element.text == "COLOUR"
 
+    # Name Header
     element = driver.find_element(By.ID, "react-aria-:R2fj6:-name")
     assert element.text == "NAME"
 
+    # Weight Header
     element = driver.find_element(By.ID, "react-aria-:R2fj6:-mass")
     assert element.text == "Weight (g)"
 
+    # Status Header
     element = driver.find_element(By.ID, "react-aria-:R2fj6:-status")
     assert element.text == "STATUS"
 
+    # Actions Header
     element = driver.find_element(By.ID, "react-aria-:R2fj6:-actions")
     assert element.text == "ACTIONS"
 
@@ -77,3 +83,4 @@ def test_material_table_order(driver):
     second_td = table.find_element(By.XPATH, "//tbody/tr[2]/td[1]")
     assert second_td.text == '2'
 
+# TODO: Make test to assess status once material migration is complete
