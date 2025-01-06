@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, Float
+from sqlalchemy.orm import relationship
 from .base import Base  # Import Base from a separate file
 
 
@@ -10,6 +11,9 @@ class Shelf(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     humidity_pct = Column(Float, nullable=False)
     temperature_cel = Column(Float, nullable=False)
+
+    #Relationships
+    materials = relationship("Material", backref="shelf", cascade='all, delete')
 
     def __repr__(self):
         return f"<Shelf(id={self.id}, humidity_pct={self.humidity_pct}, temperature_cel={self.temperature_cel})>"
