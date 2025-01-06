@@ -1,7 +1,7 @@
 # tests/test_update_mass.py
 import sys
 from pathlib import Path
-sys.path.append(str(Path().resolve().parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 import pytest
 from fastapi.testclient import TestClient
 from backend.controller.main import get_app
