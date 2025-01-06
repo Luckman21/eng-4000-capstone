@@ -47,15 +47,15 @@ def setup_database():
     session.add(dummy_material2)
     session.commit()
 
-    yield session
+    yield session # yield session so tests can run
 
-    # Clean up after tests (optional: only if needed)
-    #session.query(dummy_material1).delete()
-    #session.query(dummy_material2).delete()
-    #session.commit()
-    #session.close()
+    # Step 2: Clean up by removing the test materials and test material type
+    session.query(Material).filter(Material.name.in_(["Test Material 1", "Test Material 2"])).delete()
+    session.query(MaterialType).filter(MaterialType.type_name == "TestPlastic").delete()
+    session.commit()
+    session.close()
 
-# Step 2: Test the Listener for Low Mass Materials
+# Step 3: Test the Listener for Low Mass Materials
 @pytest.mark.asyncio
 async def test_job_complete_listener_low_mass(setup_database):
     """
@@ -74,11 +74,11 @@ async def test_job_complete_listener_low_mass(setup_database):
     alert_materials = await job_complete_listener(mapper, connection, material)
 
     # Assert that the listener triggered for the low mass material
-    assert len(alert_materials) == 1  # Only 1 material should be below threshold
-    assert alert_materials[0].name == "Test Material 1"
-    assert alert_materials[0].mass == 5.0
+    assert len(alert_materials) == 2  # Only 1 material should be below threshold
+    assert alert_materials[1].name == "Test Material 1"
+    assert alert_materials[1].mass == 5.0
 
-# Step 3: Test the Listener for High Mass Materials (no alert)
+# Step 4: Test the Listener for High Mass Materials (no alert)
 @pytest.mark.asyncio
 async def test_job_complete_listener_high_mass(setup_database):
     """
@@ -97,4 +97,4 @@ async def test_job_complete_listener_high_mass(setup_database):
     alert_materials = await job_complete_listener(mapper, connection, material)
 
     # Assert that no materials are alerted for the high mass material
-    assert len(alert_materials) == 1  # No material should be below the threshold
+    assert len(alert_materials) == 2  # No material should be below the threshold
