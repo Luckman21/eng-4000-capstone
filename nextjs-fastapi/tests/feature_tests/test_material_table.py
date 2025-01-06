@@ -12,8 +12,10 @@ from selenium.webdriver.support import expected_conditions as EC
 def driver():
 
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless") # This means you won't see the actual icon
     chrome_options.add_argument("--disable-gpu")
+
+    # This will change depending on your driver
     path = '/Users/l_filippelli/Downloads/chromedriver-mac-x64/chromedriver'
     driver = webdriver.Chrome(service=Service(path), options=chrome_options)
     yield driver
