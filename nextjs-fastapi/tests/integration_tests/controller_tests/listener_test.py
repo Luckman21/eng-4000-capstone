@@ -1,68 +1,108 @@
-from httpx import patch
 import pytest
-from fastapi.testclient import TestClient
-from backend.controller.main import get_app
-from db.model import Material
-from sqlalchemy.orm import Session
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from db.model.base import Base
+from db.model.Material import Material
+from db.model.MaterialType import MaterialType
 from db.repositories.MaterialRepository import MaterialRepository
+from backend.controller.listener import job_complete_listener
+from unittest.mock import MagicMock
+from fastapi.testclient import TestClient
+from sqlalchemy.orm import scoped_session
 
-# Initialize the TestClient with the FastAPI app
-app = get_app()
-client = TestClient(app)
+# Define the test database URL (using the provided one)
+DATABASE_URL = 'sqlite:///nextjs-fastapi/db/capstone_db.db'
 
-# Helper function to create materials in the test database
-def create_material(db: Session, name: str, mass: float):
-    material = Material(name=name, mass=mass)
-    db.add(material)
-    db.commit()
-    db.refresh(material)
-    return material
+# Create the engine and session for SQLAlchemy
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False}, echo=True)
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = scoped_session(TestingSessionLocal)
 
-# Test that listener works after PUT request to update mass
+# Dependency override for FastAPI to inject the testing session
+def override_get_db():
+    db = TestingSessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+# Step 1: Setup Database for Testing (no need for table creation)
+@pytest.fixture(scope="module")
+def setup_database():
+    session = TestingSessionLocal()
+
+    # Add a dummy material type (if not already in the database)
+    dummy_material_type = MaterialType(type_name="TestPlastic")
+    session.add(dummy_material_type)
+    session.commit()
+
+    # Add some test materials (one below threshold and one above)
+    dummy_material1 = Material(
+        name="Test Material 1",
+        colour="Blue",
+        mass=5.0,  # Below the threshold
+        material_type_id=dummy_material_type.id
+    )
+
+    dummy_material2 = Material(
+        name="Test Material 2",
+        colour="Green",
+        mass=60.0,  # Above the threshold
+        material_type_id=dummy_material_type.id
+    )
+
+    session.add(dummy_material1)
+    session.add(dummy_material2)
+    session.commit()
+
+    yield session
+
+    # Clean up after tests (optional: only if needed)
+    session.query(Material).delete()
+    session.query(MaterialType).delete()
+    session.commit()
+    session.close()
+
+# Step 2: Test the Listener for Low Mass Materials
 @pytest.mark.asyncio
-def test_listener_triggered_by_update_mass(client):
+async def test_job_complete_listener_low_mass(setup_database):
     """
-    Test the listener triggered by a PUT request to update the mass of a material.
-    It should check if materials with mass below the threshold (50g) are alerted.
+    Test the listener functionality when a material is updated with a mass below the threshold.
     """
+    session = setup_database
 
-    # Create a test material with a mass below the threshold (e.g., 40g)
-    material_data = {"name": "Test Material", "mass": 40.0}
+    # Fetch the material with mass below the threshold (5.0g)
+    material = session.query(Material).filter_by(name="Test Material 1").first()
 
-    # Use the TestClient to make a PUT request to update the material's mass
-    response = client.put(f"/update_mass/{1}", json=material_data)
+    # Mock the mapper and connection arguments that job_complete_listener expects
+    mapper = MagicMock()  # Mock object for mapper
+    connection = MagicMock()  # Mock object for connection
 
-    # Ensure the update request is successful
-    assert response.status_code == 200
+    # Call the job_complete_listener (which will be triggered by an update)
+    alert_materials = await job_complete_listener(mapper, connection, material)
 
-    # Get the response data
-    data = response.json()
+    # Assert that the listener triggered for the low mass material
+    assert len(alert_materials) == 1  # Only 1 material should be below threshold
+    assert alert_materials[0].name == "Test Material 1"
+    assert alert_materials[0].mass == 5.0
 
-    # Check if the listener was triggered and the material was updated
-    assert "Mass updated successfully" in data["message"]
-    assert data["new_mass"] == 40.0  # Ensure mass is updated
-
-# Mock the listener's job_complete_listener function to avoid actual database changes
+# Step 3: Test the Listener for High Mass Materials (no alert)
 @pytest.mark.asyncio
-@patch("controller.listener.job_complete_listener")
-def test_listener_with_mock(mock_listener, client):
+async def test_job_complete_listener_high_mass(setup_database):
     """
-    Test the listener behavior when the job_complete_listener function is mocked.
-    This prevents changes to the database and directly tests the listener's flow.
+    Test the listener functionality when a material is updated with a mass above the threshold.
     """
-    
-    # Define the mock behavior
-    mock_listener.return_value = None  # Simulate that the listener does nothing
-    
-    # Create a test material with a mass below the threshold (e.g., 40g)
-    material_data = {"name": "Test Material", "mass": 40.0}
+    session = setup_database
 
-    # Use the TestClient to make a PUT request to update the material's mass
-    response = client.put(f"/update_mass/{1}", json=material_data)
+    # Fetch the material with mass above the threshold (60.0g)
+    material = session.query(Material).filter_by(name="Test Material 2").first()
 
-    # Ensure the update request is successful
-    assert response.status_code == 200
-    assert "Mass updated successfully" in response.json()["message"]
-    
-    # Check if the mocked listener was called (i.e., the alert logic was triggered)
-    mock_listener.assert_called_once()  # Ensure the listener was called at least once
+    # Mock the mapper and connection arguments that job_complete_listener expects
+    mapper = MagicMock()  # Mock object for mapper
+    connection = MagicMock()  # Mock object for connection
+
+    # Call the job_complete_listener (which will be triggered by an update)
+    alert_materials = await job_complete_listener(mapper, connection, material)
+
+    # Assert that no materials are alerted for the high mass material
+    assert len(alert_materials) == 0  # No material should be below the threshold
