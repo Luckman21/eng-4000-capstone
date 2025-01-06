@@ -13,8 +13,9 @@ from pydantic import BaseModel
 import asyncio
 from sqlalchemy import event
 from backend.controller import listener
-class MassUpdateRequest(BaseModel):
-    mass: float
+from backend.controller.schemas.MassUpdateRequest import MassUpdateRequest
+from backend.controller.schemas.MaterialUpdateRequest import MaterialUpdateRequest
+
 
 app = FastAPI()
 origins = [
@@ -69,6 +70,34 @@ async def update_mass(entity_id: int, request: MassUpdateRequest, db: Session = 
     material = repo.get_material_by_id(entity_id)
 
     return {'message': "Mass updated successfully", 'new_mass' : material.mass}
+
+
+@app.put("/update_material/{entity_id}")
+async def update_material(entity_id: int, request: MaterialUpdateRequest, db: Session = Depends(get_db)):
+    repo = MaterialRepository(db)
+
+    # Check if the entity exists
+    if not repo.material_exists(entity_id):
+        raise HTTPException(status_code=404, detail="Material not found")
+
+    # Call the update method
+    material = repo.get_material_by_id(entity_id)
+
+    try:
+        # Call the setter method to update the material
+        repo.update_material(material,
+                             mass=request.mass,
+                             colour=request.colour,
+                             material_type_id=request.material_type_id,
+                             name=request.name)
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    material = repo.get_material_by_id(entity_id)
+
+    return {'message': "Material updated successfully"}
+
 
 def get_app():
     return app
