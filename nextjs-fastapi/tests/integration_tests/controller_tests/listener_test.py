@@ -1,6 +1,9 @@
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from db.model.base import Base
 from db.model.Material import Material
 from db.model.MaterialType import MaterialType
