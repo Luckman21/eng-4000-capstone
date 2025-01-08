@@ -34,25 +34,45 @@ const TableComponent = () => {
   const [editMaterial, setEditMaterial] = useState<Material | null>(null); // Single Material
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const list = useAsyncList({
-    async load({ signal }) {
-      let res = await fetch("http://localhost:8000/materials", { signal });
+  let list = useAsyncList({
+    async load({signal}) {
+      let res = await fetch('http://localhost:8000/materials', {
+        signal,
+      });
+      
       let json = await res.json();
-
+      console.log(json);
       const updatedMaterials = json.map((material) => ({
         ...material,
         status: material.mass <= 50 ? "Low Stock" : "In Stock",
       }));
-      setMaterials(updatedMaterials);
       setIsLoading(false);
+      setMaterials(updatedMaterials);
 
       return {
         items: updatedMaterials,
       };
     },
+    async sort({items, sortDescriptor}) {
+      return {
+        items: items.sort((a, b) => {
+          let first = a[sortDescriptor.column];
+          let second = b[sortDescriptor.column];
+          let cmp = (parseInt(first) || first) < (parseInt(second) || second) ? -1 : 1;
+
+          if (sortDescriptor.direction === "descending") {
+            cmp *= -1;
+          }
+
+          return cmp;
+        }),
+      };
+    },
   });
+  
 
   const handleEditClick = (material: Material) => {
+    console.log(material);
     setEditMaterial(material);
     onOpen();
   };
@@ -112,8 +132,8 @@ const TableComponent = () => {
       <Table
         aria-label="Visualize information through table"
         isStriped
-        onSortChange={list.sort}
-        sortDescriptor={list.sortDescriptor}
+        onSortChange={list.sort} 
+        sortDescriptor={list.sortDescriptor}  
       >
         <TableHeader columns={columns}>
           <TableColumn allowsSorting key="id">

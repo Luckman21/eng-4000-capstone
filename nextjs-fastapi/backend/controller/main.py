@@ -13,6 +13,7 @@ from pydantic import BaseModel
 import asyncio
 from sqlalchemy import event
 from backend.controller import listener
+from fastapi import WebSocket, WebSocketDisconnect
 class MassUpdateRequest(BaseModel):
     mass: float
 
@@ -28,6 +29,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+active_connections = []  # List to keep track of active WebSocket connections
 
 # Set up listeners on startup
 @app.on_event("startup")
@@ -40,6 +42,20 @@ def low_stock_listener():
         asyncio.create_task(listener.job_complete_listener(mapper, connection, target))
 
     event.listen(Material, 'after_update', listener_wrapper)
+    from fastapi import WebSocket, WebSocketDisconnect
+
+
+
+@app.websocket("/ws/low_stock")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    active_connections.append(websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        active_connections.remove(websocket)
+
 
 # Now define your API routes
 @app.get("/materials", response_model=list[MaterialSchema])

@@ -4,6 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 import smtplib
 from email.mime.text import MIMEText
+from main import active_connections
 
 THRESHOLD = 50  # 50g threshold
 
@@ -61,5 +62,7 @@ async def job_complete_listener(mapper, connection, target):
     alert_materials = await quantity_poll(materials)
     
     session.close() # Close the session once we are done
+    for connection in active_connections:
+        await connection.send_json([material.dict() for material in alert_materials])
 
-    return alert_materials  # Return the array of materials with a mass below the threshold
+    #return alert_materials  # Return the array of materials with a mass below the threshold

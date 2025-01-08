@@ -8,8 +8,10 @@ export default function Home() {
     <div>
       <Nav />
 
-   
+      
       <TableComponent />
+
+
     </div>
     
   );

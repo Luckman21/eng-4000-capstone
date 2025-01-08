@@ -1,7 +1,7 @@
 "use client";
 import React from 'react'
 import { useEffect, useState } from "react";
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Checkbox, Input, Link} from "@nextui-org/react";
+import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input} from "@nextui-org/react";
 
 
 export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
@@ -76,4 +76,4 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
   );
 };
 
-
+export default Popup;
