@@ -1,9 +1,7 @@
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from backend.controller import constants
 
-
-
-DATABASE_URL = "sqlite:///../../db/capstone_db.db"
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(constants.DATABASE_URL_PROD, echo=True)
 session = sessionmaker(bind=engine)

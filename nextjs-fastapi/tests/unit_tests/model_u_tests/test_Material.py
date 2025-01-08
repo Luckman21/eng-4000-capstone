@@ -4,12 +4,12 @@ from sqlalchemy.orm import sessionmaker
 from db.model.Material import Material
 from db.model.MaterialType import MaterialType
 from db.model.base import Base
+from backend.controller import constants
 
 # Use an existing database instead of an in-memory one
 @pytest.fixture(scope='module')
 def setup_database(request):
-    DATABASE_URL = 'sqlite:///nextjs-fastapi/db/capstone_db.db'
-    engine = create_engine(DATABASE_URL, echo=True)
+    engine = create_engine(constants.DATABASE_URL_TEST, echo=True)
 
     # Bind the Base metadata to the engine
     Base.metadata.create_all(engine)
