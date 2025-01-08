@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 import smtplib
 from email.mime.text import MIMEText
-from main import active_connections
+from backend.controller.main import ws_manager
 
 THRESHOLD = 50  # 50g threshold
 
@@ -50,7 +50,7 @@ async def job_complete_listener(mapper, connection, target):
         target (Material): the target Material instance that was updated in the database.
 
     Returns:
-        A list of materials that have a mass below the threshold value.
+        A list of materials that have a mass below the threshold value to websocket connection with UID 'low_stock'.
     """    
     session = SessionLocal()    # Create a new session instance for interacting with the database
     
@@ -62,7 +62,15 @@ async def job_complete_listener(mapper, connection, target):
     alert_materials = await quantity_poll(materials)
     
     session.close() # Close the session once we are done
-    for connection in active_connections:
-        await connection.send_json([material.dict() for material in alert_materials])
+    
+    # Send the alert materials to all active WebSocket connections
+    if alert_materials:
+        user_id = 'low_stock'
+        alert_data = {
+            'message': 'Low-stock materials alert!',
+            'materials': [material.dict() for material in alert_materials]
+        }
+        # Send alert to the specific user
+        await ws_manager.send_personal_message(user_id, alert_data)
 
     #return alert_materials  # Return the array of materials with a mass below the threshold
