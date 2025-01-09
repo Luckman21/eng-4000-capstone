@@ -99,5 +99,28 @@ async def update_material(entity_id: int, request: MaterialUpdateRequest, db: Se
     return {'message': "Material updated successfully"}
 
 
+@app.put("/delete_material/{entity_id}")
+async def delete_material(entity_id: int, db: Session = Depends(get_db)):
+    repo = MaterialRepository(db)
+
+    # Check if the entity exists
+    if not repo.material_exists(entity_id):
+        raise HTTPException(status_code=404, detail="Material not found")
+
+    # Call the update method
+    material = repo.get_material_by_id(entity_id)
+
+    try:
+        # Call the setter method to update the material
+        repo.delete_material(material)
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    material = repo.get_material_by_id(entity_id)
+
+    return {'message': "Material deleted successfully"}
+
+
 def get_app():
     return app
