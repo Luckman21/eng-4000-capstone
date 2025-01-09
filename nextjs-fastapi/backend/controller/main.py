@@ -16,6 +16,7 @@ from backend.controller import listener
 from backend.controller.schemas.MassUpdateRequest import MassUpdateRequest
 from backend.controller.schemas.MaterialUpdateRequest import MaterialUpdateRequest
 from backend.controller.schemas.MaterialCreateRequest import MaterialCreateRequest
+from db.repositories.MaterialTypeRepository import MaterialTypeRepository
 
 app = FastAPI()
 origins = [
@@ -144,6 +145,11 @@ async def create_material(request: MaterialCreateRequest, db: Session = Depends(
         raise HTTPException(status_code=400, detail=str(e))
 
     return {'message': "Material successfully created"}
+
+@app.get("/material_types")
+async def get_all_material_types(db: Session = Depends(get_db)):
+    repo = MaterialTypeRepository(db)
+    return repo.get_all_material_types()
 
 
 def get_app():
