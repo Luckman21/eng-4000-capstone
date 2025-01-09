@@ -8,6 +8,7 @@ from db.schemas import MaterialSchema
 from db.model.Material import Material
 from fastapi.middleware.cors import CORSMiddleware
 from db.repositories.MaterialRepository import MaterialRepository
+from db.repositories.MaterialTypeRepository import MaterialTypeRepository
 # from backend.controller.schemas import MassUpdateRequest, MassUpdateResponse
 from pydantic import BaseModel
 
@@ -36,8 +37,13 @@ async def get_Allmaterials(db: Session = Depends(get_db)):
     repo = MaterialRepository(db)
     return repo.get_all_materials()
 
+@app.get("/material_types")
+async def get_all_material_types(db: Session = Depends(get_db)):
+    repo =MaterialTypeRepository(db)
+    return repo.get_all_material_types()
 
-# @app.get("/materials/{material_type}")
+
+
 
 @app.put("/update_mass/{entity_id}")
 async def update_mass(entity_id: int, request: MassUpdateRequest, db: Session = Depends(get_db)):
@@ -59,6 +65,8 @@ async def update_mass(entity_id: int, request: MassUpdateRequest, db: Session = 
     material = repo.get_material_by_id(entity_id)
 
     return {'message': "Mass updated successfully", 'new_mass' : material.mass}
+
+
 
 
 def get_app():

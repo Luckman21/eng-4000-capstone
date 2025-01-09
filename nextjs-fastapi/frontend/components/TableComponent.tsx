@@ -15,13 +15,15 @@ import {
   Chip,
   Tooltip,
   Spinner,
-  useDisclosure
+  useDisclosure,
+  Button
 } from "@nextui-org/react";
 
 import { EditIcon } from "@/constants/EditIcon";
 import { DeleteIcon } from "@/constants/DeleteIcon";
 import { columns } from "@/constants/data";
 import { Popup } from "@/components/Popup";
+import { NewMaterial } from "@/components/NewMaterial";
 
 const statusColorMap = {
   "In Stock": "success",
@@ -109,6 +111,7 @@ const TableComponent = () => {
 
   return (
     <div>
+      <Button onPress={()=> onOpenChange()} color="primary" >Add Material</Button>
       <Table
         aria-label="Visualize information through table"
         isStriped
@@ -149,6 +152,7 @@ const TableComponent = () => {
         onOpenChange={onOpenChange}
         onSave={handleSaveMaterial} // Pass callback to Popup
       />
+      <NewMaterial isOpen={isOpen} onOpenChange={onOpenChange} />
     </div>
   );
 };
