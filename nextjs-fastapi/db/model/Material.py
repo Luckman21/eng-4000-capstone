@@ -5,6 +5,7 @@ from sqlalchemy.exc import IntegrityError, DataError, SQLAlchemyError
 from .base import Base  # Import Base from a separate file
 from .MaterialType import MaterialType
 
+
 # Base class for SQLAlchemy (this is the table essentially)
 
 
@@ -19,6 +20,7 @@ class Material(Base):
 
     # Foreign Key
     material_type_id = Column(Integer, ForeignKey('material_types.id'), nullable=False)
+    shelf_id = Column(Integer, ForeignKey('shelfs.id'), nullable=False)
 
     # Enforce the CHECK constraint (mass >= 0)
     __table_args__ = (
@@ -26,6 +28,7 @@ class Material(Base):
     )
 
     material_type = relationship("MaterialType", backref="materials", cascade='all, delete')
+ 
 
     # Set Methods
 
@@ -46,6 +49,11 @@ class Material(Base):
             self.material_type_id = type.id
         else:
             raise ValueError("Type can only be of UserType for Users")
+        
+    def setShelfID(self, shelf_id):
+        if not isinstance(shelf_id, int):
+            raise ValueError("Shelf ID must be an integer.")
+        self.shelf_id = shelf_id
 
     # Class Method
     def getAll(cls, session):

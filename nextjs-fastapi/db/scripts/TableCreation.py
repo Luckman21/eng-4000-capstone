@@ -24,7 +24,9 @@ CREATE TABLE materials (
     name TEXT NOT NULL, 
     mass FLOAT NOT NULL,
     material_type_id INTEGER,
-    FOREIGN KEY (material_type_id) REFERENCES material_types(id) ON DELETE CASCADE
+    shelf_id INTEGER,
+    FOREIGN KEY (material_type_id) REFERENCES material_types(id) ON DELETE CASCADE,
+    FOREIGN KEY (shelf_id) REFERENCES shelfs(id) ON DELETE SET NULL
 )
 ''')
 

@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from db.model.Material import Material
 from db.model.MaterialType import MaterialType
+from db.model.Shelf import Shelf
 from db.model.base import Base
 
 # Use an existing database instead of an in-memory one
@@ -23,11 +24,16 @@ def setup_database(request):
     session.add(dummy_material_type)
     session.commit()
 
+    dummy_shelf = Shelf(humidity_pct=50.0, temperature_cel=22.0)
+    session.add(dummy_shelf)
+    session.commit()
+
     dummy_material = Material(
         name="Dummy Material",
         colour="Red",
         mass=10.5,
-        material_type_id=dummy_material_type.id
+        material_type_id=dummy_material_type.id,
+        shelf_id=dummy_shelf.id
     )
     session.add(dummy_material)
     session.commit()
@@ -35,6 +41,7 @@ def setup_database(request):
     # Register a finalizer to clean up the data after the test
     def cleanup():
         session.query(Material).filter_by(name="Dummy Material").delete()
+        session.query(Shelf).filter_by(humidity_pct=50.0, temperature_cel=22.0).delete()
         session.query(MaterialType).filter_by(type_name="Plastic").delete()
         session.commit()
 
@@ -60,7 +67,36 @@ def test_add_dummy_material(setup_database):
 
     assert inserted_material.material_type_id == queried_type.id
 
+    inserted_shelf = session.query(Shelf).filter_by(id=inserted_material.shelf_id).first()
+    assert inserted_shelf is not None
+    assert inserted_shelf.humidity_pct == 50.0
+
     # The dummy data will be rolled back after the test
+
+
+def test_update_material_shelf(setup_database):
+    session = setup_database
+
+    # Add a new shelf for the test
+    new_shelf = Shelf(humidity_pct=60.0, temperature_cel=25.0)
+    session.add(new_shelf)
+    session.commit()
+
+    # Fetch the dummy material and update its shelf
+    material_to_update = session.query(Material).filter_by(name="Dummy Material").first()
+    assert material_to_update is not None
+
+    material_to_update.shelf_id = new_shelf.id
+    session.commit()
+
+    # Verify that the material's shelf was updated
+    updated_material = session.query(Material).filter_by(name="Dummy Material").first()
+    assert updated_material.shelf_id == new_shelf.id
+
+    queried_shelf = session.query(Shelf).filter_by(id=new_shelf.id).first()
+    assert queried_shelf is not None
+    assert queried_shelf.humidity_pct == 60.0
+
 
 # Example test case 4: Test a material update
 def test_update_material_colour(setup_database):
