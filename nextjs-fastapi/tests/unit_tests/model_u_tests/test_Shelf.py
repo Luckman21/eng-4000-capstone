@@ -27,9 +27,6 @@ def test_shelf_creation(session):
     shelf = Shelf(humidity_pct=60.5, temperature_cel=22.0)
     session.add(shelf)
     
-    # Explicit rollback before commit
-    session.rollback()
-    
     session.commit()
 
     # Test that the Shelf was successfully added
@@ -44,9 +41,6 @@ def test_shelf_creation(session):
 def test_shelf_invalid_humidity(session):
     shelf = Shelf(humidity_pct=-10.0, temperature_cel=22.0)  # Invalid humidity (negative value)
     session.add(shelf)
-    
-    # Explicit rollback before commit
-    session.rollback()
 
     # Check for IntegrityError due to negative humidity (if you want to enforce non-negative humidity)
     with pytest.raises(IntegrityError):
@@ -59,9 +53,6 @@ def test_shelf_invalid_humidity(session):
 def test_shelf_invalid_temperature(session):
     shelf = Shelf(humidity_pct=60.5, temperature_cel=-273.16)  # Invalid temperature (beyond minimum possible temperature in C)
     session.add(shelf)
-    
-    # Explicit rollback before commit
-    session.rollback()
 
     # Check for IntegrityError due to negative temperature (if you want to enforce non-negative temperature)
     with pytest.raises(IntegrityError):
@@ -76,19 +67,18 @@ def test_get_all_shelves(session):
     shelf2 = Shelf(humidity_pct=60.0, temperature_cel=23.5)
     session.add(shelf1)
     session.add(shelf2)
-    
-    # Explicit rollback before commit
-    session.rollback()
 
     session.commit()
 
     # Test the getAll method to fetch all shelves
     shelves = Shelf.getAll(Shelf, session)
-    assert len(shelves) == 2  # We added two shelves
-    assert shelves[0].humidity_pct == 55.0
-    assert shelves[0].temperature_cel == 20.0
-    assert shelves[1].humidity_pct == 60.0
-    assert shelves[1].temperature_cel == 23.5
+    assert len(shelves) == 3  # We added two shelves, plus the initial shelf from test 1
+    assert shelves[0].humidity_pct == 60.5
+    assert shelves[0].temperature_cel == 22.0
+    assert shelves[1].humidity_pct == 55.0
+    assert shelves[1].temperature_cel == 20.0
+    assert shelves[2].humidity_pct == 60.0
+    assert shelves[2].temperature_cel == 23.5
 
     # Rollback the session after the test
     session.rollback()
