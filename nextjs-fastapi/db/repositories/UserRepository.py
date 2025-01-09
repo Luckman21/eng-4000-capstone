@@ -1,7 +1,7 @@
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
-from .model.User import User
-from .model.UserType import UserType
+from db.model.User import User
+from db.model.UserType import UserType
 
 
 class UserRepository:
