@@ -13,6 +13,12 @@ import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
 
 export const NewMaterial = ({ isOpen, onOpenChange }) => {
   const [materialTypes, setMaterialTypes] = useState([]);
+  const [newMaterial, setNewMaterial] = useState({
+    colour: NaN,         
+    name:NaN,    
+    mass: NaN,           
+    type_id: NaN, 
+  });
 
   // Fetch material types on component mount
   useEffect(() => {
@@ -38,16 +44,15 @@ export const NewMaterial = ({ isOpen, onOpenChange }) => {
 
   // Update editableMaterial state on input change
   const handleChange = (field, value) => {
-    
+    setNewMaterial((prev) => ({ ...prev, [field]: value }));
   };
-  console.log(materialTypes);
 
   const handleSave = async () => {
     try {
       const response = await fetch("http://localhost:8000/create_material", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editableMaterial),
+        body: JSON.stringify(newMaterial),
       });
 
       if (!response.ok) throw new Error("Failed to add material");
@@ -95,10 +100,14 @@ export const NewMaterial = ({ isOpen, onOpenChange }) => {
             label="Material Type"
             placeholder="Search material type"
             defaultItems={materialTypes}
+            onSelectionChange={(key) => {
+                handleChange("type_id", key);
+              }
+            }
           >
             {(item) => (
             
-            <AutocompleteItem key={item.key}>
+            <AutocompleteItem key={item.key} >
             {item.label}
           </AutocompleteItem>
             )}
@@ -107,7 +116,7 @@ export const NewMaterial = ({ isOpen, onOpenChange }) => {
         <ModalFooter>
           <Button color="danger" variant="flat" onPress={onOpenChange}>
             Close
-          </Button>å
+          </Button>
           <Button color="primary" onPress={handleSave}>
             Add Material
           </Button>
