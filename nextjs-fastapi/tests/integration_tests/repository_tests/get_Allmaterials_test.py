@@ -16,14 +16,17 @@ def setup_database(request):
     DATABASE_URL = 'sqlite:///nextjs-fastapi/db/capstone_db.db'
     engine = create_engine(DATABASE_URL, echo=True)
 
+    Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
 
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    yield session
+    def cleanup():
+        session.close()
+        Base.metadata.drop_all(engine)
 
-    session.close()
+    yield session
 
 client = TestClient(get_app())
 
