@@ -17,7 +17,7 @@ export const NewMaterial = ({ isOpen, onOpenChange }) => {
     colour: "",
     name:"",
     mass: 0.0,
-    type_id: null,
+    material_type_id: null,
   });
 
   // Fetch material types on component mount
@@ -47,13 +47,20 @@ export const NewMaterial = ({ isOpen, onOpenChange }) => {
     setNewMaterial((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleMaterialTypeSelect = (value) => {
+    // value is the 'id' of the selected material type
+    setNewMaterial((prev) => ({
+      ...prev,
+      material_type_id: value, // Set 'material_type_id' to the selected 'id'
+    }));
+  };
+
   const handleSave = async () => {
 
    if (
       !newMaterial.name ||
       !newMaterial.colour ||
-      !newMaterial.mass ||
-      !newMaterial.type_id
+      !newMaterial.mass
     ) {
       alert("Please fill in all fields");
       return;
@@ -65,7 +72,8 @@ export const NewMaterial = ({ isOpen, onOpenChange }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newMaterial),
       });
-      console.log(newMaterial.type_id)
+      console.log("Request Payload:", newMaterial);
+
 
       if (!response.ok) throw new Error("Failed to add material");
 
