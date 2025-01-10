@@ -1,11 +1,11 @@
 import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button} from "@nextui-org/react";
 
 
+
 const Nav= ()=> {
   return (
     <Navbar>
       <NavbarBrand>
-        
         <p className="font-bold text-inherit">Pantheon 3D Print</p>
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
@@ -21,7 +21,7 @@ const Nav= ()=> {
         </NavbarItem>
         <NavbarItem>
           <Link color="foreground" href="#">
-            Integrations
+            Add Material
           </Link>
         </NavbarItem>
       </NavbarContent>
@@ -36,6 +36,7 @@ const Nav= ()=> {
         </NavbarItem>
       </NavbarContent>
     </Navbar>
+    
   );
 }
 

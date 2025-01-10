@@ -17,23 +17,25 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
   };
 
   const handleSave = async () => {
-    try {
-      // Send update request to backend
-      const response = await fetch(`http://localhost:8000/update_mass/${editableMaterial.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mass: editableMaterial.mass }),
-      });
+    
+      try {
+        // Send update request to backend
+        const response = await fetch(`http://localhost:8000/update_mass/${editableMaterial.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mass: editableMaterial.mass }),
+        });
 
-      if (!response.ok) throw new Error("Failed to update material");
+        if (!response.ok) throw new Error("Failed to update material");
 
-      const updatedMaterial = { ...editableMaterial };
-      onSave(updatedMaterial); // Notify parent
-      onOpenChange(); // Close the modal
-    } catch (error) {
-      console.error("Error updating material:", error);
+        const updatedMaterial = { ...editableMaterial };
+        onSave(updatedMaterial); // Notify parent
+        onOpenChange(); // Close the modal
+      } catch (error) {
+        console.error("Error updating material:", error);
+      }
     }
-  };
+    
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center" backdrop="opaque">
@@ -62,6 +64,7 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
             value={editableMaterial?.mass || ""}
             onChange={(e) => handleChange("mass", parseFloat(e.target.value))}
           />
+           
         </ModalBody>
         <ModalFooter>
           <Button color="danger" variant="flat" onPress={onOpenChange}>
@@ -76,4 +79,4 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
   );
 };
 
-
+export default Popup;
