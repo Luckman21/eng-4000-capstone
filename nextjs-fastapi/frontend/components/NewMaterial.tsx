@@ -17,8 +17,10 @@ export const NewMaterial = ({ isOpen, onOpenChange }) => {
     colour: NaN,         
     name:NaN,    
     mass: NaN,           
-    type_id: NaN, 
+    material_type_id: NaN, 
   });
+
+  console.log(newMaterial);
 
   // Fetch material types on component mount
   useEffect(() => {
@@ -73,19 +75,20 @@ export const NewMaterial = ({ isOpen, onOpenChange }) => {
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">Add New Material</ModalHeader>
         <ModalBody>
-          <Input
-            isRequired
-            label="Name"
-            placeholder="Enter material name"
-            type="text"
-            onChange={(e) => handleChange("name", e.target.value)}
-          />
+          
           <Input
             isRequired
             label="Colour"
             placeholder="Enter material colour"
             type="text"
             onChange={(e) => handleChange("colour", e.target.value)}
+          />
+          <Input
+            isRequired
+            label="Name"
+            placeholder="Enter material name"
+            type="text"
+            onChange={(e) => handleChange("name", e.target.value)}
           />
           <Input
             isRequired
@@ -101,7 +104,7 @@ export const NewMaterial = ({ isOpen, onOpenChange }) => {
             placeholder="Search material type"
             defaultItems={materialTypes}
             onSelectionChange={(key) => {
-                handleChange("type_id", key);
+                handleChange("material_type_id", key);
               }
             }
           >
