@@ -23,18 +23,31 @@ import { EditIcon } from "@/constants/EditIcon";
 import { DeleteIcon } from "@/constants/DeleteIcon";
 import { columns } from "@/constants/data";
 import { Popup } from "@/components/Popup";
-import { NewMaterial } from "@/components/NewMaterial";
+import { NewMaterial } from "@/components";
 
 const statusColorMap = {
   "In Stock": "success",
   "Low Stock": "warning",
-};
+}
 
 const TableComponent = () => {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [editMaterial, setEditMaterial] = useState<Material | null>(null); // Single Material
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [editMaterial, setEditMaterial] = useState<Material | null>(null); 
+  const {
+    isOpen: isModalOneOpen,
+    onOpen: openModalOne,
+    onOpenChange: handleModalOneChange,
+  } = useDisclosure();
+
+  
+  const {
+    isOpen: isModalTwoOpen,
+    onOpen: openModalTwo,
+    onOpenChange: handleModalTwoChange,
+  } = useDisclosure();
+
+  
 
   const list = useAsyncList({
     async load({ signal }) {
@@ -53,10 +66,11 @@ const TableComponent = () => {
       };
     },
   });
+  console.log(materials);
 
   const handleEditClick = (material: Material) => {
     setEditMaterial(material);
-    onOpen();
+    openModalOne();
   };
 
   // Callback for updating a material
@@ -66,7 +80,15 @@ const TableComponent = () => {
         mat.id === updatedMaterial.id ? updatedMaterial : mat
       )
     );
+    list.reload();
   };
+  const addMaterial = (newMaterial) => {
+    setMaterials((prevMaterials) => [...prevMaterials, newMaterial]);
+    
+      list.reload();
+    };
+
+  
 
   const renderCell = React.useCallback(
     (material, columnKey) => {
@@ -111,7 +133,7 @@ const TableComponent = () => {
 
   return (
     <div>
-      <Button onPress={()=> onOpenChange()} color="primary" >Add Material</Button>
+      <Button onPress={()=> handleModalTwoChange()} color="primary" >Add Material</Button>
       <Table
         aria-label="Visualize information through table"
         isStriped
@@ -148,11 +170,11 @@ const TableComponent = () => {
       </Table>
       <Popup
         material={editMaterial}
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
+        isOpen={isModalOneOpen}
+        onOpenChange={handleModalOneChange}
         onSave={handleSaveMaterial} // Pass callback to Popup
       />
-      <NewMaterial isOpen={isOpen} onOpenChange={onOpenChange} />
+      <NewMaterial isOpen={isModalTwoOpen} onOpenChange={handleModalTwoChange} onAddMaterial={addMaterial} materials={materials} />
     </div>
   );
 };

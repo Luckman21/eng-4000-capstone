@@ -11,13 +11,13 @@ import {
 } from "@nextui-org/react";
 import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
 
-export const NewMaterial = ({ isOpen, onOpenChange }) => {
+export const NewMaterial = ({ isOpen, onOpenChange, onAddMaterial, materials }) => {
   const [materialTypes, setMaterialTypes] = useState([]);
   const [newMaterial, setNewMaterial] = useState({
-    colour: "",
-    name:"",
-    mass: 0.0,
-    material_type_id: null,
+    colour: NaN,         
+    name:NaN,    
+    mass: NaN,           
+    material_type_id: NaN, 
   });
 
   // Fetch material types on component mount
@@ -47,37 +47,26 @@ export const NewMaterial = ({ isOpen, onOpenChange }) => {
     setNewMaterial((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleMaterialTypeSelect = (value) => {
-    // value is the 'id' of the selected material type
-    setNewMaterial((prev) => ({
-      ...prev,
-      material_type_id: value, // Set 'material_type_id' to the selected 'id'
-    }));
-  };
-
   const handleSave = async () => {
-
-   if (
-      !newMaterial.name ||
-      !newMaterial.colour ||
-      !newMaterial.mass
-    ) {
-      alert("Please fill in all fields");
-      return;
-    }
-
     try {
       const response = await fetch("http://localhost:8000/create_material", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newMaterial),
       });
-      console.log("Request Payload:", newMaterial);
-
 
       if (!response.ok) throw new Error("Failed to add material");
+      let createdMaterial = await response.json();
 
+     
+      createdMaterial = {
+        ...createdMaterial,
+        id: createdMaterial.id || materials.length +1, 
+    };
+
+      onAddMaterial(createdMaterial);
       onOpenChange(); // Close the modal
+
     } catch (error) {
       console.error("Error saving material:", error);
     }
@@ -93,19 +82,20 @@ export const NewMaterial = ({ isOpen, onOpenChange }) => {
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">Add New Material</ModalHeader>
         <ModalBody>
-          <Input
-            isRequired
-            label="Name"
-            placeholder="Enter material name"
-            type="text"
-            onChange={(e) => handleChange("name", e.target.value)}
-          />
+          
           <Input
             isRequired
             label="Colour"
             placeholder="Enter material colour"
             type="text"
             onChange={(e) => handleChange("colour", e.target.value)}
+          />
+          <Input
+            isRequired
+            label="Name"
+            placeholder="Enter material name"
+            type="text"
+            onChange={(e) => handleChange("name", e.target.value)}
           />
           <Input
             isRequired
@@ -121,7 +111,7 @@ export const NewMaterial = ({ isOpen, onOpenChange }) => {
             placeholder="Search material type"
             defaultItems={materialTypes}
             onSelectionChange={(key) => {
-                handleChange("type_id", key);
+                handleChange("material_type_id", key);
               }
             }
           >
@@ -145,3 +135,4 @@ export const NewMaterial = ({ isOpen, onOpenChange }) => {
     </Modal>
   );
 };
+export default NewMaterial;
