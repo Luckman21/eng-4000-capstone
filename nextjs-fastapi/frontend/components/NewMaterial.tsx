@@ -125,3 +125,4 @@ export const NewMaterial = ({ isOpen, onOpenChange }) => {
     </Modal>
   );
 };
+export default NewMaterial;
