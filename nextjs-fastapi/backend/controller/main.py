@@ -15,7 +15,7 @@ from sqlalchemy import event
 from backend.controller import listener
 from backend.controller.schemas.MassUpdateRequest import MassUpdateRequest
 from backend.controller.schemas.MaterialUpdateRequest import MaterialUpdateRequest
-
+from backend.controller.schemas.MaterialCreateRequest import MaterialCreateRequest
 
 app = FastAPI()
 origins = [
@@ -97,6 +97,53 @@ async def update_material(entity_id: int, request: MaterialUpdateRequest, db: Se
     material = repo.get_material_by_id(entity_id)
 
     return {'message': "Material updated successfully"}
+
+
+@app.put("/delete_material/{entity_id}")
+async def delete_material(entity_id: int, db: Session = Depends(get_db)):
+    repo = MaterialRepository(db)
+
+    # Check if the entity exists
+    if not repo.material_exists(entity_id):
+        raise HTTPException(status_code=404, detail="Material not found")
+
+    # Call the update method
+    material = repo.get_material_by_id(entity_id)
+
+    try:
+        # Call the setter method to update the material
+        repo.delete_material(material)
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    material = repo.get_material_by_id(entity_id)
+
+    return {'message': "Material deleted successfully"}
+
+@app.put("/create_material")
+async def create_material(request: MaterialCreateRequest, db: Session = Depends(get_db)):
+    repo = MaterialRepository(db)
+
+    material = db.query(Material).filter_by(name=request.name, colour=request.colour, material_type_id=request.material_type_id).first()
+
+    # Check if the entity exists
+    if material is not None and repo.material_exists(material.id):
+        raise HTTPException(status_code=404, detail="Material already exists")
+
+    # Call the update method
+
+    try:
+        # Call the setter method to update the material
+        repo.create_material(mass=request.mass,
+                             colour=request.colour,
+                             material_type_id=request.material_type_id,
+                             name=request.name)
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    return {'message': "Material successfully created"}
 
 
 def get_app():
