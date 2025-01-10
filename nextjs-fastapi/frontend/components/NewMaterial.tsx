@@ -11,7 +11,7 @@ import {
 } from "@nextui-org/react";
 import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
 
-export const NewMaterial = ({ isOpen, onOpenChange }) => {
+export const NewMaterial = ({ isOpen, onOpenChange, onAddMaterial, materials }) => {
   const [materialTypes, setMaterialTypes] = useState([]);
   const [newMaterial, setNewMaterial] = useState({
     colour: NaN,         
@@ -19,8 +19,6 @@ export const NewMaterial = ({ isOpen, onOpenChange }) => {
     mass: NaN,           
     material_type_id: NaN, 
   });
-
-  console.log(newMaterial);
 
   // Fetch material types on component mount
   useEffect(() => {
@@ -58,8 +56,17 @@ export const NewMaterial = ({ isOpen, onOpenChange }) => {
       });
 
       if (!response.ok) throw new Error("Failed to add material");
+      let createdMaterial = await response.json();
 
+     
+      createdMaterial = {
+        ...createdMaterial,
+        id: createdMaterial.id || materials.length +1, 
+    };
+
+      onAddMaterial(createdMaterial);
       onOpenChange(); // Close the modal
+
     } catch (error) {
       console.error("Error saving material:", error);
     }

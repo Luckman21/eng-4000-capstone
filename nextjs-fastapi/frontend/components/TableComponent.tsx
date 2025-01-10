@@ -28,7 +28,7 @@ import { NewMaterial } from "@/components";
 const statusColorMap = {
   "In Stock": "success",
   "Low Stock": "warning",
-};
+}
 
 const TableComponent = () => {
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -47,6 +47,7 @@ const TableComponent = () => {
     onOpenChange: handleModalTwoChange,
   } = useDisclosure();
 
+  
 
   const list = useAsyncList({
     async load({ signal }) {
@@ -65,6 +66,7 @@ const TableComponent = () => {
       };
     },
   });
+  console.log(materials);
 
   const handleEditClick = (material: Material) => {
     setEditMaterial(material);
@@ -79,6 +81,13 @@ const TableComponent = () => {
       )
     );
   };
+  const addMaterial = (newMaterial) => {
+    setMaterials((prevMaterials) => [...prevMaterials, newMaterial]);
+    
+      list.reload();
+    };
+
+  
 
   const renderCell = React.useCallback(
     (material, columnKey) => {
@@ -164,7 +173,7 @@ const TableComponent = () => {
         onOpenChange={handleModalOneChange}
         onSave={handleSaveMaterial} // Pass callback to Popup
       />
-      <NewMaterial isOpen={isModalTwoOpen} onOpenChange={handleModalTwoChange} />
+      <NewMaterial isOpen={isModalTwoOpen} onOpenChange={handleModalTwoChange} onAddMaterial={addMaterial} materials={materials} />
     </div>
   );
 };
