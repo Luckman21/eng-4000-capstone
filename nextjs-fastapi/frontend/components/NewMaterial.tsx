@@ -14,10 +14,10 @@ import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
 export const NewMaterial = ({ isOpen, onOpenChange }) => {
   const [materialTypes, setMaterialTypes] = useState([]);
   const [newMaterial, setNewMaterial] = useState({
-    colour: NaN,         
-    name:NaN,    
-    mass: NaN,           
-    type_id: NaN, 
+    colour: "",
+    name:"",
+    mass: 0.0,
+    type_id: null,
   });
 
   // Fetch material types on component mount
@@ -48,12 +48,24 @@ export const NewMaterial = ({ isOpen, onOpenChange }) => {
   };
 
   const handleSave = async () => {
+
+   if (
+      !newMaterial.name ||
+      !newMaterial.colour ||
+      !newMaterial.mass ||
+      !newMaterial.type_id
+    ) {
+      alert("Please fill in all fields");
+      return;
+    }
+
     try {
       const response = await fetch("http://localhost:8000/create_material", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newMaterial),
       });
+      console.log(newMaterial.type_id)
 
       if (!response.ok) throw new Error("Failed to add material");
 

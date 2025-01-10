@@ -3,5 +3,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from backend.controller import constants
 
-engine = create_engine(constants.DATABASE_URL_PROD, echo=True)
+DATABASE_URL = constants.DATABASE_URL
+engine = create_engine(constants.DATABASE_URL, echo=True)
 session = sessionmaker(bind=engine)

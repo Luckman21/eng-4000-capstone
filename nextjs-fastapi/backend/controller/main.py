@@ -122,7 +122,7 @@ async def delete_material(entity_id: int, db: Session = Depends(get_db)):
 
     return {'message': "Material deleted successfully"}
 
-@app.put("/create_material")
+@app.post("/create_material")
 async def create_material(request: MaterialCreateRequest, db: Session = Depends(get_db)):
     repo = MaterialRepository(db)
 
