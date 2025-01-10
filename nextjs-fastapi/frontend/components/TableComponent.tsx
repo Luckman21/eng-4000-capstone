@@ -80,6 +80,7 @@ const TableComponent = () => {
         mat.id === updatedMaterial.id ? updatedMaterial : mat
       )
     );
+    list.reload();
   };
   const addMaterial = (newMaterial) => {
     setMaterials((prevMaterials) => [...prevMaterials, newMaterial]);
