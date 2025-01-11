@@ -4,6 +4,7 @@ const columns = [
     {name: "COLOUR", uid: "colour"},
     {name: "NAME", uid: "name"},
     {name: "Weight (g)", uid: "mass"},
+    {name: "Shelf", uid: "id"},
     {name: "STATUS", uid: "status"},
     {name: "ACTIONS", uid: "actions"},
   ];
@@ -15,6 +16,7 @@ const columns = [
       colour: "Red",
       name: "Apple",
       weight: 0.2,
+      shelf: 1,
       status: "In Stock",
     },
     {
@@ -22,6 +24,7 @@ const columns = [
       colour: "Yellow",
       name: "Banana",
       weight: 0.3,
+      shelf: 2,
       status: "In Stock",
     },
     {
@@ -29,6 +32,7 @@ const columns = [
       colour: "Green",
       name: "Grapes",
       weight: 0.4,
+      shelf: 3,
       status: "Out of Stock",
     },
     {
@@ -36,6 +40,7 @@ const columns = [
       colour: "Orange",
       name: "Orange",
       weight: 0.5,
+      shelf: 4,
       status: "Low Stock",
     },
     {
@@ -43,6 +48,7 @@ const columns = [
       colour: "Purple",
       name: "Plum",
       weight: 0.6,
+      shelf: 5,
       status: "In Stock",
     },
     {
@@ -50,6 +56,7 @@ const columns = [
       colour: "Red",
       name: "Strawberry",
       weight: 0.7,
+      shelf: 6,
       status: "Out of Stock",
     },
       

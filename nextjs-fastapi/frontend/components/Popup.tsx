@@ -62,6 +62,14 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
             value={editableMaterial?.mass || ""}
             onChange={(e) => handleChange("mass", parseFloat(e.target.value))}
           />
+          <Input
+            label="Shelf"
+            placeholder="Enter shelf unit"
+            type="number"
+            variant="bordered"
+            value={editableMaterial?.shelf || ""}
+            onChange={(e) => handleChange("id", parseFloat(e.target.value))}
+          />
         </ModalBody>
         <ModalFooter>
           <Button color="danger" variant="flat" onPress={onOpenChange}>
