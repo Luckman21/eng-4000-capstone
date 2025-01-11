@@ -1,4 +1,7 @@
 import pytest
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from db.model.Material import Material
@@ -106,6 +109,33 @@ def test_update_material(setup_database):
     session.query(Material).filter_by(name="Dummy2").delete()
     session.commit()
 
+
+def test_material_existance(setup_database):
+    # Get the session from the fixture
+    session = setup_database
+    repository = MaterialRepository(session)
+    material_type = session.query(MaterialType).filter_by(type_name="Plastic").first()
+
+    # Fetch an existing material and update its data
+    material = repository.create_material("blue", "Dummy2", 2.4, material_type.id)
+
+    queried_material = repository.get_material_by_id(material.id)
+
+    assert queried_material is not None
+
+    assert repository.material_exists(queried_material.id) is True
+
+    queried_material = repository.get_material_by_id(-1)
+
+    assert queried_material is None
+
+    assert repository.material_exists(-1) is not True
+
+    # Destroy
+    session.query(Material).filter_by(name="Dummy2").delete()
+    session.commit()
+
+
 def test_delete_material(setup_database):
     # Get the session from the fixture
     session = setup_database
@@ -124,4 +154,5 @@ def test_delete_material(setup_database):
     queried_material = repository.get_material_by_id(material.id)
 
     assert queried_material is None
+
 
