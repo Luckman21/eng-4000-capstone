@@ -4,5 +4,5 @@ from sqlalchemy.orm import sessionmaker
 from backend.controller import constants
 
 DATABASE_URL = constants.DATABASE_URL
-engine = create_engine(constants.DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL, echo=True)
 session = sessionmaker(bind=engine)

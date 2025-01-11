@@ -6,7 +6,12 @@ import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
 
 export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
   const [materialTypes, setMaterialTypes] = useState([]);
-  const [editableMaterial, setEditableMaterial] = useState(material);
+  const [newMaterial, setNewMaterial] = useState({
+    colour: NaN,
+    name:NaN,
+    mass: NaN,
+    material_type_id: NaN,
+  });
 
   // Update local state when material prop changes
   React.useEffect(() => {
