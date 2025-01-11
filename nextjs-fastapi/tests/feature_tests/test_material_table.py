@@ -7,12 +7,13 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import re
 
 @pytest.fixture
 def driver():
 
     chrome_options = Options()
-    chrome_options.add_argument("--headless") # This means you won't see the actual icon
+    #chrome_options.add_argument("--headless") # This means you won't see the actual icon
     chrome_options.add_argument("--disable-gpu")
 
     # This will change depending on your driver
@@ -25,29 +26,13 @@ def test_material_table_header(driver):
     driver.get("http://localhost:3000")
     time.sleep(3)
 
-    # ID Header
-    element = driver.find_element(By.ID, "react-aria-:R2fj6:-id")
-    assert element.text == "ID"
+    # Find the header row
+    header_row = driver.find_element(By.CSS_SELECTOR, "thead tr")
 
-    # Colour Header
-    element = driver.find_element(By.ID, "react-aria-:R2fj6:-colour")
-    assert element.text == "COLOUR"
+    # Get the full text of the header row (all titles in one string)
+    header_text = header_row.text
 
-    # Name Header
-    element = driver.find_element(By.ID, "react-aria-:R2fj6:-name")
-    assert element.text == "NAME"
-
-    # Weight Header
-    element = driver.find_element(By.ID, "react-aria-:R2fj6:-mass")
-    assert element.text == "Weight (g)"
-
-    # Status Header
-    element = driver.find_element(By.ID, "react-aria-:R2fj6:-status")
-    assert element.text == "STATUS"
-
-    # Actions Header
-    element = driver.find_element(By.ID, "react-aria-:R2fj6:-actions")
-    assert element.text == "ACTIONS"
+    assert header_text == "ID COLOUR NAME Weight (g) STATUS ACTIONS"
 
 
 def test_material_table_buttons(driver):
@@ -55,12 +40,8 @@ def test_material_table_buttons(driver):
     driver.get("http://localhost:3000")
     time.sleep(3)
 
-    # Locate all rows in the table
-    table = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, "react-aria-:R2fj6:"))
-    )
 
-    rows = table.find_elements(By.CSS_SELECTOR, "tbody tr")
+    rows = driver.find_elements(By.CSS_SELECTOR, "tbody tr")
 
     # Check each row for the presence of two SVG elements
     for index, row in enumerate(rows):
@@ -74,15 +55,60 @@ def test_material_table_order(driver):
     driver.get("http://localhost:3000")
     time.sleep(3)
 
-    # Locate all rows in the table
-    table = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, "react-aria-:R2fj6:"))
-    )
-
-    first_td = table.find_element(By.XPATH, "//tbody/tr[1]/td[1]")
+    first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[1]")
     assert first_td.text == '1'
 
-    second_td = table.find_element(By.XPATH, "//tbody/tr[2]/td[1]")
+    second_td = driver.find_element(By.XPATH, "//tbody/tr[2]/td[1]")
     assert second_td.text == '2'
+
+def test_edit_button(driver):
+
+    driver.get("http://localhost:3000")
+    time.sleep(3)
+
+    button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[6]/div/span[1]")
+    button.click()
+
+    panel = driver.find_element(By.CSS_SELECTOR, "section")
+
+    header = panel.find_element(By.CSS_SELECTOR, "header")
+
+    assert header.text == "Edit Material"
+
+    edit_fields = panel.find_element(By.CSS_SELECTOR, "div")
+
+    labels = panel.find_elements(By.CSS_SELECTOR, "label")
+
+    assert labels[0].text == "Name"
+    assert labels[1].text == "Colour"
+    assert labels[2].text == "Weight (g)"
+
+def test_create_button(driver):
+    driver.get("http://localhost:3000")
+    time.sleep(3)
+
+    buttons = driver.find_elements(By.CSS_SELECTOR, "button")
+    button = buttons[0]
+    button.click()
+
+    panel = driver.find_element(By.CSS_SELECTOR, "section")
+
+    header = panel.find_element(By.CSS_SELECTOR, "header")
+
+    assert header.text == "Add New Material"
+
+    edit_fields = panel.find_element(By.CSS_SELECTOR, "div")
+
+    labels = panel.find_elements(By.CSS_SELECTOR, "label")
+
+    assert labels[0].text == "Colour"
+    assert labels[1].text == "Name"
+    assert labels[2].text == "Weight (g)"
+    assert labels[3].text == "Material Type"
+
+
+
+
+
 
 # TODO: Make test to assess status once material migration is complete
