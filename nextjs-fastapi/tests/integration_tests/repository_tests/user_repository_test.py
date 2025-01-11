@@ -9,12 +9,12 @@ from db.model.UserType import UserType
 from db.model.base import Base
 from db.repositories.UserRepository import UserRepository
 from db.repositories.UserTypeRepository import UserTypeRepository
+from backend.controller import constants
 
 # Use an existing database instead of an in-memory one
 @pytest.fixture(scope='module')
 def setup_database(request):
-    DATABASE_URL = 'sqlite:///nextjs-fastapi/db/capstone_db.db'
-    engine = create_engine(DATABASE_URL, echo=True)
+    engine = create_engine(constants.DATABASE_URL_TEST, echo=True)
 
     # Bind the Base metadata to the engine
     Base.metadata.create_all(engine)
@@ -86,7 +86,7 @@ def test_create_user(setup_database):
     session.commit()
 
 
-def test_update_user(setup_database):
+def test_update_material(setup_database):
     # Get the session from the fixture
     session = setup_database
     repository = UserRepository(session)
@@ -109,14 +109,14 @@ def test_update_user(setup_database):
     session.query(User).filter_by(username="James").delete()
     session.commit()
 
-def test_delete_user(setup_database):
+def test_delete_material(setup_database):
     # Get the session from the fixture
     session = setup_database
     repository = UserRepository(session)
     user_type = session.query(UserType).filter_by(type_name="Cheese").first()
 
     # Fetch an existing material and update its data
-    user = repository.create_user("James", "cheesewhiz", "fake123@email.com", user_type.id)
+    user = repository.create_user("James", "cheesewhiz", "fake@email.com", user_type.id)
 
     queried_user = repository.get_user_by_id(user.id)
 

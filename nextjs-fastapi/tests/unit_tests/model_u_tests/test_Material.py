@@ -8,13 +8,16 @@ from sqlalchemy.exc import IntegrityError
 from db.model.Material import Material
 from db.model.MaterialType import MaterialType
 from db.model.base import Base
+from backend.controller import constants
 
 # Fixture to setup an in-memory database for testing
 @pytest.fixture(scope='module')
+
 def session():
     # Setup the in-memory SQLite database engine
     engine = create_engine('sqlite:///:memory:')
     Base.metadata.create_all(engine)  # Create all tables defined in Base
+
 
     Session = sessionmaker(bind=engine)
     session = Session()
