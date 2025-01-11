@@ -40,6 +40,7 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
   };
 
   const handleSave = async () => {
+
     try {
       // Send update request to backend
       const response = await fetch(`http://localhost:8000/update_material/${editableMaterial.id}`, {
@@ -53,16 +54,16 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
 
         }),
       });
+        if (!response.ok) throw new Error("Failed to update material");
 
-      if (!response.ok) throw new Error("Failed to update material");
-
-      const updatedMaterial = { ...editableMaterial };
-      onSave(updatedMaterial); // Notify parent
-      onOpenChange(); // Close the modal
-    } catch (error) {
-      console.error("Error updating material:", error);
+        const updatedMaterial = { ...editableMaterial };
+        onSave(updatedMaterial); // Notify parent
+        onOpenChange(); // Close the modal
+      } catch (error) {
+        console.error("Error updating material:", error);
+      }
     }
-  };
+    
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center" backdrop="opaque">
@@ -91,6 +92,7 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
             value={editableMaterial?.mass || ""}
             onChange={(e) => handleChange("mass", parseFloat(e.target.value))}
           />
+
           {/* Autocomplete for Material Type */}
           <Autocomplete
             label="Material Type"
@@ -122,4 +124,4 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
   );
 };
 
-
+export default Popup;

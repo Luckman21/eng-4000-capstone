@@ -8,7 +8,10 @@ from db.schemas import MaterialSchema
 from db.model.Material import Material
 from fastapi.middleware.cors import CORSMiddleware
 from db.repositories.MaterialRepository import MaterialRepository
-# from backend.controller.schemas import MassUpdateRequest, MassUpdateResponse
+from db.repositories.MaterialTypeRepository import MaterialTypeRepository
+from backend.controller.schemas.MassUpdateRequest import MassUpdateRequest
+from backend.controller.schemas.MaterialUpdateRequest import MaterialUpdateRequest
+from backend.controller.schemas.MaterialCreateRequest import MaterialCreateRequest
 from pydantic import BaseModel
 import asyncio
 from sqlalchemy import event
@@ -49,7 +52,13 @@ async def get_Allmaterials(db: Session = Depends(get_db)):
     repo = MaterialRepository(db)
     return repo.get_all_materials()
 
-# @app.get("/materials/{material_type}")
+@app.get("/material_types")
+async def get_all_material_types(db: Session = Depends(get_db)):
+    repo =MaterialTypeRepository(db)
+    return repo.get_all_material_types()
+
+
+
 
 @app.put("/update_mass/{entity_id}")
 async def update_mass(entity_id: int, request: MassUpdateRequest, db: Session = Depends(get_db)):
@@ -72,32 +81,38 @@ async def update_mass(entity_id: int, request: MassUpdateRequest, db: Session = 
 
     return {'message': "Mass updated successfully", 'new_mass' : material.mass}
 
-
-@app.put("/update_material/{entity_id}")
-async def update_material(entity_id: int, request: MaterialUpdateRequest, db: Session = Depends(get_db)):
+@app.post("/create_material")
+async def create_material(request: MaterialCreateRequest, db: Session = Depends(get_db)):
     repo = MaterialRepository(db)
 
+    material = db.query(Material).filter_by(name=request.name, colour=request.colour, material_type_id=request.material_type_id).first()
+
     # Check if the entity exists
-    if not repo.material_exists(entity_id):
-        raise HTTPException(status_code=404, detail="Material not found")
+    if material is not None and repo.material_exists(material.id):
+        raise HTTPException(status_code=404, detail="Material already exists")
 
     # Call the update method
-    material = repo.get_material_by_id(entity_id)
 
     try:
         # Call the setter method to update the material
-        repo.update_material(material,
-                             mass=request.mass,
+        repo.create_material( 
                              colour=request.colour,
-                             material_type_id=request.material_type_id,
-                             name=request.name)
+                             name=request.name,
+                             mass=request.mass,
+                             material_type_id=request.material_type_id,  
+                             )
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    material = repo.get_material_by_id(entity_id)
+    return {'message': "Material successfully created"}
 
-    return {'message': "Material updated successfully"}
+@app.get("/material_types")
+async def get_all_material_types(db: Session = Depends(get_db)):
+    repo = MaterialTypeRepository(db)
+    return repo.get_all_material_types()
+
+
 
 
 @app.put("/delete_material/{entity_id}")
