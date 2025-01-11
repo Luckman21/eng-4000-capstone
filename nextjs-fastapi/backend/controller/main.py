@@ -137,35 +137,6 @@ async def delete_material(entity_id: int, db: Session = Depends(get_db)):
 
     return {'message': "Material deleted successfully"}
 
-@app.post("/create_material")
-async def create_material(request: MaterialCreateRequest, db: Session = Depends(get_db)):
-    repo = MaterialRepository(db)
-
-    material = db.query(Material).filter_by(name=request.name, colour=request.colour, material_type_id=request.material_type_id).first()
-
-    # Check if the entity exists
-    if material is not None and repo.material_exists(material.id):
-        raise HTTPException(status_code=404, detail="Material already exists")
-
-    # Call the update method
-
-    try:
-        # Call the setter method to update the material
-        repo.create_material(mass=request.mass,
-                             colour=request.colour,
-                             material_type_id=request.material_type_id,
-                             name=request.name)
-
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    return {'message': "Material successfully created"}
-
-@app.get("/material_types")
-async def get_all_material_types(db: Session = Depends(get_db)):
-    repo = MaterialTypeRepository(db)
-    return repo.get_all_material_types()
-
 
 def get_app():
     return app
