@@ -34,32 +34,33 @@ def setup_database(request):
 client = TestClient(get_app())
 
 # Test valid mass update
-def test_update_mass_success(setup_database):
+def test_update_material_success(setup_database):
     session = setup_database
 
     repository = MaterialRepository(session)
 
     material = repository.get_material_by_id(1)
     mass = material.mass
+    name = material.name
 
     # Send a PUT request with valid entity_id and new mass
-    response = client.put("/update_mass/1", json={"mass": 200.0})
+    response = client.put("/update_material/1", json={"mass": 200.0, "name": "Mickey Mouse", "colour": None, "material_type_id": None})
 
     # Assert that the response status code is 200
     assert response.status_code == 200
 
     # Assert that the response message and new mass are correct
-    assert response.json() == {"message": "Mass updated successfully", "new_mass": 200.0}
+    assert response.json() == {"message": "Material updated successfully"}
 
-    repository.update_material(material, mass=mass)
+    repository.update_material(material, mass=mass, name=name)
 
 # Test invalid material_id (material not found)
-def test_update_mass_not_found():
+def test_update_material_not_found():
     # Send a PUT request with an invalid entity_id
-    response = client.put("/update_mass/999", json={"mass": 200.0})
+    response = client.put("/update_material/999", json={"mass": 200.0, "name": "Mickey Mouse", "colour": None, "material_type_id": None})
 
     # Assert that the response status code is 404
     assert response.status_code == 404
 
     # Assert that the response contains the correct error message
-    assert response.json() == {"detail": "Mass entity not found"}
+    assert response.json() == {"detail": "Material not found"}

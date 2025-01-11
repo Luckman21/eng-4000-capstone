@@ -13,11 +13,11 @@ from backend.controller.schemas.MassUpdateRequest import MassUpdateRequest
 from backend.controller.schemas.MaterialUpdateRequest import MaterialUpdateRequest
 from backend.controller.schemas.MaterialCreateRequest import MaterialCreateRequest
 from pydantic import BaseModel
-
-
-class MassUpdateRequest(BaseModel):
-    mass: float
-
+import asyncio
+from sqlalchemy import event
+from backend.controller import listener
+from backend.controller.schemas.MassUpdateRequest import MassUpdateRequest
+from backend.controller.schemas.MaterialUpdateRequest import MaterialUpdateRequest
 
 
 app = FastAPI()
@@ -32,6 +32,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Set up listeners on startup
+@app.on_event("startup")
+def setup_listeners():
+    low_stock_listener()
+
+# Create a listener that triggers when the Material table is updated, checks for Materials with a mass below the threshold
+def low_stock_listener():
+    def listener_wrapper(mapper, connection, target):
+        asyncio.create_task(listener.job_complete_listener(mapper, connection, target))
+
+    event.listen(Material, 'after_update', listener_wrapper)
 
 # Now define your API routes
 @app.get("/materials", response_model=list[MaterialSchema])
@@ -104,6 +116,3 @@ async def get_all_material_types(db: Session = Depends(get_db)):
 
 def get_app():
     return app
-
-
-
