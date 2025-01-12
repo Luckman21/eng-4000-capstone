@@ -1,0 +1,11 @@
+** HOW TO RUN FEATURE TESTS **
+
+So we have our tests as a local project for the time being.
+This means you need to:
+
+1. Download your own chromedriver
+2. Change the driver path to your own
+3. (Before running the test), turn on the front and back end localhosts
+4. Run the tests.
+
+Bonus: If you want to see what the test is doing, turn headless off.
