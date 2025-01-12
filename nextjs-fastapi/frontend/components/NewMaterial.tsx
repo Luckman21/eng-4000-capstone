@@ -10,6 +10,7 @@ import {
   Input,
 } from "@nextui-org/react";
 import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
+import { fetchMaterialTypes } from "@/constants/data";
 
 export const NewMaterial = ({ isOpen, onOpenChange, onAddMaterial, materials }) => {
   const [materialTypes, setMaterialTypes] = useState([]);
@@ -22,24 +23,9 @@ export const NewMaterial = ({ isOpen, onOpenChange, onAddMaterial, materials }) 
 
   // Fetch material types on component mount
   useEffect(() => {
-    const fetchMaterialTypes = async () => {
-      try {
-        const res = await fetch("http://localhost:8000/material_types");
-        const data = await res.json();
 
-        // Transform fetched data to match AutocompleteItem structure
-        const types = data.map((type) => ({
-          label: type.type_name,
-          key: type.id,
-        }));
-
-        setMaterialTypes(types);
-      } catch (error) {
-        console.error("Error fetching material types:", error);
-      }
-    };
-
-    fetchMaterialTypes();
+    
+    setMaterialTypes(fetchMaterialTypes();)
   }, []);
 
   // Update editableMaterial state on input change

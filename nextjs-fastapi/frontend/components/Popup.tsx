@@ -3,10 +3,12 @@ import React from 'react'
 import { useEffect, useState } from "react";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Checkbox, Input, Link} from "@nextui-org/react";
 import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
+import { MaterialTypeName } from '@/constants/data';
 
-export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
+const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
   const [materialTypes, setMaterialTypes] = useState([]);
   const [editableMaterial, setEditableMaterial] = useState(material);
+  console.log(editableMaterial);
 
   // Update local state when material prop changes
   React.useEffect(() => {
@@ -46,7 +48,6 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-
         mass: editableMaterial.mass,
         name: editableMaterial.name,
         colour: editableMaterial.colour
@@ -91,10 +92,11 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
             value={editableMaterial?.mass || ""}
             onChange={(e) => handleChange("mass", parseFloat(e.target.value))}
           />
-          {/* Autocomplete for Material Type */}
+          
           <Autocomplete
             label="Material Type"
             placeholder="Search material type"
+            value={editableMaterial?.material_type_id ? MaterialTypeName(editableMaterial.material_type_id) ?? "" : ""}
             defaultItems={materialTypes}
             onSelectionChange={(key) => {
                 handleChange("material_type_id", key);
@@ -123,3 +125,4 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
 };
 
 
+export default Popup;

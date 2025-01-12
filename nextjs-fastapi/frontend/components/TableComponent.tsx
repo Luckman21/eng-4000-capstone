@@ -22,7 +22,7 @@ import {
 import { EditIcon } from "@/constants/EditIcon";
 import { DeleteIcon } from "@/constants/DeleteIcon";
 import { columns } from "@/constants/data";
-import { Popup } from "@/components/Popup";
+import { Popup } from "@/components";
 import { NewMaterial } from "@/components";
 
 const statusColorMap = {
@@ -152,6 +152,9 @@ const TableComponent = () => {
           </TableColumn>
           <TableColumn allowsSorting key="mass">
             Weight (g)
+          </TableColumn>
+          <TableColumn allowsSorting key="material_type_id">
+            Material Type
           </TableColumn>
           <TableColumn key="status">STATUS</TableColumn>
           <TableColumn key="actions">ACTIONS</TableColumn>
