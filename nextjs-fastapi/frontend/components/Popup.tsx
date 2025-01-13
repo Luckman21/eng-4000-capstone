@@ -6,12 +6,7 @@ import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
 
 export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
   const [materialTypes, setMaterialTypes] = useState([]);
-  const [newMaterial, setNewMaterial] = useState({
-    colour: NaN,
-    name:NaN,
-    mass: NaN,
-    material_type_id: NaN,
-  });
+  const [editableMaterial, setEditableMaterial] = useState(material);
 
   // Update local state when material prop changes
   React.useEffect(() => {
@@ -26,9 +21,9 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
         const data = await res.json();
 
         // Transform fetched data to match AutocompleteItem structure
-        const types = data.map((type) => ({
-          label: type.type_name,
-          key: type.id,
+        const types = data.map((val) => ({
+          label: val.type_name,
+          key: val.id,
         }));
 
         setMaterialTypes(types);
@@ -47,6 +42,7 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
   const handleSave = async () => {
 
     try {
+
       // Send update request to backend
       const response = await fetch(`http://localhost:8000/update_material/${editableMaterial.id}`, {
         method: "PUT",
@@ -55,12 +51,16 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
 
         mass: editableMaterial.mass,
         name: editableMaterial.name,
-        colour: editableMaterial.colour
-
+        material_type_id: editableMaterial.material_type_id,
+        colour: editableMaterial.colour,
         }),
       });
-        if (!response.ok) throw new Error("Failed to update material");
-
+        if (!response.ok) {
+        console.log(response.body)
+         const errorData = await response.json();
+         console.error("Error updating material:", errorData); // Log the error response from the backend
+         throw new Error("Failed to update material");
+      }
         const updatedMaterial = { ...editableMaterial };
         onSave(updatedMaterial); // Notify parent
         onOpenChange(); // Close the modal
@@ -102,18 +102,18 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
           <Autocomplete
             label="Material Type"
             placeholder="Search material type"
-            defaultItems={materialTypes}
+            value={editableMaterial?.material_type_id ?
+              materialTypes.find((type) => type.key === editableMaterial.material_type_id)?.label : ""}
             onSelectionChange={(key) => {
-                handleChange("material_type_id", key);
+                handleChange("material_type_id", parseInt(key, 10));
               }
             }
           >
-            {(item) => (
-
-            <AutocompleteItem key={item.key} >
-            {item.label}
-          </AutocompleteItem>
-            )}
+             {materialTypes.map((item) => (
+            <AutocompleteItem key={item.key} value={item.key}>
+                {item.label}
+            </AutocompleteItem>
+           ))}
           </Autocomplete>
         </ModalBody>
         <ModalFooter>

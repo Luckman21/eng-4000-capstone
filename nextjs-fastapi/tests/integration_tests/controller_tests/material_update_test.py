@@ -42,9 +42,10 @@ def test_update_material_success(setup_database):
     material = repository.get_material_by_id(1)
     mass = material.mass
     name = material.name
+    id = material.material_type_id
 
     # Send a PUT request with valid entity_id and new mass
-    response = client.put("/update_material/1", json={"mass": 200.0, "name": "Mickey Mouse", "colour": None, "material_type_id": None})
+    response = client.put("/update_material/1", json={"mass": 200.0, "name": "Mickey Mouse", "colour": None, "material_type_id": 6})
 
     # Assert that the response status code is 200
     assert response.status_code == 200
@@ -52,7 +53,7 @@ def test_update_material_success(setup_database):
     # Assert that the response message and new mass are correct
     assert response.json() == {"message": "Material updated successfully"}
 
-    repository.update_material(material, mass=mass, name=name)
+    repository.update_material(material, mass=mass, name=name, material_type_id=id)
 
 # Test invalid material_id (material not found)
 def test_update_material_not_found():
