@@ -24,6 +24,7 @@ import { DeleteIcon } from "@/constants/DeleteIcon";
 import { columns } from "@/constants/data";
 import { Popup } from "@/components/Popup";
 import { NewMaterial } from "@/components";
+import { DeletePopup } from "@/components/DeletePopup";
 
 const statusColorMap = {
   "In Stock": "success",
@@ -39,6 +40,8 @@ const TableComponent = () => {
     onOpen: openModalOne,
     onOpenChange: handleModalOneChange,
   } = useDisclosure();
+  const [deleteMaterial, setDeleteMaterial] = useState<Material | null>(null);
+  const {isOpen: isDeleteOpen, onOpen: onDeleteOpen, onOpenChange: onDeleteOpenChange} = useDisclosure();
 
   
   const {
@@ -73,6 +76,11 @@ const TableComponent = () => {
     openModalOne();
   };
 
+  const handleDeleteClick = (material: Material) => {
+    setDeleteMaterial(material);
+    onDeleteOpen();
+  };
+
   // Callback for updating a material
   const handleSaveMaterial = (updatedMaterial: Material) => {
     setMaterials((prevMaterials) =>
@@ -88,6 +96,9 @@ const TableComponent = () => {
       list.reload();
     };
 
+ const handleDeleteMaterial = (deletedId: number) => {
+    setMaterials((prevMaterials) => prevMaterials.filter((mat) => mat.id !== deletedId));
+  };
   
 
   const renderCell = React.useCallback(
@@ -118,7 +129,10 @@ const TableComponent = () => {
                 </span>
               </Tooltip>
               <Tooltip color="danger" content="Delete material">
-                <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                  <span
+                  onClick={() => handleDeleteClick(material)}
+                  className="text-lg text-danger cursor-pointer active:opacity-50"
+                >
                   <DeleteIcon />
                 </span>
               </Tooltip>
@@ -175,6 +189,12 @@ const TableComponent = () => {
         onSave={handleSaveMaterial} // Pass callback to Popup
       />
       <NewMaterial isOpen={isModalTwoOpen} onOpenChange={handleModalTwoChange} onAddMaterial={addMaterial} materials={materials} />
+       <DeletePopup
+        material={deleteMaterial}
+        isOpen={isDeleteOpen}
+        onOpenChange={onDeleteOpenChange}
+        onDelete={handleDeleteMaterial} // Pass callback to DeletePopup
+      />
     </div>
   );
 };
