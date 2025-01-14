@@ -25,7 +25,7 @@ class Material(Base):
         CheckConstraint('mass >= 0', name='check_mass_non_negative'),
     )
 
-    material_type = relationship("MaterialType", backref="materials", cascade='all, delete')
+    material_type = relationship("MaterialType", backref="materials")
 
     # Set Methods
 
