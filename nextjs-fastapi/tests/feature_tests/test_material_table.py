@@ -107,6 +107,31 @@ def test_create_button(driver):
     assert labels[3].text == "Material Type"
 
 
+def test_delete_confirmation(driver):
+    driver.get("http://localhost:3000")
+    time.sleep(3)
+
+    row = driver.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
+    print(row.text)
+
+    delete_icon = row.find_elements(By.TAG_NAME, "svg")[1]
+
+    delete_icon.click()
+    time.sleep(3)
+
+    popup = driver.find_element(By.ID, ":R5qfj6:")
+
+    header = popup.find_element(By.ID, ":R5qfj6H1:")
+    assert header.text == "Delete Material"
+
+    text = popup.find_element(By.ID, ":R5qfj6H2:")
+    assert text.text == 'Are you sure you want to delete this material? This action cannot be undone.'
+
+    footer = popup.find_element(By.CSS_SELECTOR, "footer")
+
+    buttons = footer.find_elements(By.CSS_SELECTOR, "button")
+
+    assert len(buttons) == 2
 
 
 
