@@ -21,7 +21,7 @@ import {
 
 import { EditIcon } from "@/constants/EditIcon";
 import { DeleteIcon } from "@/constants/DeleteIcon";
-import { columns } from "@/constants/data";
+
 import { Popup } from "@/components";
 import { NewMaterial } from "@/components";
 
@@ -66,7 +66,6 @@ const TableComponent = () => {
       };
     },
   });
-  console.log(materials);
 
   const handleEditClick = (material: Material) => {
     setEditMaterial(material);
@@ -140,7 +139,8 @@ const TableComponent = () => {
         onSortChange={list.sort}
         sortDescriptor={list.sortDescriptor}
       >
-        <TableHeader columns={columns}>
+        {/* to add columns from a variable columns={columns} */}
+        <TableHeader >
           <TableColumn allowsSorting key="id">
             ID
           </TableColumn>

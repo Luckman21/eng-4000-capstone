@@ -23,9 +23,11 @@ export const NewMaterial = ({ isOpen, onOpenChange, onAddMaterial, materials }) 
 
   // Fetch material types on component mount
   useEffect(() => {
-
-    
-    setMaterialTypes(fetchMaterialTypes();)
+    const fetchTypes = async () => {
+      const types = await fetchMaterialTypes();
+      setMaterialTypes(types);
+    };
+    fetchTypes();
   }, []);
 
   // Update editableMaterial state on input change
