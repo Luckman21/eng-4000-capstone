@@ -34,34 +34,34 @@ const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
   
   
   const handleSave = async () => {
-    const updatedMaterial = {
-      mass: editableMaterial.mass,
-      name: editableMaterial.name,
-      colour: editableMaterial.colour,
-      material_type_id: editableMaterial.material_type_id,
-    };
-  
-    console.log("Request payload:", JSON.stringify(updatedMaterial, null, 2));
-  
+
     try {
+
+      // Send update request to backend
       const response = await fetch(`http://localhost:8000/update_material/${editableMaterial.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedMaterial),
+        body: JSON.stringify({
+
+        mass: editableMaterial.mass,
+        name: editableMaterial.name,
+        material_type_id: editableMaterial.material_type_id,
+        colour: editableMaterial.colour,
+        }),
       });
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Failed to update material: ${errorData.detail}`);
+        if (!response.ok) {
+        console.log(response.body)
+         const errorData = await response.json();
+         console.error("Error updating material:", errorData); // Log the error response from the backend
+         throw new Error("Failed to update material");
       }
-  
-      onSave(updatedMaterial); // Notify parent
-      onOpenChange(); // Close modal
-    } catch (error) {
-      console.error("Error updating material:", error);
+        const updatedMaterial = { ...editableMaterial };
+        onSave(updatedMaterial); // Notify parent
+        onOpenChange(); // Close the modal
+      } catch (error) {
+        console.error("Error updating material:", error);
+      }
     }
-  };
-  
     
 
   return (
@@ -99,12 +99,11 @@ const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
             defaultItems={materialTypes}
             onSelectionChange={(key) => handleChange("material_type_id", parseInt(key, 10))}
           >
-            {(item) => (
-
-            <AutocompleteItem key={item.key} >
-            {item.label}
-          </AutocompleteItem>
-            )}
+             {materialTypes.map((item) => (
+            <AutocompleteItem key={item.key} value={item.key}>
+                {item.label}
+            </AutocompleteItem>
+           ))}
           </Autocomplete>
         </ModalBody>
         <ModalFooter>

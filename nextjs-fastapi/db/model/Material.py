@@ -41,11 +41,13 @@ class Material(Base):
 
     def setMaterialTypeID(self, type):
 
-        if isinstance(type, MaterialType):
-            self.material_type = type
-            self.material_type_id = type.id
+        if isinstance(type, int):  # If an ID is provided
+            try:
+                self.material_type_id = type  # Set the related MaterialType object
+            except Exception:
+                raise ValueError(f"MaterialType with ID {type} does not exist.")
         else:
-            raise ValueError("Type can only be of UserType for Users")
+            raise ValueError("The 'type' must be either an integer (ID) or a MaterialType object.")
 
     # Class Method
     def getAll(cls, session):

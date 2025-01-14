@@ -105,6 +105,12 @@ def test_update_material(setup_database):
 
     assert new_queried_material.colour == "grey"
 
+    repository.update_material(material, material_type_id=1)
+
+    new_queried_material = repository.get_material_by_id(material.id)
+
+    assert new_queried_material.material_type_id == 1
+
     # Destroy
     session.query(Material).filter_by(name="Dummy2").delete()
     session.commit()
