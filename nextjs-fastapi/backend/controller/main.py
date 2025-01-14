@@ -113,9 +113,7 @@ async def get_all_material_types(db: Session = Depends(get_db)):
     return repo.get_all_material_types()
 
 
-
-
-@app.put("/delete_material/{entity_id}")
+@app.delete("/delete_material/{entity_id}")
 async def delete_material(entity_id: int, db: Session = Depends(get_db)):
     repo = MaterialRepository(db)
 
