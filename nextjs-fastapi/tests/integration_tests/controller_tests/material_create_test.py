@@ -11,12 +11,12 @@ from db.model.Material import Material
 from db.model.MaterialType import MaterialType
 from db.model.base import Base
 from db.repositories.MaterialRepository import MaterialRepository
-
+from backend.controller import constants
 
 @pytest.fixture(scope='module')
 def setup_database(request):
     DATABASE_URL = 'sqlite:///nextjs-fastapi/db/capstone_db.db'
-    engine = create_engine(DATABASE_URL, echo=True)
+    engine = create_engine(constants.DATABASE_URL_TEST, echo=True)
 
     # Bind the Base metadata to the engine
     Base.metadata.create_all(engine)
@@ -34,34 +34,48 @@ def setup_database(request):
 client = TestClient(get_app())
 
 # Test valid mass update
-def test_update_material_success(setup_database):
+def test_create_material_success(setup_database):
     session = setup_database
+
+    db_count = session.query(Material).count()
 
     repository = MaterialRepository(session)
 
-    material = repository.get_material_by_id(1)
-    mass = material.mass
-    name = material.name
-    id = material.material_type_id
-
     # Send a PUT request with valid entity_id and new mass
-    response = client.put("/update_material/1", json={"mass": 200.0, "name": "Mickey Mouse", "colour": None, "material_type_id": 6})
+    response = client.post("/create_material", json={"mass": 200.0, "name": "Mickey Mouse", "colour": "red", "material_type_id": 1})
 
     # Assert that the response status code is 200
     assert response.status_code == 200
 
     # Assert that the response message and new mass are correct
-    assert response.json() == {"message": "Material updated successfully"}
+    assert response.json() == {"message": "Material successfully created"}
 
-    repository.update_material(material, mass=mass, name=name, material_type_id=id)
+    material = session.query(Material).filter_by(name="Mickey Mouse", mass= 200.0, colour='red').delete()
+    session.commit()
+    assert db_count == session.query(Material).count()
 
 # Test invalid material_id (material not found)
-def test_update_material_not_found():
+def test_update_material_not_found(setup_database):
+
+    session = setup_database
+
+    db_count = session.query(Material).count()
+    repository = MaterialRepository(session)
+    repository.create_material(
+        name="Dummy Material",
+        colour="Red",
+        mass=10.5,
+        material_type_id=1
+    )
+
     # Send a PUT request with an invalid entity_id
-    response = client.put("/update_material/999", json={"mass": 200.0, "name": "Mickey Mouse", "colour": None, "material_type_id": None})
+    response = client.post("/create_material", json={"mass": 10.5, "name": "Dummy Material", "colour": "Red", "material_type_id": 1})
 
     # Assert that the response status code is 404
     assert response.status_code == 404
 
     # Assert that the response contains the correct error message
-    assert response.json() == {"detail": "Material not found"}
+    assert response.json() == {"detail": "Material already exists"}
+    session.query(Material).filter_by(name="Dummy Material").delete()
+    session.commit()
+    assert db_count == session.query(Material).count()
