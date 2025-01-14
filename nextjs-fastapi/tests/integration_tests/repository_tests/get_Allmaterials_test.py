@@ -31,7 +31,7 @@ def setup_database(request):
 client = TestClient(get_app())
 
 
-def get_Allmaterials_test(setup_database):
+def test_get_Allmaterials(setup_database):
     session = setup_database
 
     material_type = session.query(MaterialType).filter_by(type_name="Plastic").first()
@@ -66,7 +66,7 @@ def get_Allmaterials_test(setup_database):
         )
 
 
-def get_Allmaterials_test_empty(setup_database):
+def test_get_Allmaterials_empty(setup_database):
     session = setup_database
 
     session.query(Material).delete()
