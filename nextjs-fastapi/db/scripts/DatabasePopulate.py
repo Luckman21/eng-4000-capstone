@@ -28,30 +28,30 @@ def populate_db():
 
     # Populating the different materials that are connected with each material type
     material = [
-        ("Black", "Smokey Black", 500.0, 1),
-        ("Blue", "Sky Blue", 17.8, 1),
-        ("Green", "Mother Earth", 94.5, 2),
-        ("Red", "Sunset", 72.6, 2),
-        ("Yellow", "Sunrise", 72.6, 3),
-        ("White", "Surface Moon", 72.6, 3),
-        ("Brown", "Dirt Ground", 72.6, 4),
-        ("Teal", "Seaweed", 50.0, 4),
-        ("Silver", "Starry Night", 90.0, 5),
-        ("Purple", "Barney", 72.6, 5),
-        ("Gray", "Cloudy Day", 72.6, 6),
-        ("Orange", "Pumpkin", 723.6, 6),
-        ("Maroon", "Oakwood", 100.6, 7),
-        ("Aquamarine", "Poolside", 724.6, 7),
-        ("Lime", "Sprite", 72.6, 8),
-        ("Crimson", "Lobster", 72.6, 8),
-        ("Pink", "Barbie", 72.6, 9),
-        ("Magenta", "Uniqua", 72.6, 9),
-        ("Gold", "Olympics", 72.6, 10),
-        ("Black", "Night Sky", 72.6, 10)
+        ("Black", "Smokey Black", 500.0, 1, 1),
+        ("Blue", "Sky Blue", 17.8, 1, 1),
+        ("Green", "Mother Earth", 94.5, 2, 2),
+        ("Red", "Sunset", 72.6, 2, 2),
+        ("Yellow", "Sunrise", 72.6, 3, 3),
+        ("White", "Surface Moon", 72.6, 3, 3),
+        ("Brown", "Dirt Ground", 72.6, 4, 4),
+        ("Teal", "Seaweed", 50.0, 4, 4),
+        ("Silver", "Starry Night", 90.0, 5, 5),
+        ("Purple", "Barney", 72.6, 5, 5),
+        ("Gray", "Cloudy Day", 72.6, 6, 6),
+        ("Orange", "Pumpkin", 723.6, 6, 6),
+        ("Maroon", "Oakwood", 100.6, 7, 7),
+        ("Aquamarine", "Poolside", 724.6, 7, 7),
+        ("Lime", "Sprite", 72.6, 8, 8),
+        ("Crimson", "Lobster", 72.6, 8, 8),
+        ("Pink", "Barbie", 72.6, 9, 9),
+        ("Magenta", "Uniqua", 72.6, 9, 9),
+        ("Gold", "Olympics", 72.6, 10, 10),
+        ("Black", "Night Sky", 72.6, 10, 10)
 
     ]
 
-    cursor.executemany("INSERT INTO materials (colour, name, mass, material_type_id) VALUES (?, ?, ?, ?)", material) # This will insert the material values into the material class
+    cursor.executemany("INSERT INTO materials (colour, name, mass, material_type_id, shelf_id) VALUES (?, ?, ?, ?, ?)", material) # This will insert the material values into the material class
 
     # Populating different shelves with different humidity and temperature values
     shelves = [

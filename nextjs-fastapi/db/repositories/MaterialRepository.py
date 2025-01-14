@@ -9,7 +9,7 @@ class MaterialRepository:
     def __init__(self, session: Session):
         self.session = session
 
-    def create_material(self, colour: str, name: str, mass: float, material_type_id: int) -> Material:
+    def create_material(self, colour: str, name: str, mass: float, material_type_id: int, shelf_id: int) -> Material:
         """
         Create a new Material record in the database.
         """
@@ -18,7 +18,8 @@ class MaterialRepository:
                 colour=colour,
                 name=name,
                 mass=mass,
-                material_type_id=material_type_id
+                material_type_id=material_type_id,
+                shelf_id=shelf_id
             )
             self.session.add(new_material)
             self.session.commit()
@@ -49,7 +50,7 @@ class MaterialRepository:
         return self.session.query(Material).all()
 
     def update_material(self, material: Material, colour: str = None, name: str = None, mass: float = None,
-                        material_type_id: int = None ) -> Material:
+                        material_type_id: int = None, shelf_id: int = None ) -> Material:
         """
         Update an existing material.
         """
@@ -62,6 +63,8 @@ class MaterialRepository:
                 material.mass = mass
             if material_type_id:
                 material.setMaterialTypeID(material_type_id)
+            if shelf_id is not None:
+                material.shelf_id = shelf_id
 
             self.session.commit()
             return material
