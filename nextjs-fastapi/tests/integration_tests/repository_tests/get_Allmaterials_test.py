@@ -32,33 +32,33 @@ def setup_database(request):
     
     client = TestClient(get_app()) 
     
-    def test_get_all_materials(setup_database): 
-        session = setup_database 
-        material_type = session.query(MaterialType).filter_by(type_name="Plastic").first() 
-        
-        if not material_type: 
-            material_type = MaterialType(type_name="Plastic") 
-            session.add(material_type) 
-            session.commit() 
-        
-        material = session.query(Material).filter_by(name="Dummy Material").first() 
-        
-        if not material: 
-            material = Material( name="Dummy Material", colour="Red", mass=10.5, material_type_id=material_type.id ) 
-            session.add(material) 
-            session.commit() 
-            
-        response = client.get("/materials") 
-        assert response.status_code == 200 
-        
-        materials = response.json() 
-        
-        assert any( m["name"] == "Dummy Material" and m["colour"] == "Red" and m["mass"] == 10.5 for m in materials ) 
-        
-    def test_get_all_materials_empty(setup_database): 
-        session = setup_database 
-        session.query(Material).delete() 
+def test_get_all_materials(setup_database): 
+    session = setup_database 
+    material_type = session.query(MaterialType).filter_by(type_name="Plastic").first() 
+    
+    if not material_type: 
+        material_type = MaterialType(type_name="Plastic") 
+        session.add(material_type) 
         session.commit() 
-        response = client.get("/materials") 
-        assert response.status_code == 200 
-        assert response.json() == []
+    
+    material = session.query(Material).filter_by(name="Dummy Material").first() 
+    
+    if not material: 
+        material = Material( name="Dummy Material", colour="Red", mass=10.5, material_type_id=material_type.id ) 
+        session.add(material) 
+        session.commit() 
+        
+    response = client.get("/materials") 
+    assert response.status_code == 200 
+    
+    materials = response.json() 
+    
+    assert any( m["name"] == "Dummy Material" and m["colour"] == "Red" and m["mass"] == 10.5 for m in materials ) 
+    
+def test_get_all_materials_empty(setup_database): 
+    session = setup_database 
+    session.query(Material).delete() 
+    session.commit() 
+    response = client.get("/materials") 
+    assert response.status_code == 200 
+    assert response.json() == []
