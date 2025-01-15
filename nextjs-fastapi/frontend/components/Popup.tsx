@@ -68,7 +68,7 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
         console.error("Error updating material:", error);
       }
     }
-    
+
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center" backdrop="opaque">
@@ -115,6 +115,14 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
             </AutocompleteItem>
            ))}
           </Autocomplete>
+          <Input
+            label="Shelf"
+            placeholder="Enter shelf unit"
+            type="number"
+            variant="bordered"
+            value={editableMaterial?.shelf || ""}
+            onChange={(e) => handleChange("id", parseFloat(e.target.value))}
+          />
         </ModalBody>
         <ModalFooter>
           <Button color="danger" variant="flat" onPress={onOpenChange}>
@@ -129,4 +137,4 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
   );
 };
 
-export default Popup;
+

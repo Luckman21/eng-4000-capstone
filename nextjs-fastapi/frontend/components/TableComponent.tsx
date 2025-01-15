@@ -60,6 +60,7 @@ const TableComponent = () => {
       const updatedMaterials = json.map((material) => ({
         ...material,
         status: material.mass <= 50 ? "Low Stock" : "In Stock",
+        shelf: material.shelf || "Unknown",
       }));
       setMaterials(updatedMaterials);
       setIsLoading(false);
@@ -138,6 +139,8 @@ const TableComponent = () => {
               </Tooltip>
             </div>
           );
+          case "shelf": 
+          return cellValue || "Not Assigned"; 
         default:
           return cellValue;
       }
@@ -166,6 +169,9 @@ const TableComponent = () => {
           </TableColumn>
           <TableColumn allowsSorting key="mass">
             Weight (g)
+          </TableColumn>
+          <TableColumn allowsSorting key="shelf">
+            Shelf
           </TableColumn>
           <TableColumn key="status">STATUS</TableColumn>
           <TableColumn key="actions">ACTIONS</TableColumn>
