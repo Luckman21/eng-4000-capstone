@@ -26,6 +26,23 @@ def populate_db():
 
     cursor.executemany("INSERT INTO material_types (type_name) VALUES (?)", material_type) # inserting the names into material type class
 
+    # Populating different shelves with different humidity and temperature values
+    shelves = [
+        (935, 13.5),
+        (950, 18),
+        (1050, 24.5),
+        (1025, 22.5),
+        (1100, 26),
+        (800, 10),
+        (1200, 29),
+        (1000, 22),
+        (975, 20),
+        (850, 11.5)
+    ]
+
+    cursor.executemany("INSERT INTO shelfs (humidity_pct, temperature_cel) VALUES (?, ?)",
+                       shelves)  # Inserting shelf values into the class
+
     # Populating the different materials that are connected with each material type
     material = [
         ("Black", "Smokey Black", 500.0, 1, 1),
@@ -52,22 +69,6 @@ def populate_db():
     ]
 
     cursor.executemany("INSERT INTO materials (colour, name, mass, material_type_id, shelf_id) VALUES (?, ?, ?, ?, ?)", material) # This will insert the material values into the material class
-
-    # Populating different shelves with different humidity and temperature values
-    shelves = [
-        (935, 13.5),
-        (950, 18),
-        (1050, 24.5),
-        (1025, 22.5),
-        (1100, 26),
-        (800, 10),
-        (1200, 29),
-        (1000, 22),
-        (975, 20),
-        (850, 11.5)
-    ]
-
-    cursor.executemany("INSERT INTO shelfs (humidity_pct, temperature_cel) VALUES (?, ?)", shelves) # Inserting shelf values into the class
 
     # Populating with different user types
     user_type = [

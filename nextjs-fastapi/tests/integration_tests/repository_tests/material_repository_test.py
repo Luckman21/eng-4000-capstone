@@ -29,8 +29,6 @@ def setup_database(request):
     # Add some dummy data
     dummy_material_type = MaterialType(type_name="Plastic")
     session.add(dummy_material_type)
-    dummy_shelf = Shelf(humidity_pct=50.0, temperature_cel=22.0)
-    session.add(dummy_shelf)
     session.commit()
 
     dummy_material = Material(
@@ -38,7 +36,7 @@ def setup_database(request):
         colour="Red",
         mass=10.5,
         material_type_id=dummy_material_type.id,
-        shelf_id=dummy_shelf.id
+        shelf_id=1
     )
     session.add(dummy_material)
     session.commit()
@@ -47,7 +45,6 @@ def setup_database(request):
     def cleanup():
         session.query(Material).filter_by(name="Dummy Material").delete()
         session.query(MaterialType).filter_by(type_name="Plastic").delete()
-        session.query(Shelf).filter_by(id=dummy_shelf.id).delete()
         session.commit()
         assert db_count == session.query(Material).count()
 
@@ -128,6 +125,7 @@ def test_update_material(setup_database):
 
     # Destroy
     session.query(Material).filter_by(name="Dummy2").delete()
+    session.query(Shelf).filter_by(id=new_shelf.id).delete()
     session.commit()
 
 
@@ -138,7 +136,7 @@ def test_material_existance(setup_database):
     material_type = session.query(MaterialType).filter_by(type_name="Plastic").first()
 
     # Fetch an existing material and update its data
-    material = repository.create_material("blue", "Dummy2", 2.4, material_type.id)
+    material = repository.create_material("blue", "Dummy2", 2.4, material_type.id, 1)
 
     queried_material = repository.get_material_by_id(material.id)
 
@@ -179,5 +177,8 @@ def test_delete_material(setup_database):
     queried_material = repository.get_material_by_id(material.id)
 
     assert queried_material is None
+
+    session.query(Shelf).filter_by(id=new_shelf.id).delete()
+    session.commit()
 
 
