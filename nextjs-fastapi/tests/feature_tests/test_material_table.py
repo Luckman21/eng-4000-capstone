@@ -13,7 +13,7 @@ import re
 def driver():
 
     chrome_options = Options()
-    #chrome_options.add_argument("--headless") # This means you won't see the actual icon
+    chrome_options.add_argument("--headless") # This means you won't see the actual icon
     chrome_options.add_argument("--disable-gpu")
 
     # This will change depending on your driver
@@ -32,7 +32,7 @@ def test_material_table_header(driver):
     # Get the full text of the header row (all titles in one string)
     header_text = header_row.text
 
-    assert header_text == "ID COLOUR NAME Weight (g) STATUS ACTIONS"
+    assert header_text == "ID COLOUR NAME Weight (g) Shelf STATUS ACTIONS"
 
 
 def test_material_table_buttons(driver):
@@ -66,10 +66,11 @@ def test_edit_button(driver):
     driver.get("http://localhost:3000")
     time.sleep(3)
 
-    button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[6]/div/span[1]")
+    button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[7]/div/span[1]")
     button.click()
+    time.sleep(2)
 
-    panel = driver.find_element(By.CSS_SELECTOR, "section")
+    panel = driver.find_element(By.ID, ":R3qfj6:")
 
     header = panel.find_element(By.CSS_SELECTOR, "header")
 
@@ -104,7 +105,8 @@ def test_create_button(driver):
     assert labels[0].text == "Colour"
     assert labels[1].text == "Name"
     assert labels[2].text == "Weight (g)"
-    assert labels[3].text == "Material Type"
+    assert labels[3].text == "Shelf"
+    assert labels[4].text == "Material Type"
 
 
 def test_delete_confirmation(driver):

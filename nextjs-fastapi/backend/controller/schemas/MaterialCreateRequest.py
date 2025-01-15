@@ -8,3 +8,4 @@ class MaterialCreateRequest(BaseModel):
     name: str
     mass: float
     material_type_id: int
+    shelf_id: Optional[int] = None

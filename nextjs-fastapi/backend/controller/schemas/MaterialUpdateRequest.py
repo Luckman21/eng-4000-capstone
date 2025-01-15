@@ -8,3 +8,4 @@ class MaterialUpdateRequest(BaseModel):
     name: Optional[str] = None
     mass: Optional[float] = None
     material_type_id: Optional[int] = None
+    shelf_id: Optional[int] = None

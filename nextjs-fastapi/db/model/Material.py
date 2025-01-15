@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.exc import IntegrityError, DataError, SQLAlchemyError
 from .base import Base  # Import Base from a separate file
 from .MaterialType import MaterialType
+from .Shelf import Shelf
 
 # Base class for SQLAlchemy (this is the table essentially)
 
@@ -19,6 +20,7 @@ class Material(Base):
 
     # Foreign Key
     material_type_id = Column(Integer, ForeignKey('material_types.id'), nullable=False)
+    shelf_id = Column(Integer, ForeignKey('shelfs.id'), nullable=False)
 
     # Enforce the CHECK constraint (mass >= 0)
     __table_args__ = (
@@ -26,6 +28,8 @@ class Material(Base):
     )
 
     material_type = relationship("MaterialType", backref="materials")
+    shelf_type = relationship("Shelf", backref="materials")
+
 
     # Set Methods
 
@@ -40,7 +44,6 @@ class Material(Base):
         self.name = newName
 
     def setMaterialTypeID(self, type):
-
         if isinstance(type, int):  # If an ID is provided
             try:
                 self.material_type_id = type  # Set the related MaterialType object
@@ -48,6 +51,11 @@ class Material(Base):
                 raise ValueError(f"MaterialType with ID {type} does not exist.")
         else:
             raise ValueError("The 'type' must be either an integer (ID) or a MaterialType object.")
+
+    def setShelfID(self, shelf_id):
+        if not isinstance(shelf_id, int):
+            raise ValueError("Shelf ID must be an integer.")
+        self.shelf_id = shelf_id
 
     # Class Method
     def getAll(cls, session):

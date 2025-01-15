@@ -21,8 +21,8 @@ import {
 
 import { EditIcon } from "@/constants/EditIcon";
 import { DeleteIcon } from "@/constants/DeleteIcon";
-import { columns } from "@/constants/data";
-import { Popup } from "@/components/Popup";
+
+import { Popup } from "@/components";
 import { NewMaterial } from "@/components";
 import { DeletePopup } from "@/components/DeletePopup";
 
@@ -69,7 +69,6 @@ const TableComponent = () => {
       };
     },
   });
-  console.log(materials);
 
   const handleEditClick = (material: Material) => {
     setEditMaterial(material);
@@ -99,12 +98,11 @@ const TableComponent = () => {
  const handleDeleteMaterial = (deletedId: number) => {
     setMaterials((prevMaterials) => prevMaterials.filter((mat) => mat.id !== deletedId));
   };
-  
+
 
   const renderCell = React.useCallback(
     (material, columnKey) => {
       const cellValue = material[columnKey];
-
       switch (columnKey) {
         case "status":
           return (
@@ -138,6 +136,8 @@ const TableComponent = () => {
               </Tooltip>
             </div>
           );
+          case "shelf_id":
+          return cellValue || "Not Assigned";
         default:
           return cellValue;
       }
@@ -154,7 +154,7 @@ const TableComponent = () => {
         onSortChange={list.sort}
         sortDescriptor={list.sortDescriptor}
       >
-        <TableHeader columns={columns}>
+        <TableHeader>
           <TableColumn allowsSorting key="id">
             ID
           </TableColumn>
@@ -166,6 +166,12 @@ const TableComponent = () => {
           </TableColumn>
           <TableColumn allowsSorting key="mass">
             Weight (g)
+          </TableColumn>
+          <TableColumn allowsSorting key="material_type_id">
+            Material Type
+          </TableColumn>
+          <TableColumn allowsSorting key="shelf_id">
+            Shelf
           </TableColumn>
           <TableColumn key="status">STATUS</TableColumn>
           <TableColumn key="actions">ACTIONS</TableColumn>

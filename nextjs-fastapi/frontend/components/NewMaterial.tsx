@@ -10,6 +10,7 @@ import {
   Input,
 } from "@nextui-org/react";
 import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
+import { fetchMaterialTypes } from "@/constants/data";
 
 export const NewMaterial = ({ isOpen, onOpenChange, onAddMaterial, materials }) => {
   const [materialTypes, setMaterialTypes] = useState([]);
@@ -17,29 +18,17 @@ export const NewMaterial = ({ isOpen, onOpenChange, onAddMaterial, materials }) 
     colour: NaN,         
     name:NaN,    
     mass: NaN,           
-    material_type_id: NaN, 
+    material_type_id: NaN,
+    shelf_id: NaN
   });
 
   // Fetch material types on component mount
   useEffect(() => {
-    const fetchMaterialTypes = async () => {
-      try {
-        const res = await fetch("http://localhost:8000/material_types");
-        const data = await res.json();
-
-        // Transform fetched data to match AutocompleteItem structure
-        const types = data.map((type) => ({
-          label: type.type_name,
-          key: type.id,
-        }));
-
-        setMaterialTypes(types);
-      } catch (error) {
-        console.error("Error fetching material types:", error);
-      }
+    const fetchTypes = async () => {
+      const types = await fetchMaterialTypes();
+      setMaterialTypes(types);
     };
-
-    fetchMaterialTypes();
+    fetchTypes();
   }, []);
 
   // Update editableMaterial state on input change
@@ -103,6 +92,13 @@ export const NewMaterial = ({ isOpen, onOpenChange, onAddMaterial, materials }) 
             placeholder="Enter material weight"
             type="number"
             onChange={(e) => handleChange("mass", parseFloat(e.target.value))}
+          />
+           <Input
+
+            label="Shelf"
+            placeholder="Enter shelf number"
+            type="number"
+            onChange={(e) => handleChange("shelf_id", parseFloat(e.target.value))}
           />
           {/* Autocomplete for Material Type */}
           <Autocomplete
