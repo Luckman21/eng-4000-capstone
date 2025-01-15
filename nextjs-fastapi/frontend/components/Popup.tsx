@@ -3,45 +3,39 @@ import React from 'react'
 import { useEffect, useState } from "react";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Checkbox, Input, Link} from "@nextui-org/react";
 import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
+import { fetchMaterialTypes, MaterialTypeName } from '@/constants/data';
 
-export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
-  const [materialTypes, setMaterialTypes] = useState([]);
+const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
   const [editableMaterial, setEditableMaterial] = useState(material);
+  const [materialTypes, setMaterialTypes] = useState([]);
+  const mat = (material?.material_type_id)?.toString();
+  console.log(mat)
 
-  // Update local state when material prop changes
-  React.useEffect(() => {
+
+
+  useEffect(() => {
     setEditableMaterial(material);
   }, [material]);
 
    // Fetch material types on component mount
   useEffect(() => {
-    const fetchMaterialTypes = async () => {
-      try {
-        const res = await fetch("http://localhost:8000/material_types");
-        const data = await res.json();
+    const fetchTypes = async () => {
+      const types = await fetchMaterialTypes();
+      setMaterialTypes(types);
 
-        // Transform fetched data to match AutocompleteItem structure
-        const types = data.map((val) => ({
-          label: val.type_name,
-          key: val.id,
-        }));
-
-        setMaterialTypes(types);
-      } catch (error) {
-        console.error("Error fetching material types:", error);
-      }
     };
+    fetchTypes();
 
-    fetchMaterialTypes();
   }, []);
 
   const handleChange = (field, value) => {
     setEditableMaterial((prev) => ({ ...prev, [field]: value }));
   };
 
+
+
   const handleSave = async () => {
 
-  console.log(editableMaterial)
     try {
 
       // Send update request to backend
@@ -112,12 +106,9 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
           <Autocomplete
             label="Material Type"
             placeholder="Search material type"
-            value={editableMaterial?.material_type_id ?
-              materialTypes.find((type) => type.key === editableMaterial.material_type_id)?.label : ""}
-            onSelectionChange={(key) => {
-                handleChange("material_type_id", parseInt(key, 10));
-              }
-            }
+            defaultSelectedKey={mat}
+            defaultItems={materialTypes}
+            onSelectionChange={(key) => handleChange("material_type_id", parseInt(key, 10))}
           >
              {materialTypes.map((item) => (
             <AutocompleteItem key={item.key} value={item.key}>
@@ -139,4 +130,6 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
   );
 };
 
+
+export default Popup;
 

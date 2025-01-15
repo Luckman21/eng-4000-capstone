@@ -1,6 +1,6 @@
-class UserTypes:
+# class UserTypes:
 
-    user_types = [
-        ("SuperAdmin", ),
-        ("Admin",)
-    ]
+#     user_types = [
+#         ("SuperAdmin", ),
+#         ("Admin",)
+#     ]

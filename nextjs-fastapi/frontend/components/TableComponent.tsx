@@ -21,8 +21,8 @@ import {
 
 import { EditIcon } from "@/constants/EditIcon";
 import { DeleteIcon } from "@/constants/DeleteIcon";
-import { columns } from "@/constants/data";
-import { Popup } from "@/components/Popup";
+
+import { Popup } from "@/components";
 import { NewMaterial } from "@/components";
 import { DeletePopup } from "@/components/DeletePopup";
 
@@ -56,6 +56,7 @@ const TableComponent = () => {
     async load({ signal }) {
       let res = await fetch("http://localhost:8000/materials", { signal });
       let json = await res.json();
+
       const updatedMaterials = json.map((material) => ({
         ...material,
         status: material.mass <= 50 ? "Low Stock" : "In Stock",
@@ -68,7 +69,6 @@ const TableComponent = () => {
       };
     },
   });
-  console.log(materials);
 
   const handleEditClick = (material: Material) => {
     setEditMaterial(material);
@@ -98,7 +98,7 @@ const TableComponent = () => {
  const handleDeleteMaterial = (deletedId: number) => {
     setMaterials((prevMaterials) => prevMaterials.filter((mat) => mat.id !== deletedId));
   };
-  
+
 
   const renderCell = React.useCallback(
     (material, columnKey) => {
@@ -166,6 +166,9 @@ const TableComponent = () => {
           </TableColumn>
           <TableColumn allowsSorting key="mass">
             Weight (g)
+          </TableColumn>
+          <TableColumn allowsSorting key="material_type_id">
+            Material Type
           </TableColumn>
           <TableColumn allowsSorting key="shelf_id">
             Shelf
