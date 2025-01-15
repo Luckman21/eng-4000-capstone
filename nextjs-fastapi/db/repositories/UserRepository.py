@@ -94,3 +94,8 @@ class UserRepository:
         except Exception as e:
             self.session.rollback()
             raise ValueError(f"Unexpected error: {e}")
+
+    def user_exists(self, user_id: int):
+        if self.get_user_by_id(user_id) is None:
+            return False
+        return True
