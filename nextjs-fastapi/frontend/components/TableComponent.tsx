@@ -154,7 +154,7 @@ const TableComponent = () => {
         onSortChange={list.sort}
         sortDescriptor={list.sortDescriptor}
       >
-        <TableHeader columns={columns}>
+        <TableHeader>
           <TableColumn allowsSorting key="id">
             ID
           </TableColumn>
