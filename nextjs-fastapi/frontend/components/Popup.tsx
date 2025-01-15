@@ -41,6 +41,7 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
 
   const handleSave = async () => {
 
+  console.log(editableMaterial)
     try {
 
       // Send update request to backend
@@ -53,6 +54,7 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
         name: editableMaterial.name,
         material_type_id: editableMaterial.material_type_id,
         colour: editableMaterial.colour,
+        shelf_id: editableMaterial.shelf_id
         }),
       });
         if (!response.ok) {
@@ -97,6 +99,14 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
             value={editableMaterial?.mass || ""}
             onChange={(e) => handleChange("mass", parseFloat(e.target.value))}
           />
+            <Input
+            label="Shelf"
+            placeholder="Enter shelf number"
+            type="number"
+            variant="bordered"
+            value={editableMaterial?.shelf_id || ""}
+            onChange={(e) => handleChange("shelf_id", parseFloat(e.target.value))}
+          />
 
           {/* Autocomplete for Material Type */}
           <Autocomplete
@@ -115,14 +125,6 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
             </AutocompleteItem>
            ))}
           </Autocomplete>
-          <Input
-            label="Shelf"
-            placeholder="Enter shelf unit"
-            type="number"
-            variant="bordered"
-            value={editableMaterial?.shelf || ""}
-            onChange={(e) => handleChange("id", parseFloat(e.target.value))}
-          />
         </ModalBody>
         <ModalFooter>
           <Button color="danger" variant="flat" onPress={onOpenChange}>

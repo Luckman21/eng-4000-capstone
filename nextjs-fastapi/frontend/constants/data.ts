@@ -4,7 +4,7 @@ const columns = [
     {name: "COLOUR", uid: "colour"},
     {name: "NAME", uid: "name"},
     {name: "Weight (g)", uid: "mass"},
-    {name: "Shelf", uid: "id"},
+    {name: "Shelf", uid: "shelf_id"},
     {name: "STATUS", uid: "status"},
     {name: "ACTIONS", uid: "actions"},
   ];

@@ -17,7 +17,8 @@ export const NewMaterial = ({ isOpen, onOpenChange, onAddMaterial, materials }) 
     colour: NaN,         
     name:NaN,    
     mass: NaN,           
-    material_type_id: NaN, 
+    material_type_id: NaN,
+    shelf_id: NaN
   });
 
   // Fetch material types on component mount
@@ -103,6 +104,13 @@ export const NewMaterial = ({ isOpen, onOpenChange, onAddMaterial, materials }) 
             placeholder="Enter material weight"
             type="number"
             onChange={(e) => handleChange("mass", parseFloat(e.target.value))}
+          />
+           <Input
+
+            label="Shelf"
+            placeholder="Enter shelf number"
+            type="number"
+            onChange={(e) => handleChange("shelf_id", parseFloat(e.target.value))}
           />
           {/* Autocomplete for Material Type */}
           <Autocomplete
