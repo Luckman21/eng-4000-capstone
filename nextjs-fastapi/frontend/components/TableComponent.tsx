@@ -56,7 +56,6 @@ const TableComponent = () => {
     async load({ signal }) {
       let res = await fetch("http://localhost:8000/materials", { signal });
       let json = await res.json();
-
       const updatedMaterials = json.map((material) => ({
         ...material,
         status: material.mass <= 50 ? "Low Stock" : "In Stock",
@@ -104,7 +103,6 @@ const TableComponent = () => {
   const renderCell = React.useCallback(
     (material, columnKey) => {
       const cellValue = material[columnKey];
-
       switch (columnKey) {
         case "status":
           return (
@@ -138,8 +136,8 @@ const TableComponent = () => {
               </Tooltip>
             </div>
           );
-          case "shelf":
-          return cellValue || "Not Assigned"; 
+          case "shelf_id":
+          return cellValue || "Not Assigned";
         default:
           return cellValue;
       }
@@ -169,7 +167,7 @@ const TableComponent = () => {
           <TableColumn allowsSorting key="mass">
             Weight (g)
           </TableColumn>
-          <TableColumn allowsSorting key="shelf">
+          <TableColumn allowsSorting key="shelf_id">
             Shelf
           </TableColumn>
           <TableColumn key="status">STATUS</TableColumn>

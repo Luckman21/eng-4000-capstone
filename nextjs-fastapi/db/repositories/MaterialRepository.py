@@ -64,7 +64,7 @@ class MaterialRepository:
             if material_type_id:
                 material.setMaterialTypeID(material_type_id)
             if shelf_id is not None:
-                material.shelf_id = shelf_id
+                material.setShelfID(shelf_id)
 
             self.session.commit()
             return material
