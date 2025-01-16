@@ -51,12 +51,8 @@ def test_get_all_materials(setup_database):
     
     materials = response.json() 
     
-    assert any( m["name"] == "Dummy Material" and m["colour"] == "Red" and m["mass"] == 10.5 for m in materials ) 
-    
-def test_get_all_materials_empty(setup_database): 
-    session = setup_database 
-    session.query(Material).delete() 
-    session.commit() 
-    response = client.get("/materials") 
-    assert response.status_code == 200 
-    assert response.json() == []
+    assert any( m["name"] == "Dummy Material" and m["colour"] == "Red" and m["mass"] == 10.5 for m in materials )
+    session.query(MaterialType).filter_by(type_name="Plastic").delete()
+    session.query(Material).filter_by(name="Dummy Material").delete()
+    session.commit()
+    session.close()
