@@ -215,7 +215,7 @@ async def create_material_type(request: MaterialTypeCreateRequest, db: Session =
     if type is not None and repo.type_exists(type.id):
         raise HTTPException(status_code=404, detail="Material Type already exists")
 
-    # Call the update method
+    # Call the create method
 
     try:
         # Call the setter method to update the type
