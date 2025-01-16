@@ -17,7 +17,6 @@ def setup_database(request):
     DATABASE_URL = DATABASE_URL_TEST 
     engine = create_engine(DATABASE_URL, echo=True) 
     
-    Base.metadata.drop_all(engine) 
     Base.metadata.create_all(engine) 
     
     Session = sessionmaker(bind=engine) 
@@ -25,12 +24,11 @@ def setup_database(request):
     session = Session()
     
     def cleanup(): 
-        session.close() 
-        Base.metadata.drop_all(engine) 
+        session.close()  
     
     yield session 
     
-    client = TestClient(get_app()) 
+client = TestClient(get_app()) 
     
 def test_get_all_materials(setup_database): 
     session = setup_database 

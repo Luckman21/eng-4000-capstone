@@ -9,7 +9,7 @@ from email.mime.text import MIMEText
 THRESHOLD = 50  # 50g threshold
 
 # Create an engine and local session for connection to the database
-engine = create_engine(constants.DATABASE_URL_TEST, echo=True)
+engine = create_engine(constants.DATABASE_URL_PROD, echo=True)
 SessionLocal = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
 
 """
