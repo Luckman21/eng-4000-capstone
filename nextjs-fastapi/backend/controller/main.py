@@ -59,6 +59,11 @@ async def get_all_material_types(db: Session = Depends(get_db)):
     repo =MaterialTypeRepository(db)
     return repo.get_all_material_types()
 
+@app.get("/users")
+async def get_all_users(db: Session = Depends(get_db)):
+    repo =UserRepository(db)
+    return repo.get_all_users()
+
 @app.post("/create_material")
 async def create_material(request: MaterialCreateRequest, db: Session = Depends(get_db)):
     repo = MaterialRepository(db)
