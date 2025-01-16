@@ -108,3 +108,23 @@ def test_delete_material_type(setup_database):
 
     assert queried_material_type is None
 
+def test_material_type_existance(setup_database):
+    # Get the session from the fixture
+    session = setup_database
+    repository = MaterialTypeRepository(session)
+    material_type = session.query(MaterialType).filter_by(type_name="Plastic").first()
+
+    assert material_type is not None
+
+    assert repository.type_exists(material_type.id) is True
+
+    queried_material_type = repository.get_material_type_by_id(-1)
+
+    assert queried_material_type is None
+
+    assert repository.type_exists(-1) is not True
+
+    # Destroy
+    session.query(MaterialType).filter_by(type_name="Plastic").delete()
+    session.commit()
+
