@@ -12,7 +12,6 @@ from db.model.MaterialType import MaterialType
 from db.model.base import Base
 from db.repositories.MaterialRepository import MaterialRepository
 
-
 @pytest.fixture(scope='module')
 def setup_database(request):
     DATABASE_URL = 'sqlite:///nextjs-fastapi/db/capstone_db.db'
@@ -25,40 +24,64 @@ def setup_database(request):
     Session = sessionmaker(bind=engine)
     session = Session()
 
+    db_count = session.query(Material).count()
+
+    # Add some dummy data
+    dummy_material_type = MaterialType(type_name="Plastic")
+    session.add(dummy_material_type)
+    session.commit()
+
+    dummy_material = Material(
+        name="Dummy Material",
+        colour="Red",
+        mass=10.5,
+        material_type_id=dummy_material_type.id
+    )
+    session.add(dummy_material)
+    session.commit()
+
+    # Register a finalizer to clean up the data after the test
+    def cleanup():
+        session.query(Material).filter_by(name="Dummy Material").delete()
+        session.query(MaterialType).filter_by(type_name="Plastic").delete()
+        session.commit()
+        assert db_count == session.query(Material).count()
+
+    # Register cleanup to be executed after the test, even if it fails
+    request.addfinalizer(cleanup)
+
     yield session  # Yield the session to the test
 
     # Cleanup manually after the test has finished (this could be redundant)
     session.close()
 
+
 # Initialize the TestClient to simulate schemas
 client = TestClient(get_app())
 
 # Test valid mass update
-def test_update_material_success(setup_database):
+def test_delete_material_success(setup_database):
     session = setup_database
 
-    repository = MaterialRepository(session)
+    material = session.query(Material).filter_by(name="Dummy Material").first()
 
-    material = repository.get_material_by_id(1)
-    mass = material.mass
-    name = material.name
-    id = material.material_type_id
+    assert material is not None, "Dummy material should exist in the database"
+
+    material_id = material.id
 
     # Send a PUT request with valid entity_id and new mass
-    response = client.put("/update_material/1", json={"mass": 200.0, "name": "Mickey Mouse", "colour": None, "material_type_id": 6})
+    response = client.delete(f"/delete_material/{material_id}")
 
     # Assert that the response status code is 200
     assert response.status_code == 200
 
     # Assert that the response message and new mass are correct
-    assert response.json() == {"message": "Material updated successfully"}
-
-    repository.update_material(material, mass=mass, name=name, material_type_id=id)
+    assert response.json() == {"message": "Material deleted successfully"}
 
 # Test invalid material_id (material not found)
 def test_update_material_not_found():
     # Send a PUT request with an invalid entity_id
-    response = client.put("/update_material/999", json={"mass": 200.0, "name": "Mickey Mouse", "colour": None, "material_type_id": None})
+    response = client.delete("/delete_material/999")
 
     # Assert that the response status code is 404
     assert response.status_code == 404

@@ -2,9 +2,10 @@
 import React from 'react'
 import { useEffect, useState } from "react";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Checkbox, Input, Link} from "@nextui-org/react";
-
+import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
 
 export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
+  const [materialTypes, setMaterialTypes] = useState([]);
   const [editableMaterial, setEditableMaterial] = useState(material);
 
   // Update local state when material prop changes
@@ -12,28 +13,62 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
     setEditableMaterial(material);
   }, [material]);
 
+   // Fetch material types on component mount
+  useEffect(() => {
+    const fetchMaterialTypes = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/material_types");
+        const data = await res.json();
+
+        // Transform fetched data to match AutocompleteItem structure
+        const types = data.map((val) => ({
+          label: val.type_name,
+          key: val.id,
+        }));
+
+        setMaterialTypes(types);
+      } catch (error) {
+        console.error("Error fetching material types:", error);
+      }
+    };
+
+    fetchMaterialTypes();
+  }, []);
+
   const handleChange = (field, value) => {
     setEditableMaterial((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSave = async () => {
+
     try {
+
       // Send update request to backend
-      const response = await fetch(`http://localhost:8000/update_mass/${editableMaterial.id}`, {
+      const response = await fetch(`http://localhost:8000/update_material/${editableMaterial.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mass: editableMaterial.mass }),
+        body: JSON.stringify({
+
+        mass: editableMaterial.mass,
+        name: editableMaterial.name,
+        material_type_id: editableMaterial.material_type_id,
+        colour: editableMaterial.colour,
+        }),
       });
-
-      if (!response.ok) throw new Error("Failed to update material");
-
-      const updatedMaterial = { ...editableMaterial };
-      onSave(updatedMaterial); // Notify parent
-      onOpenChange(); // Close the modal
-    } catch (error) {
-      console.error("Error updating material:", error);
+        if (!response.ok) {
+        console.log(response.body)
+         const errorData = await response.json();
+         console.error("Error updating material:", errorData); // Log the error response from the backend
+         throw new Error("Failed to update material");
+      }
+        const updatedMaterial = { ...editableMaterial };
+        onSave(updatedMaterial); // Notify parent
+        onOpenChange(); // Close the modal
+      } catch (error) {
+        console.error("Error updating material:", error);
+      }
     }
-  };
+    
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center" backdrop="opaque">
@@ -62,6 +97,24 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
             value={editableMaterial?.mass || ""}
             onChange={(e) => handleChange("mass", parseFloat(e.target.value))}
           />
+
+          {/* Autocomplete for Material Type */}
+          <Autocomplete
+            label="Material Type"
+            placeholder="Search material type"
+            value={editableMaterial?.material_type_id ?
+              materialTypes.find((type) => type.key === editableMaterial.material_type_id)?.label : ""}
+            onSelectionChange={(key) => {
+                handleChange("material_type_id", parseInt(key, 10));
+              }
+            }
+          >
+             {materialTypes.map((item) => (
+            <AutocompleteItem key={item.key} value={item.key}>
+                {item.label}
+            </AutocompleteItem>
+           ))}
+          </Autocomplete>
         </ModalBody>
         <ModalFooter>
           <Button color="danger" variant="flat" onPress={onOpenChange}>
@@ -76,4 +129,4 @@ export const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
   );
 };
 
-
+export default Popup;
