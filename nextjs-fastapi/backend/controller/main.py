@@ -7,6 +7,8 @@ from backend.controller.dependencies import get_db
 from db.schemas import MaterialSchema 
 from db.model.Material import Material
 from db.model.User import User
+from db.model.MaterialType import MaterialType
+from db.model.UserType import UserType
 from fastapi.middleware.cors import CORSMiddleware
 from db.repositories.MaterialRepository import MaterialRepository
 from db.repositories.UserRepository import UserRepository
@@ -18,6 +20,8 @@ from backend.controller.schemas.MaterialCreateRequest import MaterialCreateReque
 from db.repositories.MaterialTypeRepository import MaterialTypeRepository
 from backend.controller.schemas.UserUpdateRequest import UserUpdateRequest
 from backend.controller.schemas.UserCreateRequest import UserCreateRequest
+from backend.controller.schemas.MaterialTypeUpdateRequest import MaterialTypeUpdateRequest
+from backend.controller.schemas.MaterialTypeCreateRequest import MaterialTypeCreateRequest
 
 app = FastAPI()
 origins = [
@@ -200,6 +204,71 @@ async def update_user(entity_id: int, request: UserUpdateRequest, db: Session = 
         raise HTTPException(status_code=400, detail=str(e))
 
     return {'message': "User updated successfully"}
+
+@app.post("/create_mattype")
+async def create_material_type(request: MaterialTypeCreateRequest, db: Session = Depends(get_db)):
+    repo = MaterialTypeRepository(db)
+
+    type = db.query(MaterialType).filter_by(type_name=request.type_name).first()
+
+    # Check if the entity exists
+    if type is not None and repo.type_exists(type.id):
+        raise HTTPException(status_code=404, detail="Material Type already exists")
+
+    # Call the update method
+
+    try:
+        # Call the setter method to update the type
+        repo.create_material_type(
+                             type_name=request.type_name
+                             )
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    return {'message': "Material Type successfully created"}
+
+
+
+
+@app.delete("/delete_mattype/{entity_id}")
+async def delete_material_type(entity_id: int, db: Session = Depends(get_db)):
+    repo = MaterialTypeRepository(db)
+
+    # Check if the entity exists
+    if not repo.type_exists(entity_id):
+        raise HTTPException(status_code=404, detail="Material Type not found")
+
+    # Call the update method
+    type = repo.get_material_type_by_id(entity_id)
+
+    try:
+        # Call the setter method to update the type
+        repo.delete_material_type(type)
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+    return {'message': "Material Type deleted successfully"}
+
+@app.put("/update_mattype/{entity_id}")
+async def update_material_type(entity_id: int, request: MaterialTypeUpdateRequest, db: Session = Depends(get_db)):
+    repo = MaterialTypeRepository(db)
+    # Check if the entity exists
+    if not repo.type_exists(entity_id):
+        raise HTTPException(status_code=404, detail="Material Type not found")
+
+    # Call the update method
+    type = repo.get_material_type_by_id(entity_id)
+    try:
+        # Call the setter method to update the user
+        repo.update_material_type(type,
+                           type_name=request.type_name)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    return {'message': "Material Type updated successfully"}
 
 def get_app():
     return app
