@@ -6,20 +6,18 @@ from sqlalchemy.orm import Session
 from backend.controller.dependencies import get_db
 from db.schemas import MaterialSchema 
 from db.model.Material import Material
+from db.model.User import User
 from fastapi.middleware.cors import CORSMiddleware
 from db.repositories.MaterialRepository import MaterialRepository
-from db.repositories.MaterialTypeRepository import MaterialTypeRepository
-from backend.controller.schemas.MassUpdateRequest import MassUpdateRequest
-from backend.controller.schemas.MaterialUpdateRequest import MaterialUpdateRequest
-from backend.controller.schemas.MaterialCreateRequest import MaterialCreateRequest
-from pydantic import BaseModel
+from db.repositories.UserRepository import UserRepository
 import asyncio
 from sqlalchemy import event
 from backend.controller import listener
-from backend.controller.schemas.MassUpdateRequest import MassUpdateRequest
 from backend.controller.schemas.MaterialUpdateRequest import MaterialUpdateRequest
 from backend.controller.schemas.MaterialCreateRequest import MaterialCreateRequest
 from db.repositories.MaterialTypeRepository import MaterialTypeRepository
+from backend.controller.schemas.UserUpdateRequest import UserUpdateRequest
+from backend.controller.schemas.UserCreateRequest import UserCreateRequest
 
 app = FastAPI()
 origins = [
@@ -57,30 +55,6 @@ async def get_all_material_types(db: Session = Depends(get_db)):
     repo =MaterialTypeRepository(db)
     return repo.get_all_material_types()
 
-
-
-
-@app.put("/update_mass/{entity_id}")
-async def update_mass(entity_id: int, request: MassUpdateRequest, db: Session = Depends(get_db)):
-    repo = MaterialRepository(db)
-
-    # Check if the entity exists
-    if not repo.material_exists(entity_id):
-        raise HTTPException(status_code=404, detail="Mass entity not found")
-
-    # Call the update method
-    material = repo.get_material_by_id(entity_id)
-
-    try:
-        # Call the setter method to update the mass
-        repo.update_material(material, mass=request.mass)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    material = repo.get_material_by_id(entity_id)
-
-    return {'message': "Mass updated successfully", 'new_mass' : material.mass}
-
 @app.post("/create_material")
 async def create_material(request: MaterialCreateRequest, db: Session = Depends(get_db)):
     repo = MaterialRepository(db)
@@ -95,7 +69,7 @@ async def create_material(request: MaterialCreateRequest, db: Session = Depends(
 
     try:
         # Call the setter method to update the material
-        repo.create_material( 
+        repo.create_material(
                              colour=request.colour,
                              name=request.name,
                              mass=request.mass,
@@ -108,10 +82,7 @@ async def create_material(request: MaterialCreateRequest, db: Session = Depends(
 
     return {'message': "Material successfully created"}
 
-@app.get("/material_types")
-async def get_all_material_types(db: Session = Depends(get_db)):
-    repo = MaterialTypeRepository(db)
-    return repo.get_all_material_types()
+
 
 
 @app.delete("/delete_material/{entity_id}")
@@ -157,6 +128,78 @@ async def update_material(entity_id: int, request: MaterialUpdateRequest, db: Se
         raise HTTPException(status_code=400, detail=str(e))
 
     return {'message': "Material updated successfully"}
+
+
+@app.post("/create_user")
+async def create_user(request: UserCreateRequest, db: Session = Depends(get_db)):
+    repo = UserRepository(db)
+
+    user = db.query(User).filter_by(email=request.email, username=request.username, user_type_id=request.user_type_id).first()
+
+    # Check if the entity exists
+    if user is not None and repo.user_exists(user.id):
+        raise HTTPException(status_code=404, detail="User already exists")
+
+    # Call the update method
+
+    try:
+        # Call the setter method to update the material
+        repo.create_user(
+                             username=request.username,
+                             user_type_id=request.user_type_id,
+                             password=request.password,
+                             email=request.email
+                             )
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    return {'message': "User successfully created"}
+
+
+
+
+@app.delete("/delete_user/{entity_id}")
+async def delete_user(entity_id: int, db: Session = Depends(get_db)):
+    repo = UserRepository(db)
+
+    # Check if the entity exists
+    if not repo.user_exists(entity_id):
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Call the update method
+    user = repo.get_user_by_id(entity_id)
+
+    try:
+        # Call the setter method to update the material
+        repo.delete_user(user)
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+    return {'message': "User deleted successfully"}
+
+@app.put("/update_user/{entity_id}")
+async def update_user(entity_id: int, request: UserUpdateRequest, db: Session = Depends(get_db)):
+    repo = UserRepository(db)
+    # Check if the entity exists
+    if not repo.user_exists(entity_id):
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Call the update method
+    user = repo.get_user_by_id(entity_id)
+    try:
+        # Call the setter method to update the user
+        repo.update_user(user,
+                             username=request.username,
+                             email=request.email,
+                             user_type_id=request.user_type_id,
+                             password=request.password)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    return {'message': "User updated successfully"}
 
 def get_app():
     return app

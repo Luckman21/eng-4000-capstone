@@ -54,11 +54,10 @@ class User(Base):
         Sets the user type ID of the current instance of user.
         """
 
-        if isinstance(type, UserType):
-            self.user_type = type
-            self.user_type_id = type.id
+        if isinstance(type, int):
+            self.user_type_id = type
         else:
-            raise ValueError("Type can only be of UserType for Users")
+            raise ValueError("User_type_id can only be of int for Users")
 
     # Class Method
     def getAll(cls, session):
