@@ -77,3 +77,9 @@ class MaterialTypeRepository:
         except Exception as e:
             self.session.rollback()
             raise ValueError(f"Unexpected error: {e}")
+
+    def type_exists(self, material_type_id: int):
+
+        if self.get_material_type_by_id(material_type_id) is None:
+            return False
+        return True
