@@ -14,6 +14,15 @@ CREATE TABLE material_types (
 )
 ''')
 
+# Shelf Table
+cursor.execute('''
+CREATE TABLE shelfs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    humidity_pct REAL NOT NULL,
+    temperature_cel REAL NOT NULL 
+)
+''')
+
 # Material Table Creation
 # autoincrement allows us to consistently increment each ID by 1
 
@@ -24,18 +33,13 @@ CREATE TABLE materials (
     name TEXT NOT NULL, 
     mass FLOAT NOT NULL,
     material_type_id INTEGER,
-    FOREIGN KEY (material_type_id) REFERENCES material_types(id) 
+    shelf_id INTEGER,
+    FOREIGN KEY (material_type_id) REFERENCES material_types(id),
+    FOREIGN KEY (shelf_id) REFERENCES shelfs(id)
 )
 ''')
 
-# Shelf Table
-cursor.execute('''
-CREATE TABLE shelfs (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    humidity_pct REAL NOT NULL,
-    temperature_cel REAL NOT NULL 
-)
-''')
+
 
 # User Table
 cursor.execute('''
