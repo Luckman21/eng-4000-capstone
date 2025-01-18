@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Material, MaterialType } from "@/types";
 import axios from "axios";
 import { useAsyncList } from "@react-stately/data";
+import { fetchMaterialTypes } from "@/constants/data";
 
 import React from "react";
 import {
@@ -33,6 +34,7 @@ const statusColorMap = {
 
 const TableComponent = () => {
   const [materials, setMaterials] = useState<Material[]>([]);
+  const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]); // Add materialTypes state
   const [isLoading, setIsLoading] = useState(true);
   const [editMaterial, setEditMaterial] = useState<Material | null>(null); 
   const {
@@ -99,6 +101,15 @@ const TableComponent = () => {
     setMaterials((prevMaterials) => prevMaterials.filter((mat) => mat.id !== deletedId));
   };
 
+    // Fetch material types on component mount
+  useEffect(() => {
+    const fetchTypes = async () => {
+      const types = await fetchMaterialTypes();
+      setMaterialTypes(types);
+    };
+    fetchTypes();
+  }, []);
+
 
   const renderCell = React.useCallback(
     (material, columnKey) => {
@@ -115,6 +126,17 @@ const TableComponent = () => {
               {cellValue}
             </Chip>
           );
+        case "material_type_id":
+          // Ensure that materialTypes is loaded before accessing it
+          if (materialTypes.length > 0) {
+            const materialType = materialTypes.find(
+              (type) => Number(type.id) === Number(material.material_type_id)
+            );
+
+            return materialType ? materialType.type_name : "Unknown Type";
+          } else {
+            return "Loading Types...";
+          }
         case "actions":
           return (
             <div className="relative flex items-center gap-2">
