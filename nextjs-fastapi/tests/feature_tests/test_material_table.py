@@ -32,7 +32,7 @@ def test_material_table_header(driver):
     # Get the full text of the header row (all titles in one string)
     header_text = header_row.text
 
-    assert header_text == "ID COLOUR NAME Weight (g) Shelf STATUS ACTIONS"
+    assert header_text == "ID COLOUR SUPPLIER LINK MASS (g) MATERIAL TYPE SHELF STATUS ACTIONS"
 
 
 def test_material_table_buttons(driver):
@@ -66,7 +66,7 @@ def test_edit_button(driver):
     driver.get("http://localhost:3000")
     time.sleep(3)
 
-    button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[7]/div/span[1]")
+    button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[8]/div/span[1]")
     button.click()
     time.sleep(2)
 
@@ -80,7 +80,7 @@ def test_edit_button(driver):
 
     labels = panel.find_elements(By.CSS_SELECTOR, "label")
 
-    assert labels[0].text == "Name"
+    assert labels[0].text == "Supplier Link"
     assert labels[1].text == "Colour"
     assert labels[2].text == "Weight (g)"
 
@@ -103,7 +103,7 @@ def test_create_button(driver):
     labels = panel.find_elements(By.CSS_SELECTOR, "label")
 
     assert labels[0].text == "Colour"
-    assert labels[1].text == "Name"
+    assert labels[1].text == "Supplier Link"
     assert labels[2].text == "Weight (g)"
     assert labels[3].text == "Shelf"
     assert labels[4].text == "Material Type"
