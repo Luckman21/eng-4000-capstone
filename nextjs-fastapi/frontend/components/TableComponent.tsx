@@ -162,16 +162,16 @@ const TableComponent = () => {
             COLOUR
           </TableColumn>
           <TableColumn allowsSorting key="name">
-            NAME
+            SUPPLIER LINK
           </TableColumn>
           <TableColumn allowsSorting key="mass">
-            Weight (g)
+            MASS (g)
           </TableColumn>
           <TableColumn allowsSorting key="material_type_id">
-            Material Type
+            MATERIAL TYPE
           </TableColumn>
           <TableColumn allowsSorting key="shelf_id">
-            Shelf
+            SHELF
           </TableColumn>
           <TableColumn key="status">STATUS</TableColumn>
           <TableColumn key="actions">ACTIONS</TableColumn>
