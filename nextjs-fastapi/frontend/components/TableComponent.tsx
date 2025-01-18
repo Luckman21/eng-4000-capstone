@@ -136,6 +136,23 @@ const TableComponent = () => {
               </Tooltip>
             </div>
           );
+         case "supplier_link":
+        // Check if there is a link and it's valid
+        if (cellValue) {
+          return (
+            <Chip
+              clickable
+              color="primary"
+              variant="flat"
+              size="sm"
+              onClick={() => window.open(cellValue, "_blank")}
+            >
+              Visit Supplier
+            </Chip>
+          );
+        } else {
+          return <Chip size="sm">No Link</Chip>; // or some default text
+        }
           case "shelf_id":
           return cellValue || "Not Assigned";
         default:
