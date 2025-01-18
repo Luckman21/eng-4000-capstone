@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Material } from "@/types";
+import { User } from "@/types";
 import axios from "axios";
 import { useAsyncList } from "@react-stately/data";
 
@@ -16,32 +16,26 @@ import {
   Tooltip,
   Spinner,
   useDisclosure,
-  Button,
+  Button
 } from "@heroui/react";
 
 import { EditIcon } from "@/constants/EditIcon";
 import { DeleteIcon } from "@/constants/DeleteIcon";
+import { NewUser, EditUser,DeletePopup } from "@/components";
 
-import { Popup } from "@/components";
-import { NewMaterial } from "@/components";
-import { DeletePopup } from "@/components";
 
-const statusColorMap = {
-  "In Stock": "success",
-  "Low Stock": "warning",
-}
 
-const TableComponent = () => {
-  const APIHEADER = "delete_material"; 
-  const [materials, setMaterials] = useState<Material[]>([]);
+const UserTable = () => {
+  const APIHEADER = "delete_user";  
+  const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [editMaterial, setEditMaterial] = useState<Material | null>(null); 
+  const [editUser, setEditUser] = useState<User | null>(null); 
   const {
     isOpen: isModalOneOpen,
     onOpen: openModalOne,
     onOpenChange: handleModalOneChange,
   } = useDisclosure();
-  const [deleteMaterial, setDeleteMaterial] = useState<Material | null>(null);
+  const [deleteUser, setDeleteUser] = useState<User | null>(null);
   const {isOpen: isDeleteOpen, onOpen: onDeleteOpen, onOpenChange: onDeleteOpenChange} = useDisclosure();
 
   
@@ -51,52 +45,47 @@ const TableComponent = () => {
     onOpenChange: handleModalTwoChange,
   } = useDisclosure();
 
+  
 
   const list = useAsyncList({
     async load({ signal }) {
-      let res = await fetch("http://localhost:8000/materials", { signal });
+      let res = await fetch("http://localhost:8000/users", { signal });
       let json = await res.json();
-
-      const updatedMaterials = json.map((material: { mass: number; }) => ({
-        ...material,
-        status: material.mass <= 50 ? "Low Stock" : "In Stock",
-      }));
-      setMaterials(updatedMaterials);
       setIsLoading(false);
 
       return {
-        items: updatedMaterials,
+        items: json,
       };
     },
   });
 
-  const handleEditClick = (material: Material) => {
-    setEditMaterial(material);
+  const handleEditClick = (user: User) => {
+    setEditUser(user);
     openModalOne();
   };
 
-  const handleDeleteClick = (material: Material) => {
-    setDeleteMaterial(material);
+  const handleDeleteClick = (user: User) => {
+    setDeleteUser(user);
     onDeleteOpen();
   };
 
   // Callback for updating a material
-  const handleSaveMaterial = (updatedMaterial: Material) => {
-    setMaterials((prevMaterials) =>
+  const handleSaveMaterial = (updatedMaterial: User) => {
+    setUsers((prevMaterials) =>
       prevMaterials.map((mat) =>
         mat.id === updatedMaterial.id ? updatedMaterial : mat
       )
     );
     list.reload();
   };
-  const addMaterial = (newMaterial) => {
-    setMaterials((prevMaterials) => [...prevMaterials, newMaterial]);
+  const addUser = (newUser: User) => {
+    setUsers((prevUsers) => [...prevUsers, newUser]);
     
       list.reload();
     };
 
- const handleDeleteMaterial = (deletedId: number) => {
-    setMaterials((prevMaterials) => prevMaterials.filter((mat) => mat.id !== deletedId));
+ const handleDeleteUser = (deletedId: number) => {
+    setUsers((prevMaterials) => prevMaterials.filter((mat) => mat.id !== deletedId));
   };
 
 
@@ -104,17 +93,7 @@ const TableComponent = () => {
     (material, columnKey) => {
       const cellValue = material[columnKey];
       switch (columnKey) {
-        case "status":
-          return (
-            <Chip
-              className="capitalize"
-              color={statusColorMap[material.status]}
-              size="sm"
-              variant="flat"
-            >
-              {cellValue}
-            </Chip>
-          );
+        
         case "actions":
           return (
             <div className="relative flex items-center gap-2">
@@ -158,26 +137,22 @@ const TableComponent = () => {
           <TableColumn allowsSorting key="id">
             ID
           </TableColumn>
-          <TableColumn allowsSorting key="colour">
-            COLOUR
+          <TableColumn allowsSorting key="username">
+            Username
           </TableColumn>
-          <TableColumn allowsSorting key="name">
-            NAME
+          <TableColumn allowsSorting key="password">
+            Password
           </TableColumn>
-          <TableColumn allowsSorting key="mass">
-            Weight (g)
+          <TableColumn allowsSorting key="email">
+            Email
           </TableColumn>
-          <TableColumn allowsSorting key="material_type_id">
-            Material Type
+          <TableColumn allowsSorting key="user_type_id">
+            User Type
           </TableColumn>
-          <TableColumn allowsSorting key="shelf_id">
-            Shelf
-          </TableColumn>
-          <TableColumn key="status">STATUS</TableColumn>
           <TableColumn key="actions">ACTIONS</TableColumn>
         </TableHeader>
         <TableBody
-          items={materials}
+          items={users}
           isLoading={isLoading}
           loadingContent={<Spinner label="Loading..." />}
         >
@@ -188,22 +163,22 @@ const TableComponent = () => {
           )}
         </TableBody>
       </Table>
-      <Popup
-        material={editMaterial}
+      <EditUser
+        user={editUser}
         isOpen={isModalOneOpen}
         onOpenChange={handleModalOneChange}
         onSave={handleSaveMaterial} // Pass callback to Popup
       />
-      <NewMaterial isOpen={isModalTwoOpen} onOpenChange={handleModalTwoChange} onAddMaterial={addMaterial} materials={materials} />
+      <NewUser isOpen={isModalTwoOpen} onOpenChange={handleModalTwoChange} onAddUser={addUser} users={users} />
        <DeletePopup
-        item={deleteMaterial}
+        item={deleteUser}
         isOpen={isDeleteOpen}
         onOpenChange={onDeleteOpenChange}
-        onDelete={handleDeleteMaterial} // Pass callback to DeletePopup
         itemType={APIHEADER}
+        onDelete={handleDeleteUser} // Pass callback to DeletePopup
       />
     </div>
   );
 };
 
-export default TableComponent;
+export default UserTable;
