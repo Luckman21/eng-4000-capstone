@@ -30,7 +30,7 @@ cursor.execute('''
 CREATE TABLE materials (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     colour TEXT NOT NULL,
-    name TEXT NOT NULL, 
+    supplier_link TEXT NOT NULL, 
     mass FLOAT NOT NULL,
     material_type_id INTEGER,
     shelf_id INTEGER,

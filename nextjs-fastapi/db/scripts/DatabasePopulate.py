@@ -5,6 +5,12 @@ def populate_db():
     # Connecting to the database
     conn = sqlite3.connect('../capstone_db.db')
 
+    # Define some links
+
+    money_4_nothing = "https://www.youtube.com/watch?v=JcqhvPNiJzo"
+    google = "https://www.google.com/"
+    meditations = "https://www.goodreads.com/book/show/30659.Meditations"
+
     # Enable foreign key enforcement in SQLite (important)
     conn.execute("PRAGMA foreign_keys = ON;")
 
@@ -45,26 +51,26 @@ def populate_db():
 
     # Populating the different materials that are connected with each material type
     material = [
-        ("Black", "Smokey Black", 500.0, 1, 1),
-        ("Blue", "Sky Blue", 17.8, 1, 1),
-        ("Green", "Mother Earth", 94.5, 2, 2),
-        ("Red", "Sunset", 72.6, 2, 2),
-        ("Yellow", "Sunrise", 72.6, 3, 3),
-        ("White", "Surface Moon", 72.6, 3, 3),
-        ("Brown", "Dirt Ground", 72.6, 4, 4),
-        ("Teal", "Seaweed", 50.0, 4, 4),
-        ("Silver", "Starry Night", 90.0, 5, 5),
-        ("Purple", "Barney", 72.6, 5, 5),
-        ("Gray", "Cloudy Day", 72.6, 6, 6),
-        ("Orange", "Pumpkin", 723.6, 6, 6),
-        ("Maroon", "Oakwood", 100.6, 7, 7),
-        ("Aquamarine", "Poolside", 724.6, 7, 7),
-        ("Lime", "Sprite", 72.6, 8, 8),
-        ("Crimson", "Lobster", 72.6, 8, 8),
-        ("Pink", "Barbie", 72.6, 9, 9),
-        ("Magenta", "Uniqua", 72.6, 9, 9),
-        ("Gold", "Olympics", 72.6, 10, 10),
-        ("Black", "Night Sky", 72.6, 10, 10)
+        ("Black", google, 500.0, 1, 1),
+        ("Blue", money_4_nothing, 17.8, 1, 1),
+        ("Green", meditations, 94.5, 2, 2),
+        ("Red", google, 72.6, 2, 2),
+        ("Yellow", google, 72.6, 3, 3),
+        ("White", google, 72.6, 3, 3),
+        ("Brown", google, 72.6, 4, 4),
+        ("Teal", google, 50.0, 4, 4),
+        ("Silver", google, 90.0, 5, 5),
+        ("Purple", money_4_nothing, 72.6, 5, 5),
+        ("Gray", money_4_nothing, 72.6, 6, 6),
+        ("Orange", money_4_nothing, 723.6, 6, 6),
+        ("Maroon", money_4_nothing, 100.6, 7, 7),
+        ("Aquamarine", money_4_nothing, 724.6, 7, 7),
+        ("Lime", meditations, 72.6, 8, 8),
+        ("Crimson", meditations, 72.6, 8, 8),
+        ("Pink", meditations, 72.6, 9, 9),
+        ("Magenta", meditations, 72.6, 9, 9),
+        ("Gold", meditations, 72.6, 10, 10),
+        ("Black", meditations, 72.6, 10, 10)
 
     ]
 

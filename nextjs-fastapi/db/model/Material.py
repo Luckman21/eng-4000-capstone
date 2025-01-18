@@ -15,7 +15,7 @@ class Material(Base):
     # Attributes
     id = Column(Integer, primary_key=True, autoincrement=True)
     colour = Column(String, nullable=False)
-    name = Column(String, nullable=False)
+    supplier_link = Column(String, nullable=False)
     mass = Column(Float, nullable=False)
 
     # Foreign Key
@@ -38,10 +38,10 @@ class Material(Base):
             raise ValueError("colour must be string")
         self.colour = newColour
 
-    def setName(self, newName):
-        if type(newName) is not str:
-            raise ValueError("name must be string")
-        self.name = newName
+    def setSupplierLink(self, new_link):
+        if type(new_link) is not str:
+            raise ValueError("link must be string")
+        self.supplier_link = new_link
 
     def setMaterialTypeID(self, type):
         if isinstance(type, int):  # If an ID is provided
