@@ -32,7 +32,7 @@ def setup_database(request):
     session.commit()
 
     dummy_material = Material(
-        name="Dummy Material",
+        supplier_link="Dummy Material",
         colour="Red",
         mass=10.5,
         material_type_id=dummy_material_type.id
@@ -42,7 +42,7 @@ def setup_database(request):
 
     # Register a finalizer to clean up the data after the test
     def cleanup():
-        session.query(Material).filter_by(name="Dummy Material").delete()
+        session.query(Material).filter_by(supplier_link="Dummy Material").delete()
         session.query(MaterialType).filter_by(type_name="Plastic").delete()
         session.commit()
         assert db_count == session.query(Material).count()
@@ -63,7 +63,7 @@ client = TestClient(get_app())
 def test_delete_material_success(setup_database):
     session = setup_database
 
-    material = session.query(Material).filter_by(name="Dummy Material").first()
+    material = session.query(Material).filter_by(supplier_link="Dummy Material").first()
 
     assert material is not None, "Dummy material should exist in the database"
 

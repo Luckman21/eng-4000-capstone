@@ -42,7 +42,7 @@ def test_create_material_success(setup_database):
     repository = MaterialRepository(session)
 
     # Send a PUT request with valid entity_id and new mass
-    response = client.post("/create_material", json={"mass": 200.0, "name": "Mickey Mouse", "colour": "red", "material_type_id": 1, "shelf_id" : 2})
+    response = client.post("/create_material", json={"mass": 200.0, "supplier_link": "Mickey Mouse", "colour": "red", "material_type_id": 1, "shelf_id" : 2})
 
     # Assert that the response status code is 200
     assert response.status_code == 200
@@ -50,7 +50,7 @@ def test_create_material_success(setup_database):
     # Assert that the response message and new mass are correct
     assert response.json() == {"message": "Material successfully created"}
 
-    material = session.query(Material).filter_by(name="Mickey Mouse", mass= 200.0, colour='red').delete()
+    material = session.query(Material).filter_by(supplier_link="Mickey Mouse", mass= 200.0, colour='red').delete()
     session.commit()
     assert db_count == session.query(Material).count()
 
@@ -62,7 +62,7 @@ def test_create_material_not_found(setup_database):
     db_count = session.query(Material).count()
     repository = MaterialRepository(session)
     repository.create_material(
-        name="Dummy Material",
+        supplier_link="Dummy Material",
         colour="Red",
         mass=10.5,
         material_type_id=1,
@@ -70,13 +70,13 @@ def test_create_material_not_found(setup_database):
     )
 
     # Send a PUT request with an invalid entity_id
-    response = client.post("/create_material", json={"mass": 10.5, "name": "Dummy Material", "colour": "Red", "material_type_id": 1, "shelf_id" : 2})
+    response = client.post("/create_material", json={"mass": 10.5, "supplier_link": "Dummy Material", "colour": "Red", "material_type_id": 1, "shelf_id" : 2})
 
     # Assert that the response status code is 404
     assert response.status_code == 404
 
     # Assert that the response contains the correct error message
     assert response.json() == {"detail": "Material already exists"}
-    session.query(Material).filter_by(name="Dummy Material").delete()
+    session.query(Material).filter_by(supplier_link="Dummy Material").delete()
     session.commit()
     assert db_count == session.query(Material).count()

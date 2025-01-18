@@ -41,12 +41,12 @@ def test_update_material_success(setup_database):
 
     material = repository.get_material_by_id(1)
     mass = material.mass
-    name = material.name
+    link = material.supplier_link
     id = material.material_type_id
     shelf = material.shelf_id
 
     # Send a PUT request with valid entity_id and new mass
-    response = client.put("/update_material/1", json={"mass": 200.0, "name": "Mickey Mouse", "colour": None, "material_type_id": 6, "shelf_id" : 1})
+    response = client.put("/update_material/1", json={"mass": 200.0, "supplier_link": "Mickey Mouse", "colour": None, "material_type_id": 6, "shelf_id" : 1})
 
     # Assert that the response status code is 200
     assert response.status_code == 200
@@ -54,12 +54,12 @@ def test_update_material_success(setup_database):
     # Assert that the response message and new mass are correct
     assert response.json() == {"message": "Material updated successfully"}
 
-    repository.update_material(material, mass=mass, name=name, material_type_id=id)
+    repository.update_material(material, mass=mass, supplier_link=link, material_type_id=id)
 
 # Test invalid material_id (material not found)
 def test_update_material_not_found():
     # Send a PUT request with an invalid entity_id
-    response = client.put("/update_material/999", json={"mass": 200.0, "name": "Mickey Mouse", "colour": None, "material_type_id": None, "shelf_id" : 1})
+    response = client.put("/update_material/999", json={"mass": 200.0, "supplier_link": "Mickey Mouse", "colour": None, "material_type_id": None, "shelf_id" : 1})
 
     # Assert that the response status code is 404
     assert response.status_code == 404
