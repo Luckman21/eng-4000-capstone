@@ -3,7 +3,7 @@ import React from 'react'
 import { useEffect, useState } from "react";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Checkbox, Input, Link} from "@heroui/react";
 import { Autocomplete, AutocompleteItem } from "@heroui/react";
-import { fetchMaterialTypes, MaterialTypeName } from '@/constants/data';
+import { fetchMaterialTypes } from '@/constants/data';
 
 const EditUser = ({ user, isOpen, onOpenChange, onSave }) => {
   const [editableUser, setEditableUser] = useState(user);
