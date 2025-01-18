@@ -74,7 +74,7 @@ def populate_db():
 
     ]
 
-    cursor.executemany("INSERT INTO materials (colour, name, mass, material_type_id, shelf_id) VALUES (?, ?, ?, ?, ?)", material) # This will insert the material values into the material class
+    cursor.executemany("INSERT INTO materials (colour, supplier_link, mass, material_type_id, shelf_id) VALUES (?, ?, ?, ?, ?)", material) # This will insert the material values into the material class
 
     # Populating with different user types
     user_type = [
