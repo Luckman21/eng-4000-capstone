@@ -48,7 +48,7 @@ def test_material_table_buttons(driver):
         svg_elements = row.find_elements(By.TAG_NAME, "svg")
 
         # Assert that each row has exactly 2 SVGs (or adjust as necessary)
-        assert len(svg_elements) == 2, f"Row {index + 1} does not have exactly 2 SVG elements."
+        assert len(svg_elements) == 3, f"Row {index + 1} does not have exactly 2 SVG elements."
 
 def test_material_table_order(driver):
 
@@ -70,19 +70,19 @@ def test_edit_button(driver):
     button.click()
     time.sleep(2)
 
-    panel = driver.find_element(By.ID, ":R3qfj6:")
+    panel = driver.find_element(By.TAG_NAME, "section")
 
     header = panel.find_element(By.CSS_SELECTOR, "header")
 
     assert header.text == "Edit Material"
-
-    edit_fields = panel.find_element(By.CSS_SELECTOR, "div")
 
     labels = panel.find_elements(By.CSS_SELECTOR, "label")
 
     assert labels[0].text == "Supplier Link"
     assert labels[1].text == "Colour"
     assert labels[2].text == "Weight (g)"
+    assert labels[3].text == "Shelf"
+    assert labels[4].text == "Material Type"
 
 def test_create_button(driver):
     driver.get("http://localhost:3000")
@@ -116,18 +116,18 @@ def test_delete_confirmation(driver):
     row = driver.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
     print(row.text)
 
-    delete_icon = row.find_elements(By.TAG_NAME, "svg")[1]
+    delete_icon = row.find_elements(By.TAG_NAME, "svg")[2]
 
     delete_icon.click()
     time.sleep(3)
 
-    popup = driver.find_element(By.ID, ":R5qfj6:")
+    popup = driver.find_element(By.TAG_NAME, "section")
 
-    header = popup.find_element(By.ID, ":R5qfj6H1:")
-    assert header.text == "Delete Material"
+    header = popup.find_element(By.TAG_NAME, "header")
+    assert header.text == "Delete Item"
 
-    text = popup.find_element(By.ID, ":R5qfj6H2:")
-    assert text.text == 'Are you sure you want to delete this material? This action cannot be undone.'
+    text = popup.find_element(By.XPATH, "div[2]")
+    assert text.text == 'Are you sure you want to delete this item? This action cannot be undone.'
 
     footer = popup.find_element(By.CSS_SELECTOR, "footer")
 
@@ -135,7 +135,15 @@ def test_delete_confirmation(driver):
 
     assert len(buttons) == 2
 
+def test_search_bar(driver):
+    driver.get("http://localhost:3000")
+    time.sleep(3)
 
+    input_element = driver.find_element(By.CSS_SELECTOR,
+                                             'input[aria-label="Search by colour, status, shelf, or type..."]')
 
+    # Assert the aria-label matches the expected value
+    aria_label_value = input_element.get_attribute('aria-label')
+    assert aria_label_value == "Search by colour, status, shelf, or type..."
 
 # TODO: Make test to assess status once material migration is complete
