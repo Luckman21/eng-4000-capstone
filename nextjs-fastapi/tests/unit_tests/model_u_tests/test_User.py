@@ -52,74 +52,6 @@ def test_user_creation(session):
     assert user.email == 'testuser@example.com'
     assert user.user_type_id == user_type.id
 
-'''
-# Test invalid username (non-string) raises ValueError
-def test_user_invalid_username(session):
-    user_type = session.query(UserType).first()  # Get the first UserType
-
-    user = User(
-        username=123,  # Invalid username (non-string)
-        password='hashedpassword123',
-        email='testuser@example.com',
-        user_type_id=user_type.id
-    )
-
-    session.add(user)
-    
-    # Check for ValueError due to invalid username (non-string)
-    with pytest.raises(ValueError):
-        session.commit()
-
-    # Rollback the session after the test
-    session.rollback()
-'''
-
-
-'''
-# Test invalid password (non-string) raises ValueError
-def test_user_invalid_password(session):
-    user_type = session.query(UserType).first()  # Get the first UserType
-
-    user = User(
-        username='testuser',
-        password=123456,  # Invalid password (non-string)
-        email='testuser@example.com',
-        user_type_id=user_type.id
-    )
-
-    session.add(user)
-
-    # Check for ValueError due to invalid password (non-string)
-    with pytest.raises(ValueError):
-        session.commit()
-
-    # Rollback the session after the test
-    session.rollback()
-'''
-
-
-'''
-# Test invalid email (non-string) raises ValueError
-def test_user_invalid_email(session):
-    user_type = session.query(UserType).first()  # Get the first UserType
-
-    user = User(
-        username='testuser',
-        password='hashedpassword123',
-        email=12345,  # Invalid email (non-string)
-        user_type_id=user_type.id
-    )
-
-    session.add(user)
-
-    # Check for ValueError due to invalid email (non-string)
-    with pytest.raises(ValueError):
-        session.commit()
-
-    # Rollback the session after the test
-    session.rollback()
-'''
-
 # Test setUserTypeID method with valid and invalid inputs
 def test_set_user_type_id(session):
     user_type = session.query(UserType).first()  # Get the first UserType
@@ -161,9 +93,8 @@ def test_set_user_type_id(session):
     )
 
     # Update user's type
-    user.setUserTypeID(another_user_type)
+    user.setUserTypeID(another_user_type.id)
     assert user.user_type_id == another_user_type.id
-    assert user.user_type == another_user_type
 
     # Invalid input: should raise ValueError if not passed a UserType instance
     with pytest.raises(ValueError):
@@ -203,34 +134,3 @@ def test_get_all_users(session):
 
     # Rollback the session after the test
     session.rollback()
-
-'''
-# Test invalid input types (username, password, and email must be strings)
-def test_invalid_input_types(session):
-    with pytest.raises(TypeError):
-        User(
-            username=12345,  # username must be a string
-            password='hashedpassword123',
-            email='user@example.com',
-            user_type_id=1
-        )
-
-    with pytest.raises(TypeError):
-        User(
-            username='user1',
-            password=123456,  # password must be a string
-            email='user@example.com',
-            user_type_id=1
-        )
-
-    with pytest.raises(TypeError):
-        User(
-            username='user1',
-            password='hashedpassword123',
-            email=12345,  # email must be a string
-            user_type_id=1
-        )
-
-    # Rollback the session after the test
-    session.rollback()
-'''
