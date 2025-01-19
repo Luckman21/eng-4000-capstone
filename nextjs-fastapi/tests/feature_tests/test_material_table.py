@@ -146,4 +146,75 @@ def test_search_bar(driver):
     aria_label_value = input_element.get_attribute('aria-label')
     assert aria_label_value == "Search by colour, status, shelf, mass, or type..."
 
+def test_colour_query(driver):
+    driver.get("http://localhost:3000")
+    time.sleep(3)
+
+    input_element = driver.find_element(By.CSS_SELECTOR,
+                                        'input[aria-label="Search by colour, status, shelf, mass, or type..."]')
+
+
+    # Colour
+    input_element.send_keys("Red")
+    time.sleep(2)
+
+    first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[2]")
+    assert first_td.text == 'Red'
+
+def test_status_query(driver):
+    driver.get("http://localhost:3000")
+    time.sleep(3)
+
+    input_element = driver.find_element(By.CSS_SELECTOR,
+                                            'input[aria-label="Search by colour, status, shelf, mass, or type..."]')
+
+    # Status
+    input_element.send_keys("In Stock")
+    time.sleep(2)
+
+    first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[7]")
+    assert first_td.text == 'In Stock'
+
+def test_shelf_query(driver):
+    driver.get("http://localhost:3000")
+    time.sleep(3)
+
+    input_element = driver.find_element(By.CSS_SELECTOR,
+                                        'input[aria-label="Search by colour, status, shelf, mass, or type..."]')
+    # Shelf
+    input_element.send_keys("1")
+    time.sleep(2)
+
+    first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[6]")
+    assert first_td.text == '1'
+
+
+def test_type_query(driver):
+    driver.get("http://localhost:3000")
+    time.sleep(3)
+
+    input_element = driver.find_element(By.CSS_SELECTOR,
+                                        'input[aria-label="Search by colour, status, shelf, mass, or type..."]')
+    # Type
+    input_element.send_keys("PLA")
+    time.sleep(2)
+
+    first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[5]")
+    assert first_td.text == 'PLA'
+
+def test_mass_query(driver):
+    driver.get("http://localhost:3000")
+    time.sleep(3)
+
+    input_element = driver.find_element(By.CSS_SELECTOR,
+                                        'input[aria-label="Search by colour, status, shelf, mass, or type..."]')
+
+    # Mass
+    input_element.send_keys("72.0")
+    time.sleep(2)
+
+    first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[4]")
+    mass = float(first_td.text)
+    assert mass - 50 <= mass or mass + 50 >= mass
+
 # TODO: Make test to assess status once material migration is complete
