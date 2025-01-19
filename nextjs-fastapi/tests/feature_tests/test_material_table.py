@@ -14,7 +14,7 @@ import re
 def driver():
 
     chrome_options = Options()
-    chrome_options.add_argument("--headless") # This means you won't see the actual icon
+    #chrome_options.add_argument("--headless") # This means you won't see the actual icon
     chrome_options.add_argument("--disable-gpu")
 
     # This will change depending on your driver
@@ -141,7 +141,7 @@ def test_search_bar(driver):
     time.sleep(3)
 
     input_element = driver.find_element(By.CSS_SELECTOR,
-                                             'input[aria-label="Search by colour, status, shelf, mass, or type..."]')
+                                             'input[aria-label="Search by colour, status, shelf, or type..."]')
 
     # Assert the aria-label matches the expected value
     aria_label_value = input_element.get_attribute('aria-label')
@@ -152,7 +152,7 @@ def test_colour_query(driver):
     time.sleep(3)
 
     input_element = driver.find_element(By.CSS_SELECTOR,
-                                        'input[aria-label="Search by colour, status, shelf, mass, or type..."]')
+                                        'input[aria-label="Search by colour, status, shelf, or type..."]')
 
 
     # Colour
@@ -169,7 +169,7 @@ def test_status_query(driver):
     time.sleep(3)
 
     input_element = driver.find_element(By.CSS_SELECTOR,
-                                            'input[aria-label="Search by colour, status, shelf, mass, or type..."]')
+                                            'input[aria-label="Search by colour, status, shelf, or type..."]')
 
     # Status
     input_element.send_keys("In Stock")
@@ -183,7 +183,7 @@ def test_shelf_query(driver):
     time.sleep(3)
 
     input_element = driver.find_element(By.CSS_SELECTOR,
-                                        'input[aria-label="Search by colour, status, shelf, mass, or type..."]')
+                                        'input[aria-label="Search by colour, status, shelf, or type..."]')
     # Shelf
     input_element.send_keys("1")
     time.sleep(2)
@@ -197,7 +197,7 @@ def test_type_query(driver):
     time.sleep(3)
 
     input_element = driver.find_element(By.CSS_SELECTOR,
-                                        'input[aria-label="Search by colour, status, shelf, mass, or type..."]')
+                                        'input[aria-label="Search by colour, status, shelf, or type..."]')
     # Type
     input_element.send_keys("PLA")
     time.sleep(2)
@@ -205,20 +205,5 @@ def test_type_query(driver):
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[5]")
     # Levenstien Distance
     assert re.search("PL.", first_td.text) or re.search(".LA",first_td.text) or re.search("P.A",first_td.text)
-
-def test_mass_query(driver):
-    driver.get("http://localhost:3000")
-    time.sleep(3)
-
-    input_element = driver.find_element(By.CSS_SELECTOR,
-                                        'input[aria-label="Search by colour, status, shelf, mass, or type..."]')
-
-    # Mass
-    input_element.send_keys("72.0")
-    time.sleep(2)
-
-    first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[4]")
-    mass = float(first_td.text)
-    assert mass - 50 <= mass or mass + 50 >= mass
 
 # TODO: Make test to assess status once material migration is complete

@@ -142,25 +142,9 @@ const filteredItems = React.useMemo(() => {
         const totalDistance =
           colourDistance + shelfIdDistance + statusDistance + materialTypeDistance;
 
-        console.log(filterValue)
-        const isInteger = !filterValue.includes(".");
+        console.log(filterValue);
 
-        // Initialize matches
-        let massMatch = false;
-        let shelfMatch = false;
 
-        if (isInteger) {
-          // If input is an integer, we will filter by shelf
-          shelfMatch = filterValue === material.shelf_id.toString().toLowerCase();
-        } else {
-
-          // If input is not an integer, we filter by mass
-          if (!isNaN(parseFloat(filterValue))) {
-            const inputMass = parseFloat(filterValue);
-            // Check if mass is within +/- 50 of the input value
-            massMatch = mass >= inputMass - 50 && mass <= inputMass + 50;
-          }
-        }
 
         // Add distance data to material for sorting
         return {
@@ -169,8 +153,7 @@ const filteredItems = React.useMemo(() => {
           colourMatch: colourDistance <= levenshteinThresholdColour,
           shelfIdMatch: filterValue.toLowerCase() === material.shelf_id.toString().toLowerCase(),
           statusMatch: statusDistance <= levenshteinThresholdStatus,
-          materialTypeMatch: materialTypeDistance <= levenshteinThresholdType,
-          massMatch: massMatch || false,
+          materialTypeMatch: materialTypeDistance <= levenshteinThresholdType
         };
       })
       .filter((material) => {
@@ -179,8 +162,7 @@ const filteredItems = React.useMemo(() => {
           material.colourMatch ||
           material.shelfIdMatch ||
           material.statusMatch ||
-          material.materialTypeMatch ||
-          material.massMatch
+          material.materialTypeMatch
         );
       });
   }
@@ -291,7 +273,7 @@ const filteredItems = React.useMemo(() => {
       <Input
         isClearable
         className="w-full sm:max-w-[70%]"  // Search bar takes 70% of the width on larger screens
-        placeholder="Search by colour, status, shelf, mass, or type..."
+        placeholder="Search by colour, status, shelf, or type..."
         startContent={<SearchIcon />}
         value={filterValue}
         onClear={() => onClear()}
