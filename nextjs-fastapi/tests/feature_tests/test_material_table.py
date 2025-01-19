@@ -9,9 +9,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import re
 import chromedriver_autoinstaller
-from backend.controller import constants
+import os
 
-TEST_URL = constants.LOCALHOST_TEST
+
+if os.getenv("CI"):
+    TEST_URL = "http://frontend:3000"
+else:
+    TEST_URL = "http://localhost:3000"
 
 @pytest.fixture
 def driver():
@@ -21,9 +25,13 @@ def driver():
     chrome_options.add_argument("--disable-gpu") # Disable GPU acceleration (required in headless mode)
 
     # This will change depending on your driver
-    path = '/Users/l_filippelli/Downloads/chromedriver-mac-x64/chromedriver'
+    if os.getenv("CI"):  # If in CI environment
+        driver = webdriver.Chrome(options=chrome_options)
+    else:
+        path = '/Users/l_filippelli/Downloads/chromedriver-mac-x64/chromedriver'
 
-    driver = webdriver.Chrome(service=Service(path), options=chrome_options)
+        driver = webdriver.Chrome(service=Service(path), options=chrome_options)
+
     yield driver
     driver.quit()
 
