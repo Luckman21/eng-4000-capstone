@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Material } from "@/types";
+import { Material,MaterialType } from "@/types";
 import axios from "axios";
 import { useAsyncList } from "@react-stately/data";
 import { fetchMaterialTypes } from "@/constants/data";
@@ -35,9 +35,9 @@ const statusColorMap = {
 const TableComponent = () => {
   const APIHEADER = "delete_material"; 
   const [materials, setMaterials] = useState<Material[]>([]);
-  const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]); // Add materialTypes state
   const [isLoading, setIsLoading] = useState(true);
   const [editMaterial, setEditMaterial] = useState<Material | null>(null); 
+  const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
   const {
     isOpen: isModalOneOpen,
     onOpen: openModalOne,
@@ -53,7 +53,14 @@ const TableComponent = () => {
     onOpenChange: handleModalTwoChange,
   } = useDisclosure();
 
-
+  useEffect(() => {
+      const fetchTypes = async () => {
+        const types = await fetchMaterialTypes();
+        setMaterialTypes(types);
+      };
+      fetchTypes();
+    }, []);
+  
   const list = useAsyncList({
     async load({ signal }) {
       let res = await fetch("http://localhost:8000/materials", { signal });
@@ -101,15 +108,7 @@ const TableComponent = () => {
     setMaterials((prevMaterials) => prevMaterials.filter((mat) => mat.id !== deletedId));
   };
 
-    // Fetch material types on component mount
-  useEffect(() => {
-    const fetchTypes = async () => {
-      const types = await fetchMaterialTypes();
-      setMaterialTypes(types);
-    };
-    fetchTypes();
-  }, []);
-
+      console.log(materialTypes)
 
   const renderCell = React.useCallback(
     (material, columnKey) => {
@@ -130,10 +129,10 @@ const TableComponent = () => {
           // Ensure that materialTypes is loaded before accessing it
           if (materialTypes.length > 0) {
             const materialType = materialTypes.find(
-              (type) => Number(type.id) === Number(material.material_type_id)
+              (type) => Number(type.key) === Number(material.material_type_id)
             );
 
-            return materialType ? materialType.type_name : "Unknown Type";
+            return materialType ? materialType.label : "Unknown Type";
           } else {
             return "Loading Types...";
           }
@@ -181,7 +180,7 @@ const TableComponent = () => {
           return cellValue;
       }
     },
-    []
+    [materialTypes]
   );
 
   return (
