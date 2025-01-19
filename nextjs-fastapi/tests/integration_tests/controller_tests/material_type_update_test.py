@@ -50,7 +50,11 @@ def test_update_material_type_success(setup_database):
     # Assert that the response message and new mass are correct
     assert response.json() == {"message": "Material Type updated successfully"}
 
+    material_type = repository.get_material_type_by_id(1)
     repository.update_material_type(material_type, type_name=type_name)
+    material_type = repository.get_material_type_by_id(material_type.id)
+
+    assert material_type.type_name == type_name
 
 # Test invalid material_id (material not found)
 def test_update_material_type_not_found():
