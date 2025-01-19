@@ -1,7 +1,6 @@
 import subprocess
 import pytest
 import time
-import re
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -9,22 +8,27 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import re
+import chromedriver_autoinstaller
+from backend.controller import constants
+
+TEST_URL = constants.LOCALHOST_TEST
 
 @pytest.fixture
 def driver():
 
     chrome_options = Options()
     chrome_options.add_argument("--headless") # This means you won't see the actual icon
-    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--disable-gpu") # Disable GPU acceleration (required in headless mode)
 
     # This will change depending on your driver
     path = '/Users/l_filippelli/Downloads/chromedriver-mac-x64/chromedriver'
+
     driver = webdriver.Chrome(service=Service(path), options=chrome_options)
     yield driver
     driver.quit()
 
 def test_material_table_header(driver):
-    driver.get("http://localhost:3000")
+    driver.get(TEST_URL)
     time.sleep(3)
 
     # Find the header row
@@ -37,8 +41,7 @@ def test_material_table_header(driver):
 
 
 def test_material_table_buttons(driver):
-
-    driver.get("http://localhost:3000")
+    driver.get(TEST_URL)
     time.sleep(3)
 
 
@@ -53,7 +56,7 @@ def test_material_table_buttons(driver):
 
 def test_material_table_order(driver):
 
-    driver.get("http://localhost:3000")
+    driver.get(TEST_URL)
     time.sleep(3)
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[1]")
@@ -64,7 +67,7 @@ def test_material_table_order(driver):
 
 def test_edit_button(driver):
 
-    driver.get("http://localhost:3000")
+    driver.get(TEST_URL)
     time.sleep(3)
 
     button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[8]/div/span[1]")
@@ -86,7 +89,7 @@ def test_edit_button(driver):
     assert labels[4].text == "Material Type"
 
 def test_create_button(driver):
-    driver.get("http://localhost:3000")
+    driver.get(TEST_URL)
     time.sleep(3)
 
     buttons = driver.find_elements(By.CSS_SELECTOR, "button")
@@ -111,7 +114,7 @@ def test_create_button(driver):
 
 
 def test_delete_confirmation(driver):
-    driver.get("http://localhost:3000")
+    driver.get(TEST_URL)
     time.sleep(3)
 
     row = driver.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
@@ -137,7 +140,7 @@ def test_delete_confirmation(driver):
     assert len(buttons) == 2
 
 def test_search_bar(driver):
-    driver.get("http://localhost:3000")
+    driver.get(TEST_URL)
     time.sleep(3)
 
     input_element = driver.find_element(By.CSS_SELECTOR,
@@ -148,7 +151,7 @@ def test_search_bar(driver):
     assert aria_label_value == "Search by colour, status, shelf, or type..."
 
 def test_colour_query(driver):
-    driver.get("http://localhost:3000")
+    driver.get(TEST_URL)
     time.sleep(3)
 
     input_element = driver.find_element(By.CSS_SELECTOR,
@@ -165,7 +168,7 @@ def test_colour_query(driver):
     assert re.search("Re.", first_td.text) or re.search(".ed", first_td.text) or re.search("R.d", first_td.text) or re.search("..d", first_td.text) or re.search("R..", first_td.text) or re.search(".e.", first_td.text)
 
 def test_status_query(driver):
-    driver.get("http://localhost:3000")
+    driver.get(TEST_URL)
     time.sleep(3)
 
     input_element = driver.find_element(By.CSS_SELECTOR,
@@ -179,7 +182,7 @@ def test_status_query(driver):
     assert first_td.text == 'In Stock'
 
 def test_shelf_query(driver):
-    driver.get("http://localhost:3000")
+    driver.get(TEST_URL)
     time.sleep(3)
 
     input_element = driver.find_element(By.CSS_SELECTOR,
@@ -193,7 +196,7 @@ def test_shelf_query(driver):
 
 
 def test_type_query(driver):
-    driver.get("http://localhost:3000")
+    driver.get(TEST_URL)
     time.sleep(3)
 
     input_element = driver.find_element(By.CSS_SELECTOR,

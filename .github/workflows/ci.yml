@@ -1,0 +1,113 @@
+name: Python CI with Pytest and Selenium
+
+on:
+  push:
+    branches:
+      - '*'  # Trigger on any push to any branch
+  pull_request:
+    branches:
+      - main  # Trigger on pull requests targeting the 'main' branch
+
+jobs:
+  test:
+    runs-on: ubuntu-latest  # You can also use macos-latest or windows-latest depending on your environment needs
+
+    services:
+      selenium:
+        image: selenium/standalone-chrome:latest  # Using the latest Selenium image with Chrome
+        options: >-
+          --shm-size=2g  # Allocate shared memory size (important for headless Chrome)
+
+    steps:
+    # Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+      # Set up Docker (to build and run the frontend/backend containers)
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v2
+
+      # Build the backend Docker image
+    - name: Build Backend Docker Image
+      run: |
+        cd nextjs-fastapi/backend
+        docker build -t nextjs-backend .
+
+      # Build the frontend Docker image
+    - name: Build Frontend Docker Image
+      run: |
+        cd nextjs-fastapi/frontend
+        docker build -t nextjs-frontend .
+
+      # Run Backend in Docker
+    - name: Run Backend Docker Container
+      run: |
+        docker run -d --name nextjs-backend -p 8000:8000 nextjs-backend
+
+      # Run Frontend in Docker
+    - name: Run Frontend Docker Container
+      run: |
+        docker run -d --name nextjs-frontend -p 3000:3000 nextjs-frontend
+
+      # Wait for the services to be fully ready
+    - name: Wait for services to start
+      run: |
+        echo "Waiting for services to start..."
+        sleep 10  # Adjust if necessary based on the startup time of your services
+
+      # Set up Python environment
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8  # Use the Python version you're working with
+
+    # Install dependencies
+    - name: Install dependencies
+      run: |
+        echo "Installing dependancies"
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt  # Ensure that chromedriver-autoinstaller is in your requirements.txt
+
+    # Run unit tests (non-Selenium)
+    - name: Run unit tests
+      run: |
+        echo "Running unit tests"
+        set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/unit_tests
+        echo "Completed unit tests"
+
+    # Run integration tests (non-Selenium)
+    - name: Run integration tests
+      run: |
+        echo "Running integration tests"
+        set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/integration_tests
+        echo "Completed integration tests"
+
+    # Start the backend FastAPI service in the background
+    - name: Start FastAPI backend
+      working-directory: nextjs-fastapi/backend/controller
+      run: |
+        nohup uvicorn main:app --host 0.0.0.0 --port 8000 --reload &  # Starts FastAPI in the background
+        echo "backend is running"
+
+    # Start the frontend Next.js service in the background
+    - name: Start Next.js frontend
+      working-directory: nextjs-fastapi/frontend
+      run: |
+        nohup npm run dev &  # Starts Next.js frontend in the background
+        echo "frontend is running"
+
+    # Wait for the services to start (you may need to adjust the time depending on your app's startup time)
+    - name: Wait for services to start
+      run: |
+        sleep 10  # Adjust this value depending on how long your services need to start
+
+    # Run Selenium tests (only tests in the feature_tests directory)
+    - name: Run Selenium tests
+      run: |
+        set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/feature_tests/
+
+      # Stop and remove containers after testing
+    - name: Clean up containers
+      run: |
+        docker stop nextjs-backend nextjs-frontend selenium
+        docker rm nextjs-backend nextjs-frontend selenium
