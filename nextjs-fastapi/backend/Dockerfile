@@ -7,6 +7,9 @@ WORKDIR /app
 # Copy the backend code to the container
 COPY . /app/
 
+# Install dependencies, including uvicorn
+RUN pip install --no-cache-dir fastapi selenium pytest chromedriver-autoinstaller uvicorn
+
 # Expose the port the app will run on
 EXPOSE 8000
 
