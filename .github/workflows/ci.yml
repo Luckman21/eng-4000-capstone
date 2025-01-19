@@ -69,6 +69,7 @@ jobs:
         echo "Installing dependencies"
         python -m pip install --upgrade pip  # Upgrade pip to the latest version
         pip install sqlalchemy
+        pip install pytest
 
       # Run unit tests (non-Selenium)
     - name: Run unit tests
