@@ -277,7 +277,7 @@ const filteredItems = React.useMemo(() => {
   return (
  <div className="px-4 pt-4"> {/* Padding for spacing from the edges and top */}
     {/* Flex container for the search bar and button */}
-    <div className="flex items-center gap-4 mb-6"> {/* Gap between button and search bar, margin-bottom for space to the table */}
+    <div className="flex items-center gap-4" style={{ marginBottom: "16px" }}> {/* Gap between button and search bar, margin-bottom for space to the table */}
       {/* Add Material button */}
       <Button
         onPress={() => handleModalTwoChange()}
