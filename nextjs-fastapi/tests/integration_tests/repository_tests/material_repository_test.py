@@ -32,7 +32,7 @@ def setup_database(request):
     session.commit()
 
     dummy_material = Material(
-        name="Dummy Material",
+        supplier_link="Dummy Material",
         colour="Red",
         mass=10.5,
         material_type_id=dummy_material_type.id,
@@ -43,7 +43,7 @@ def setup_database(request):
 
     # Register a finalizer to clean up the data after the test
     def cleanup():
-        session.query(Material).filter_by(name="Dummy Material").delete()
+        session.query(Material).filter_by(supplier_link="Dummy Material").delete()
         session.query(MaterialType).filter_by(type_name="Plastic").delete()
         session.commit()
         assert db_count == session.query(Material).count()
@@ -62,7 +62,7 @@ def test_get_material_by_id(setup_database):
     session = setup_database
 
     # Fetch an existing material and update its data
-    material = session.query(Material).filter_by(name="Dummy Material").first()
+    material = session.query(Material).filter_by(supplier_link="Dummy Material").first()
 
     repository = MaterialRepository(session)
 
@@ -89,7 +89,7 @@ def test_create_material(setup_database):
     assert queried_material.shelf_id == new_shelf.id
 
     # Destroy
-    session.query(Material).filter_by(name="Dummy2").delete()
+    session.query(Material).filter_by(supplier_link="Dummy2").delete()
     session.commit()
 
 
@@ -124,7 +124,7 @@ def test_update_material(setup_database):
     assert new_queried_material.material_type_id == 1
 
     # Destroy
-    session.query(Material).filter_by(name="Dummy2").delete()
+    session.query(Material).filter_by(supplier_link="Dummy2").delete()
     session.query(Shelf).filter_by(id=new_shelf.id).delete()
     session.commit()
 
@@ -151,7 +151,7 @@ def test_material_existance(setup_database):
     assert repository.material_exists(-1) is not True
 
     # Destroy
-    session.query(Material).filter_by(name="Dummy2").delete()
+    session.query(Material).filter_by(supplier_link="Dummy2").delete()
     session.commit()
 
 

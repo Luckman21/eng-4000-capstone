@@ -39,10 +39,10 @@ def test_get_all_materials(setup_database):
         session.add(material_type) 
         session.commit() 
     
-    material = session.query(Material).filter_by(name="Dummy Material").first() 
+    material = session.query(Material).filter_by(supplier_link="Dummy Material").first()
     
     if not material: 
-        material = Material( name="Dummy Material", colour="Red", mass=10.5, material_type_id=material_type.id ) 
+        material = Material( supplier_link="Dummy Material", colour="Red", mass=10.5, material_type_id=material_type.id, shelf_id=1 )
         session.add(material) 
         session.commit() 
         
@@ -51,8 +51,8 @@ def test_get_all_materials(setup_database):
     
     materials = response.json() 
     
-    assert any( m["name"] == "Dummy Material" and m["colour"] == "Red" and m["mass"] == 10.5 for m in materials )
+    assert any( m["supplier_link"] == "Dummy Material" and m["colour"] == "Red" and m["mass"] == 10.5 for m in materials )
     session.query(MaterialType).filter_by(type_name="Plastic").delete()
-    session.query(Material).filter_by(name="Dummy Material").delete()
+    session.query(Material).filter_by(supplier_link="Dummy Material").delete()
     session.commit()
     session.close()

@@ -9,14 +9,14 @@ class MaterialRepository:
     def __init__(self, session: Session):
         self.session = session
 
-    def create_material(self, colour: str, name: str, mass: float, material_type_id: int, shelf_id: int) -> Material:
+    def create_material(self, colour: str, supplier_link: str, mass: float, material_type_id: int, shelf_id: int) -> Material:
         """
         Create a new Material record in the database.
         """
         try:
             new_material = Material(
                 colour=colour,
-                name=name,
+                supplier_link=supplier_link,
                 mass=mass,
                 material_type_id=material_type_id,
                 shelf_id=shelf_id
@@ -49,7 +49,7 @@ class MaterialRepository:
         """
         return self.session.query(Material).all()
 
-    def update_material(self, material: Material, colour: str = None, name: str = None, mass: float = None,
+    def update_material(self, material: Material, colour: str = None, supplier_link: str = None, mass: float = None,
                         material_type_id: int = None, shelf_id: int = None ) -> Material:
         """
         Update an existing material.
@@ -57,8 +57,8 @@ class MaterialRepository:
         try:
             if colour:
                 material.setColour(colour)
-            if name:
-                material.setName(name)
+            if supplier_link:
+                material.setSupplierLink(supplier_link)
             if mass is not None:
                 material.mass = mass
             if material_type_id:

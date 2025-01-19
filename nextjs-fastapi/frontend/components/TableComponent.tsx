@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Material } from "@/types";
+import { Material,MaterialType } from "@/types";
 import axios from "axios";
 import { useAsyncList } from "@react-stately/data";
+import { fetchMaterialTypes } from "@/constants/data";
 
 import React from "react";
 import {
@@ -36,6 +37,7 @@ const TableComponent = () => {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editMaterial, setEditMaterial] = useState<Material | null>(null); 
+  const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
   const {
     isOpen: isModalOneOpen,
     onOpen: openModalOne,
@@ -51,7 +53,14 @@ const TableComponent = () => {
     onOpenChange: handleModalTwoChange,
   } = useDisclosure();
 
-
+  useEffect(() => {
+      const fetchTypes = async () => {
+        const types = await fetchMaterialTypes();
+        setMaterialTypes(types);
+      };
+      fetchTypes();
+    }, []);
+  
   const list = useAsyncList({
     async load({ signal }) {
       let res = await fetch("http://localhost:8000/materials", { signal });
@@ -99,6 +108,7 @@ const TableComponent = () => {
     setMaterials((prevMaterials) => prevMaterials.filter((mat) => mat.id !== deletedId));
   };
 
+      console.log(materialTypes)
 
   const renderCell = React.useCallback(
     (material, columnKey) => {
@@ -115,6 +125,17 @@ const TableComponent = () => {
               {cellValue}
             </Chip>
           );
+        case "material_type_id":
+          // Ensure that materialTypes is loaded before accessing it
+          if (materialTypes.length > 0) {
+            const materialType = materialTypes.find(
+              (type) => Number(type.key) === Number(material.material_type_id)
+            );
+
+            return materialType ? materialType.label : "Unknown Type";
+          } else {
+            return "Loading Types...";
+          }
         case "actions":
           return (
             <div className="relative flex items-center gap-2">
@@ -136,13 +157,31 @@ const TableComponent = () => {
               </Tooltip>
             </div>
           );
+         case "supplier_link":
+        // Check if there is a link and it's valid
+        if (cellValue) {
+          return (
+          <Chip
+              clickable
+              color="primary"
+              variant="flat"
+              size="sm"
+              endContent={<ExternalLinkIcon size={18} stroke="currentColor" />}
+              onClick={() => window.open(cellValue, "_blank")}
+            >
+              Visit Supplier
+            </Chip>
+          );
+        } else {
+          return <Chip size="sm">No Link</Chip>; // or some default text
+        }
           case "shelf_id":
           return cellValue || "Not Assigned";
         default:
           return cellValue;
       }
     },
-    []
+    [materialTypes]
   );
 
   return (
@@ -161,17 +200,17 @@ const TableComponent = () => {
           <TableColumn allowsSorting key="colour">
             COLOUR
           </TableColumn>
-          <TableColumn allowsSorting key="name">
-            NAME
+          <TableColumn allowsSorting key="supplier_link">
+            SUPPLIER LINK
           </TableColumn>
           <TableColumn allowsSorting key="mass">
-            Weight (g)
+            MASS (g)
           </TableColumn>
           <TableColumn allowsSorting key="material_type_id">
-            Material Type
+            MATERIAL TYPE
           </TableColumn>
           <TableColumn allowsSorting key="shelf_id">
-            Shelf
+            SHELF
           </TableColumn>
           <TableColumn key="status">STATUS</TableColumn>
           <TableColumn key="actions">ACTIONS</TableColumn>
@@ -207,3 +246,25 @@ const TableComponent = () => {
 };
 
 export default TableComponent;
+
+
+export const ExternalLinkIcon = ({ size = 18, stroke = "currentColor", ...props }) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke={stroke}
+      width={size}
+      height={size}
+      {...props}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+      />
+    </svg>
+  );
+};

@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from db.model.Material import Material
 from db.model.MaterialType import MaterialType
 from db.model.base import Base
+from db.model.Shelf import Shelf
 
 # Use an existing database instead of an in-memory one
 @pytest.fixture(scope='module')
@@ -29,17 +30,17 @@ def session():
     session.commit()
 
     dummy_material = Material(
-        name="Dummy Material",
+        supplier_link="Dummy Material",
         colour="Red",
         mass=10.5,
-        material_type_id=dummy_material_type.id
+        material_type_id=material_type.id
     )
     session.add(dummy_material)
     session.commit()
 
     # Register a finalizer to clean up the data after the test
     def cleanup():
-        session.query(Material).filter_by(name="Dummy Material").delete()
+        session.query(Material).filter_by(supplier_link="Dummy Material").delete()
         session.query(MaterialType).filter_by(type_name="Plastic").delete()
         session.commit()
 
@@ -56,7 +57,7 @@ def test_material_creation(session):
     # Create a valid Material
     material = Material(
         colour='Red',
-        name='Material 1',
+        supplier_link='Material 1',
         mass=10.5,
         material_type_id=material_type.id
     )
@@ -71,7 +72,7 @@ def test_material_creation(session):
     # Test that the material was successfully added
     assert material.id is not None
     assert material.colour == 'Red'
-    assert material.name == 'Material 1'
+    assert material.supplier_link == 'Material 1'
     assert material.mass == 10.5
     assert material.material_type_id == material_type.id
 
@@ -81,7 +82,7 @@ def test_material_invalid_mass(session):
 
     material = Material(
         colour='Blue',
-        name='Material 2',
+        supplier_link='Material 2',
         mass=-5.0,  # Invalid mass (negative value)
         material_type_id=material_type.id
     )
@@ -98,7 +99,7 @@ def test_set_colours(session):
     material_type = session.query(MaterialType).first()  # Get the first MaterialType
     material = Material(
         colour='Red',
-        name='Material 3',
+        supplier_link='Material 3',
         mass=8.5,
         material_type_id=material_type.id
     )
@@ -111,24 +112,21 @@ def test_set_colours(session):
         material.setColour(123)  # Passing an integer instead of a string
 
 # Test setName method with valid and invalid inputs
-def test_set_name(session):
+def test_set_supplier_link(session):
     material_type = session.query(MaterialType).first()  # Get the first MaterialType
     material = Material(
         colour='Yellow',
-        name='Material 4',
+        supplier_link='Material 4',
         mass=5.0,
         material_type_id=material_type.id
     )
 
-    material.setName('New Material')
-    assert material.name == 'New Material'
+    material.setSupplierLink('New Material')
+    assert material.supplier_link == 'New Material'
 
     # Invalid input: name must be a string
     with pytest.raises(ValueError):
         material.setName(123)  # Passing an integer instead of a string
-    inserted_shelf = session.query(Shelf).filter_by(id=inserted_material.shelf_id).first()
-    assert inserted_shelf is not None
-    assert inserted_shelf.humidity_pct == 50.0
 
     # The dummy data will be rolled back after the test
 
@@ -149,7 +147,7 @@ def test_update_material_shelf(setup_database):
     session.commit()
 
     # Verify that the material's shelf was updated
-    updated_material = session.query(Material).filter_by(name="Dummy Material").first()
+    updated_material = session.query(Material).filter_by(supplier_link="Dummy Material").first()
     assert updated_material.shelf_id == new_shelf.id
 
     queried_shelf = session.query(Shelf).filter_by(id=new_shelf.id).first()
@@ -163,7 +161,7 @@ def test_update_material_colour(setup_database):
     session = setup_database
 
     # Fetch an existing material and update its data
-    material_to_update = session.query(Material).filter_by(name="Dummy Material").first()
+    material_to_update = session.query(Material).filter_by(supplier_link="Dummy Material").first()
     assert material_to_update is not None
 
 # Test setMaterialTypeID method with valid and invalid inputs
@@ -175,7 +173,7 @@ def test_set_material_type_id(session):
 
     material = Material(
         colour='Grey',
-        name='Material 5',
+        supplier_link='Material 5',
         mass=3.0,
         material_type_id=material_type.id
     )
@@ -195,14 +193,14 @@ def test_get_all_materials(session):
 
     material1 = Material(
         colour='White',
-        name='Material 6',
+        supplier_link='Material 6',
         mass=12.0,
         material_type_id=material_type.id
     )
 
     material2 = Material(
         colour='Black',
-        name='Material 7',
+        supplier_link='Material 7',
         mass=15.0,
         material_type_id=material_type.id
     )
@@ -218,6 +216,6 @@ def test_get_all_materials(session):
     # Test the getAll method to fetch all materials
     materials = Material.getAll(Material, session)
     assert len(materials) == 3  # We added three materials (first in test 1, with Material 1)
-    assert materials[0].name == 'Material 1'
-    assert materials[1].name == 'Material 6'
-    assert materials[2].name == 'Material 7'
+    assert materials[0].supplier_link == 'Material 1'
+    assert materials[1].supplier_link == 'Material 6'
+    assert materials[2].supplier_link == 'Material 7'

@@ -45,7 +45,7 @@ const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
         body: JSON.stringify({
 
         mass: editableMaterial.mass,
-        name: editableMaterial.name,
+        supplier_link: editableMaterial.supplier_link,
         material_type_id: editableMaterial.material_type_id,
         colour: editableMaterial.colour,
         shelf_id: editableMaterial.shelf_id
@@ -72,11 +72,11 @@ const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
         <ModalHeader className="flex flex-col gap-1">Edit Material</ModalHeader>
         <ModalBody>
           <Input
-            label="Name"
-            placeholder="Enter material name"
+            label="Supplier Link"
+            placeholder="Enter material supplier link"
             variant="bordered"
-            value={editableMaterial?.name || ""}
-            onChange={(e) => handleChange("name", e.target.value)}
+            value={editableMaterial?.supplier_link || ""}
+            onChange={(e) => handleChange("supplier_link", e.target.value)}
           />
           <Input
             label="Colour"

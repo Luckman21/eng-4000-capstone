@@ -5,7 +5,7 @@ from typing import Optional
 
 class MaterialUpdateRequest(BaseModel):
     colour: Optional[str] = None
-    name: Optional[str] = None
+    supplier_link: Optional[str] = None
     mass: Optional[float] = None
     material_type_id: Optional[int] = None
     shelf_id: Optional[int] = None

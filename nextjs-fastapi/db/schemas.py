@@ -3,7 +3,7 @@ from pydantic import BaseModel
 class MaterialSchema(BaseModel):
     id: int
     colour: str
-    name: str
+    supplier_link: str
     mass: float
     material_type_id: int
     shelf_id: int

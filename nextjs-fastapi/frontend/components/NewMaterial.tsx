@@ -16,7 +16,7 @@ export const NewMaterial = ({ isOpen, onOpenChange, onAddMaterial, materials }) 
   const [materialTypes, setMaterialTypes] = useState([]);
   const [newMaterial, setNewMaterial] = useState({
     colour: NaN,         
-    name:NaN,    
+    supplier_link:NaN,
     mass: NaN,           
     material_type_id: NaN,
     shelf_id: NaN
@@ -81,10 +81,10 @@ export const NewMaterial = ({ isOpen, onOpenChange, onAddMaterial, materials }) 
           />
           <Input
             isRequired
-            label="Name"
-            placeholder="Enter material name"
+            label="Supplier Link"
+            placeholder="Enter material supplier link"
             type="text"
-            onChange={(e) => handleChange("name", e.target.value)}
+            onChange={(e) => handleChange("supplier_link", e.target.value)}
           />
           <Input
             isRequired

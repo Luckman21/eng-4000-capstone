@@ -68,7 +68,7 @@ async def get_all_users(db: Session = Depends(get_db)):
 async def create_material(request: MaterialCreateRequest, db: Session = Depends(get_db)):
     repo = MaterialRepository(db)
 
-    material = db.query(Material).filter_by(name=request.name, colour=request.colour, material_type_id=request.material_type_id).first()
+    material = db.query(Material).filter_by(supplier_link=request.supplier_link, colour=request.colour, material_type_id=request.material_type_id).first()
 
     # Check if the entity exists
     if material is not None and repo.material_exists(material.id):
@@ -80,7 +80,7 @@ async def create_material(request: MaterialCreateRequest, db: Session = Depends(
         # Call the setter method to update the material
         repo.create_material(
                              colour=request.colour,
-                             name=request.name,
+                             supplier_link=request.supplier_link,
                              mass=request.mass,
                              material_type_id=request.material_type_id,
                              shelf_id=request.shelf_id
@@ -131,7 +131,7 @@ async def update_material(entity_id: int, request: MaterialUpdateRequest, db: Se
                              mass=request.mass,
                              colour=request.colour,
                              material_type_id=request.material_type_id,
-                             name=request.name,
+                             supplier_link=request.supplier_link,
                              shelf_id = request.shelf_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
