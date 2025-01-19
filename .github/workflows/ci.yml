@@ -70,6 +70,7 @@ jobs:
         python -m pip install --upgrade pip  # Upgrade pip to the latest version
         pip install sqlalchemy
         pip install pytest
+        pip install fastapi
 
       # Run unit tests (non-Selenium)
     - name: Run unit tests
