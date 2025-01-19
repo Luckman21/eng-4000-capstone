@@ -55,7 +55,7 @@ jobs:
     - name: Wait for services to start
       run: |
         echo "Waiting for services to start..."
-        sleep 10  # Adjust if necessary based on the startup time of your services
+        sleep 10
 
     # Set up Python environment
     - name: Set up Python
@@ -73,6 +73,7 @@ jobs:
         pip install fastapi
         pip install httpx
         pip install selenium
+        pip install chromedriver_autoinstaller
 
       # Run unit tests (non-Selenium)
     - name: Run unit tests
