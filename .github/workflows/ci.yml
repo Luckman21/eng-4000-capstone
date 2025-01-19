@@ -68,8 +68,7 @@ jobs:
       run: |
         echo "Installing dependencies"
         python -m pip install --upgrade pip  # Upgrade pip to the latest version
-        pip install -r requirements.txt  # Make sure sqlalchemy is in your requirements.txt
-        pip install sqlalchemy  # Explicitly install sqlalchemy if not in requirements.txt
+        pip install sqlalchemy
 
       # Run unit tests (non-Selenium)
     - name: Run unit tests
