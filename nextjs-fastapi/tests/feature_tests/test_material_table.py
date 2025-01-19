@@ -140,10 +140,10 @@ def test_search_bar(driver):
     time.sleep(3)
 
     input_element = driver.find_element(By.CSS_SELECTOR,
-                                             'input[aria-label="Search by colour, status, shelf, or type..."]')
+                                             'input[aria-label="Search by colour, status, shelf, mass, or type..."]')
 
     # Assert the aria-label matches the expected value
     aria_label_value = input_element.get_attribute('aria-label')
-    assert aria_label_value == "Search by colour, status, shelf, or type..."
+    assert aria_label_value == "Search by colour, status, shelf, mass, or type..."
 
 # TODO: Make test to assess status once material migration is complete

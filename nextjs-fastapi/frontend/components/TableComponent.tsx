@@ -291,7 +291,7 @@ const filteredItems = React.useMemo(() => {
       <Input
         isClearable
         className="w-full sm:max-w-[70%]"  // Search bar takes 70% of the width on larger screens
-        placeholder="Search by colour, status, shelf, or type..."
+        placeholder="Search by colour, status, shelf, mass, or type..."
         startContent={<SearchIcon />}
         value={filterValue}
         onClear={() => onClear()}
