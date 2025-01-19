@@ -124,6 +124,8 @@ const filteredItems = React.useMemo(() => {
     filteredMaterials = filteredMaterials
       .map((material) => {
 
+      const mass = material.mass || 0; // Assuming material.mass is a float
+
         // Differentiate thresholds given common sizes of each category's words
         const levenshteinThresholdColour = 2;
         const levenshteinThresholdStatus = 1;
@@ -136,10 +138,29 @@ const filteredItems = React.useMemo(() => {
         const shelfIdDistance = levenshtein(filterValue.toLowerCase(), material.shelf_id.toString().toLowerCase());
         const statusDistance = levenshtein(filterValue.toLowerCase(), material.status.toLowerCase());
         const materialTypeDistance = levenshtein(filterValue.toLowerCase(), materialTypeName.toLowerCase());
-
         // Sum of all Levenshtein distances
         const totalDistance =
           colourDistance + shelfIdDistance + statusDistance + materialTypeDistance;
+
+        console.log(filterValue)
+        const isInteger = !filterValue.includes(".");
+
+        // Initialize matches
+        let massMatch = false;
+        let shelfMatch = false;
+
+        if (isInteger) {
+          // If input is an integer, we will filter by shelf
+          shelfMatch = filterValue === material.shelf_id.toString().toLowerCase();
+        } else {
+
+          // If input is not an integer, we filter by mass
+          if (!isNaN(parseFloat(filterValue))) {
+            const inputMass = parseFloat(filterValue);
+            // Check if mass is within +/- 50 of the input value
+            massMatch = mass >= inputMass - 50 && mass <= inputMass + 50;
+          }
+        }
 
         // Add distance data to material for sorting
         return {
@@ -149,6 +170,7 @@ const filteredItems = React.useMemo(() => {
           shelfIdMatch: filterValue.toLowerCase() === material.shelf_id.toString().toLowerCase(),
           statusMatch: statusDistance <= levenshteinThresholdStatus,
           materialTypeMatch: materialTypeDistance <= levenshteinThresholdType,
+          massMatch: massMatch || false,
         };
       })
       .filter((material) => {
@@ -157,7 +179,8 @@ const filteredItems = React.useMemo(() => {
           material.colourMatch ||
           material.shelfIdMatch ||
           material.statusMatch ||
-          material.materialTypeMatch
+          material.materialTypeMatch ||
+          material.massMatch
         );
       });
   }
