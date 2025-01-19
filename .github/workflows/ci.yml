@@ -17,56 +17,58 @@ jobs:
         image: selenium/standalone-chrome:latest  # Using the latest Selenium image with Chrome
         options: >-
           --shm-size=2g
+        ports:
+          - 4444:4444  # Expose the Selenium WebDriver port
 
     steps:
     # Checkout the code
     - name: Checkout code
       uses: actions/checkout@v2
 
-      # Set up Docker (to build and run the frontend/backend containers)
+    # Set up Docker (to build and run the frontend/backend containers)
     - name: Set up Docker
       uses: docker/setup-buildx-action@v2
 
-      # Build the backend Docker image
+    # Build the backend Docker image
     - name: Build Backend Docker Image
       run: |
         cd nextjs-fastapi/backend
         docker build -t nextjs-backend .
 
-      # Build the frontend Docker image
+    # Build the frontend Docker image
     - name: Build Frontend Docker Image
       run: |
         cd nextjs-fastapi/frontend
         docker build -t nextjs-frontend .
 
-      # Run Backend in Docker
+    # Run Backend in Docker
     - name: Run Backend Docker Container
       run: |
         docker run -d --name nextjs-backend -p 8000:8000 nextjs-backend
 
-      # Run Frontend in Docker
+    # Run Frontend in Docker
     - name: Run Frontend Docker Container
       run: |
         docker run -d --name nextjs-frontend -p 3000:3000 nextjs-frontend
 
-      # Wait for the services to be fully ready
+    # Wait for the services to be fully ready
     - name: Wait for services to start
       run: |
         echo "Waiting for services to start..."
         sleep 10  # Adjust if necessary based on the startup time of your services
 
-      # Set up Python environment
+    # Set up Python environment
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: 3.8  # Use the Python version you're working with
 
-    # Install dependencies
+    # Install dependencies directly using pip
     - name: Install dependencies
       run: |
-        echo "Installing dependancies"
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt  # Ensure that chromedriver-autoinstaller is in your requirements.txt
+        echo "Installing dependencies"
+        python -m pip install --upgrade pip  # Upgrade pip to the latest version
+        pip install fastapi selenium pytest chromedriver-autoinstaller  # List your dependencies directly
 
     # Run unit tests (non-Selenium)
     - name: Run unit tests
@@ -87,14 +89,14 @@ jobs:
       working-directory: nextjs-fastapi/backend/controller
       run: |
         nohup uvicorn main:app --host 0.0.0.0 --port 8000 --reload &  # Starts FastAPI in the background
-        echo "backend is running"
+        echo "Backend is running"
 
     # Start the frontend Next.js service in the background
     - name: Start Next.js frontend
       working-directory: nextjs-fastapi/frontend
       run: |
         nohup npm run dev &  # Starts Next.js frontend in the background
-        echo "frontend is running"
+        echo "Frontend is running"
 
     # Wait for the services to start (you may need to adjust the time depending on your app's startup time)
     - name: Wait for services to start
@@ -106,7 +108,7 @@ jobs:
       run: |
         set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/feature_tests/
 
-      # Stop and remove containers after testing
+    # Stop and remove containers after testing
     - name: Clean up containers
       run: |
         docker stop nextjs-backend nextjs-frontend selenium
