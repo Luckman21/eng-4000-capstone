@@ -5,23 +5,23 @@ import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDis
 import { Autocomplete, AutocompleteItem } from "@heroui/react";
 import { fetchMaterialTypes, MaterialTypeName } from '@/constants/data';
 
-const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
-  const [editableMaterial, setEditableMaterial] = useState(material);
-  const [materialTypes, setMaterialTypes] = useState([]);
-  const mat = (material?.material_type_id)?.toString();
+const EditUser = ({ user, isOpen, onOpenChange, onSave }) => {
+  const [editableUser, setEditableUser] = useState(user);
+  const [userTypes, setUserTypes] = useState([]);
+  const mat = (user?.user_type_id)?.toString();
   console.log(mat)
 
 
 
   useEffect(() => {
-    setEditableMaterial(material);
-  }, [material]);
+    setEditableUser(user);
+  }, [user]);
 
-   // Fetch material types on component mount
+   // Fetch user types on component mount
   useEffect(() => {
     const fetchTypes = async () => {
       const types = await fetchMaterialTypes();
-      setMaterialTypes(types);
+      setUserTypes(types);
 
     };
     fetchTypes();
@@ -29,7 +29,7 @@ const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
   }, []);
 
   const handleChange = (field, value) => {
-    setEditableMaterial((prev) => ({ ...prev, [field]: value }));
+    setEditableUser((prev) => ({ ...prev, [field]: value }));
   };
 
 
@@ -39,29 +39,28 @@ const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
     try {
 
       // Send update request to backend
-      const response = await fetch(`http://localhost:8000/update_material/${editableMaterial.id}`, {
+      const response = await fetch(`http://localhost:8000/update_user/${editableUser.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
 
-        mass: editableMaterial.mass,
-        supplier_link: editableMaterial.supplier_link,
-        material_type_id: editableMaterial.material_type_id,
-        colour: editableMaterial.colour,
-        shelf_id: editableMaterial.shelf_id
+        username: editableUser.username,
+        password: editableUser.password,
+        email: editableUser.email,
+        user_type_id: editableUser.user_type_id,
         }),
       });
         if (!response.ok) {
         console.log(response.body)
          const errorData = await response.json();
-         console.error("Error updating material:", errorData); // Log the error response from the backend
-         throw new Error("Failed to update material");
+         console.error("Error updating user:", errorData); // Log the error response from the backend
+         throw new Error("Failed to update user");
       }
-        const updatedMaterial = { ...editableMaterial };
+        const updatedMaterial = { ...editableUser };
         onSave(updatedMaterial); // Notify parent
         onOpenChange(); // Close the modal
       } catch (error) {
-        console.error("Error updating material:", error);
+        console.error("Error updating user:", error);
       }
     }
 
@@ -72,45 +71,36 @@ const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
         <ModalHeader className="flex flex-col gap-1">Edit Material</ModalHeader>
         <ModalBody>
           <Input
-            label="Supplier Link"
-            placeholder="Enter material supplier link"
+            label="Username"
+            placeholder="Enter username"
             variant="bordered"
-            value={editableMaterial?.supplier_link || ""}
-            onChange={(e) => handleChange("supplier_link", e.target.value)}
+            value={editableUser?.name || ""}
+            onChange={(e) => handleChange("name", e.target.value)}
           />
           <Input
-            label="Colour"
-            placeholder="Enter material colour"
+            label="Password"
+            placeholder="Enter user password"
             variant="bordered"
-            value={editableMaterial?.colour || ""}
+            value={editableUser?.colour || ""}
             onChange={(e) => handleChange("colour", e.target.value)}
           />
           <Input
-            label="Weight (g)"
-            placeholder="Enter material weight"
-            type="number"
+            label="Email"
+            placeholder="Enter user email"
             variant="bordered"
-            value={editableMaterial?.mass || ""}
+            value={editableUser?.mass || ""}
             onChange={(e) => handleChange("mass", parseFloat(e.target.value))}
-          />
-            <Input
-            label="Shelf"
-            placeholder="Enter shelf number"
-            type="number"
-            variant="bordered"
-            value={editableMaterial?.shelf_id || ""}
-            onChange={(e) => handleChange("shelf_id", parseFloat(e.target.value))}
           />
 
           {/* Autocomplete for Material Type */}
           <Autocomplete
-            label="Material Type"
-            placeholder="Search material type"
+            label="User Type"
+            placeholder="Select user type"
             defaultSelectedKey={mat}
-            defaultItems={materialTypes}
-            onSelectionChange={(key) => handleChange("material_type_id", parseInt(key, 10))}
+            defaultItems={userTypes}
+            onSelectionChange={(key) => handleChange("user_type_id", parseInt(key, 2))}
           >
-             {materialTypes.map((item) => (
+             {userTypes.map((item) => (
             <AutocompleteItem key={item.key} value={item.key}>
                 {item.label}
             </AutocompleteItem>
@@ -131,5 +121,5 @@ const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
 };
 
 
-export default Popup;
+export default EditUser;
 

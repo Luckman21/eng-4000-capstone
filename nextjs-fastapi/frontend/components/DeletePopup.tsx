@@ -1,26 +1,31 @@
 "use client";
 import React from 'react'
 import { useEffect, useState } from "react";
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
 
-export const DeletePopup = ({ material, isOpen, onOpenChange, onDelete}) => {
-  const [deleteMaterial, setDeleteMaterial] = useState(material);
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button
+} from "@heroui/react";
 
-  React.useEffect(() => {
-    setDeleteMaterial(material);
-  }, [material]);
+const DeletePopup = ({ item, isOpen, onOpenChange, onDelete, itemType}) => {
+
+  
 
   const handleDelete = async () => {
     try {
       // send delete request to backend
-      const response = await fetch(`http://localhost:8000/delete_material/${material.id}` , {
+      const response = await fetch(`http://localhost:8000/${itemType}/${item.id}` , {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       });
 
       if (!response.ok) throw new Error("Failed to delete material");
 
-      onDelete(material.id);
+      onDelete(item.id);
       onOpenChange();
     } catch (error) {
       console.error("Error deleting material:", error);
@@ -31,10 +36,10 @@ export const DeletePopup = ({ material, isOpen, onOpenChange, onDelete}) => {
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center" backdrop="opaque">
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
-          Delete Material
+          Delete Item
         </ModalHeader>
         <ModalBody>
-          Are you sure you want to delete this material? This action cannot be undone.
+          Are you sure you want to delete this item? This action cannot be undone.
         </ModalBody>
         <ModalFooter>
           <Button color="danger" variant="flat" onPress={onOpenChange}>
@@ -48,3 +53,4 @@ export const DeletePopup = ({ material, isOpen, onOpenChange, onDelete}) => {
     </Modal>
   );
 };
+export default DeletePopup;

@@ -1,0 +1,184 @@
+"use client";
+import { useEffect, useState } from "react";
+import { User } from "@/types";
+import axios from "axios";
+import { useAsyncList } from "@react-stately/data";
+
+import React from "react";
+import {
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Chip,
+  Tooltip,
+  Spinner,
+  useDisclosure,
+  Button
+} from "@heroui/react";
+
+import { EditIcon } from "@/constants/EditIcon";
+import { DeleteIcon } from "@/constants/DeleteIcon";
+import { NewUser, EditUser,DeletePopup } from "@/components";
+
+
+
+const UserTable = () => {
+  const APIHEADER = "delete_user";  
+  const [users, setUsers] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [editUser, setEditUser] = useState<User | null>(null); 
+  const {
+    isOpen: isModalOneOpen,
+    onOpen: openModalOne,
+    onOpenChange: handleModalOneChange,
+  } = useDisclosure();
+  const [deleteUser, setDeleteUser] = useState<User | null>(null);
+  const {isOpen: isDeleteOpen, onOpen: onDeleteOpen, onOpenChange: onDeleteOpenChange} = useDisclosure();
+
+  
+  const {
+    isOpen: isModalTwoOpen,
+    onOpen: openModalTwo,
+    onOpenChange: handleModalTwoChange,
+  } = useDisclosure();
+
+  
+
+  const list = useAsyncList({
+    async load({ signal }) {
+      let res = await fetch("http://localhost:8000/users", { signal });
+      let json = await res.json();
+      setIsLoading(false);
+
+      return {
+        items: json,
+      };
+    },
+  });
+
+  const handleEditClick = (user: User) => {
+    setEditUser(user);
+    openModalOne();
+  };
+
+  const handleDeleteClick = (user: User) => {
+    setDeleteUser(user);
+    onDeleteOpen();
+  };
+
+  // Callback for updating a material
+  const handleSaveMaterial = (updatedMaterial: User) => {
+    setUsers((prevMaterials) =>
+      prevMaterials.map((mat) =>
+        mat.id === updatedMaterial.id ? updatedMaterial : mat
+      )
+    );
+    list.reload();
+  };
+  const addUser = (newUser: User) => {
+    setUsers((prevUsers) => [...prevUsers, newUser]);
+    
+      list.reload();
+    };
+
+ const handleDeleteUser = (deletedId: number) => {
+    setUsers((prevMaterials) => prevMaterials.filter((mat) => mat.id !== deletedId));
+  };
+
+
+  const renderCell = React.useCallback(
+    (material, columnKey) => {
+      const cellValue = material[columnKey];
+      switch (columnKey) {
+        
+        case "actions":
+          return (
+            <div className="relative flex items-center gap-2">
+              <Tooltip content="Edit material">
+                <span
+                  onClick={() => handleEditClick(material)}
+                  className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                >
+                  <EditIcon />
+                </span>
+              </Tooltip>
+              <Tooltip color="danger" content="Delete material">
+                  <span
+                  onClick={() => handleDeleteClick(material)}
+                  className="text-lg text-danger cursor-pointer active:opacity-50"
+                >
+                  <DeleteIcon />
+                </span>
+              </Tooltip>
+            </div>
+          );
+          case "shelf_id":
+          return cellValue || "Not Assigned";
+        default:
+          return cellValue;
+      }
+    },
+    []
+  );
+
+  return (
+    <div>
+      <Button onPress={()=> handleModalTwoChange()} color="primary" >Add Material</Button>
+      <Table
+        aria-label="Visualize information through table"
+        isStriped
+        onSortChange={list.sort}
+        sortDescriptor={list.sortDescriptor}
+      >
+        <TableHeader>
+          <TableColumn allowsSorting key="id">
+            ID
+          </TableColumn>
+          <TableColumn allowsSorting key="username">
+            Username
+          </TableColumn>
+          <TableColumn allowsSorting key="password">
+            Password
+          </TableColumn>
+          <TableColumn allowsSorting key="email">
+            Email
+          </TableColumn>
+          <TableColumn allowsSorting key="user_type_id">
+            User Type
+          </TableColumn>
+          <TableColumn key="actions">ACTIONS</TableColumn>
+        </TableHeader>
+        <TableBody
+          items={users}
+          isLoading={isLoading}
+          loadingContent={<Spinner label="Loading..." />}
+        >
+          {(item) => (
+            <TableRow key={item.id}>
+              {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+      <EditUser
+        user={editUser}
+        isOpen={isModalOneOpen}
+        onOpenChange={handleModalOneChange}
+        onSave={handleSaveMaterial} // Pass callback to Popup
+      />
+      <NewUser isOpen={isModalTwoOpen} onOpenChange={handleModalTwoChange} onAddUser={addUser} users={users} />
+       <DeletePopup
+        item={deleteUser}
+        isOpen={isDeleteOpen}
+        onOpenChange={onDeleteOpenChange}
+        itemType={APIHEADER}
+        onDelete={handleDeleteUser} // Pass callback to DeletePopup
+      />
+    </div>
+  );
+};
+
+export default UserTable;

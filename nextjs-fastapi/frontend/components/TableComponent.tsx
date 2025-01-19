@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Material, MaterialType } from "@/types";
+import { Material } from "@/types";
 import axios from "axios";
 import { useAsyncList } from "@react-stately/data";
 import { fetchMaterialTypes } from "@/constants/data";
@@ -17,15 +17,15 @@ import {
   Tooltip,
   Spinner,
   useDisclosure,
-  Button
-} from "@nextui-org/react";
+  Button,
+} from "@heroui/react";
 
 import { EditIcon } from "@/constants/EditIcon";
 import { DeleteIcon } from "@/constants/DeleteIcon";
 
 import { Popup } from "@/components";
 import { NewMaterial } from "@/components";
-import { DeletePopup } from "@/components/DeletePopup";
+import { DeletePopup } from "@/components";
 
 const statusColorMap = {
   "In Stock": "success",
@@ -33,6 +33,7 @@ const statusColorMap = {
 }
 
 const TableComponent = () => {
+  const APIHEADER = "delete_material"; 
   const [materials, setMaterials] = useState<Material[]>([]);
   const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]); // Add materialTypes state
   const [isLoading, setIsLoading] = useState(true);
@@ -52,14 +53,13 @@ const TableComponent = () => {
     onOpenChange: handleModalTwoChange,
   } = useDisclosure();
 
-  
 
   const list = useAsyncList({
     async load({ signal }) {
       let res = await fetch("http://localhost:8000/materials", { signal });
       let json = await res.json();
 
-      const updatedMaterials = json.map((material) => ({
+      const updatedMaterials = json.map((material: { mass: number; }) => ({
         ...material,
         status: material.mass <= 50 ? "Low Stock" : "In Stock",
       }));
@@ -235,10 +235,11 @@ const TableComponent = () => {
       />
       <NewMaterial isOpen={isModalTwoOpen} onOpenChange={handleModalTwoChange} onAddMaterial={addMaterial} materials={materials} />
        <DeletePopup
-        material={deleteMaterial}
+        item={deleteMaterial}
         isOpen={isDeleteOpen}
         onOpenChange={onDeleteOpenChange}
         onDelete={handleDeleteMaterial} // Pass callback to DeletePopup
+        itemType={APIHEADER}
       />
     </div>
   );
