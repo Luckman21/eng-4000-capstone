@@ -14,7 +14,7 @@ import re
 def driver():
 
     chrome_options = Options()
-    #chrome_options.add_argument("--headless") # This means you won't see the actual icon
+    chrome_options.add_argument("--headless") # This means you won't see the actual icon
     chrome_options.add_argument("--disable-gpu")
 
     # This will change depending on your driver
@@ -145,7 +145,7 @@ def test_search_bar(driver):
 
     # Assert the aria-label matches the expected value
     aria_label_value = input_element.get_attribute('aria-label')
-    assert aria_label_value == "Search by colour, status, shelf, mass, or type..."
+    assert aria_label_value == "Search by colour, status, shelf, or type..."
 
 def test_colour_query(driver):
     driver.get("http://localhost:3000")
