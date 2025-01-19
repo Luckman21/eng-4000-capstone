@@ -1,7 +1,7 @@
+
 import './globals.css';
 export const metadata = {
     title: 'Pantheon Inventory Management',
-    description: 'Discover the best cars in the world',
     
 }
 

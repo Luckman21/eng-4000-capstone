@@ -38,3 +38,4 @@ next-env.d.ts
 __pycache__/
 venv
 nextjs-fastapi/db/capstone_db.db
+node_modules
