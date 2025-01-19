@@ -80,7 +80,15 @@ jobs:
         set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/unit_tests
         echo "Completed unit tests"
 
-    # Run integration tests (non-Selenium)
+      # Run database setup scripts (for in-memory DB)
+    - name: Run database setup scripts
+      run: |
+        echo "Running database setup scripts"
+        python nextjs-fastapi/db/scripts/TableCreation.py  # Run the first script
+        python nextjs-fastapi/db/scripts/DatabasePopulate.py  # Run the second script
+
+
+      # Run integration tests (non-Selenium)
     - name: Run integration tests
       run: |
         echo "Running integration tests"
