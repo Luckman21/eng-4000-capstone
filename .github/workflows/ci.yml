@@ -71,6 +71,7 @@ jobs:
         pip install sqlalchemy
         pip install pytest
         pip install fastapi
+        pip install httpx
 
       # Run unit tests (non-Selenium)
     - name: Run unit tests
