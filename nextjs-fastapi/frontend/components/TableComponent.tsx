@@ -129,7 +129,7 @@ const filteredItems = React.useMemo(() => {
         // Differentiate thresholds given common sizes of each category's words
         const levenshteinThresholdColour = 2;
         const levenshteinThresholdStatus = 1;
-        const levenshteinThresholdType = 0;
+        const levenshteinThresholdType = 1;
 
         const materialTypeName = materialTypes.find((type) => type.key === material.material_type_id)?.label || "";
 
