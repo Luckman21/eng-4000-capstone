@@ -68,9 +68,10 @@ jobs:
       run: |
         echo "Installing dependencies"
         python -m pip install --upgrade pip  # Upgrade pip to the latest version
-        pip install fastapi selenium pytest chromedriver-autoinstaller  # List your dependencies directly
+        pip install -r requirements.txt  # Make sure sqlalchemy is in your requirements.txt
+        pip install sqlalchemy  # Explicitly install sqlalchemy if not in requirements.txt
 
-    # Run unit tests (non-Selenium)
+      # Run unit tests (non-Selenium)
     - name: Run unit tests
       run: |
         echo "Running unit tests"
