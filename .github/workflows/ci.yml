@@ -16,7 +16,7 @@ jobs:
       selenium:
         image: selenium/standalone-chrome:latest  # Using the latest Selenium image with Chrome
         options: >-
-          --shm-size=2g  # Allocate shared memory size (important for headless Chrome)
+          --shm-size=2g
 
     steps:
     # Checkout the code
