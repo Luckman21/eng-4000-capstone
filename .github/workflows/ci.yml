@@ -72,6 +72,7 @@ jobs:
         pip install pytest
         pip install fastapi
         pip install httpx
+        pip install selenium
 
       # Run unit tests (non-Selenium)
     - name: Run unit tests
