@@ -56,7 +56,6 @@ jobs:
 # Run database table creation script
     - name: Run table creation script
       run: |
-        cd db/scripts
         cd nextjs-fastapi/db/scripts
         python TableCreation.py
         echo "Database tables created"
