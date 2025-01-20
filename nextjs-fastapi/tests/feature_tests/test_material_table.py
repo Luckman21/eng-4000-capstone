@@ -8,7 +8,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import Remote
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+import chromedriver_autoinstaller
 import re
 import os
 
@@ -26,6 +26,10 @@ def driver():
     chrome_options.add_argument("--no-sandbox")  # Might help in some environments
     # This will change depending on your driver
     if os.getenv("CI"):  # If in CI environment
+        # Automatically installs the correct ChromeDriver version for your installed Chrome
+        chromedriver_autoinstaller.install()
+
+        # Use the remote selenium service
         driver = Remote(
             command_executor="http://selenium:4444/wd/hub",  # Selenium service URL in Docker
             options=chrome_options  # Pass options directly
