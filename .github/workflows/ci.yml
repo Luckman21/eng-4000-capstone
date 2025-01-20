@@ -64,8 +64,8 @@ jobs:
       # Start the backend FastAPI service (run in background)
     - name: Start FastAPI backend
       run: |
-           cd nextjs-fastapi/backend
-           nohup fastapi dev controller.main:app --host 0.0.0.0 --port 8000 &  # Starts FastAPI using dev command
+           cd nextjs-fastapi/backend/controller
+           nohup fastapi dev main.py
            echo "Backend is running"
 
     # Start the frontend Next.js service (run in background)
