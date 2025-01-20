@@ -37,7 +37,7 @@ def driver():
 
 def test_material_table_header(driver):
     driver.get(TEST_URL)
-    time.sleep(3)
+    time.sleep(5)
 
     # Find the header row
     header_row = driver.find_element(By.CSS_SELECTOR, "thead tr")
@@ -50,7 +50,7 @@ def test_material_table_header(driver):
 
 def test_material_table_buttons(driver):
     driver.get(TEST_URL)
-    time.sleep(3)
+    time.sleep(5)
 
 
     rows = driver.find_elements(By.CSS_SELECTOR, "tbody tr")
@@ -65,7 +65,7 @@ def test_material_table_buttons(driver):
 def test_material_table_order(driver):
 
     driver.get(TEST_URL)
-    time.sleep(3)
+    time.sleep(5)
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[1]")
     assert first_td.text == '1'
@@ -76,11 +76,11 @@ def test_material_table_order(driver):
 def test_edit_button(driver):
 
     driver.get(TEST_URL)
-    time.sleep(3)
+    time.sleep(5)
 
     button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[8]/div/span[1]")
     button.click()
-    time.sleep(2)
+    time.sleep(5)
 
     panel = driver.find_element(By.TAG_NAME, "section")
 
@@ -98,7 +98,7 @@ def test_edit_button(driver):
 
 def test_create_button(driver):
     driver.get(TEST_URL)
-    time.sleep(3)
+    time.sleep(5)
 
     buttons = driver.find_elements(By.CSS_SELECTOR, "button")
     button = buttons[0]
@@ -123,7 +123,7 @@ def test_create_button(driver):
 
 def test_delete_confirmation(driver):
     driver.get(TEST_URL)
-    time.sleep(3)
+    time.sleep(5)
 
     row = driver.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
     print(row.text)
@@ -131,7 +131,7 @@ def test_delete_confirmation(driver):
     delete_icon = row.find_elements(By.TAG_NAME, "svg")[2]
 
     delete_icon.click()
-    time.sleep(3)
+    time.sleep(5)
 
     popup = driver.find_element(By.TAG_NAME, "section")
 
@@ -149,7 +149,7 @@ def test_delete_confirmation(driver):
 
 def test_search_bar(driver):
     driver.get(TEST_URL)
-    time.sleep(3)
+    time.sleep(5)
 
     input_element = driver.find_element(By.CSS_SELECTOR,
                                              'input[aria-label="Search by colour, status, shelf, or type..."]')
@@ -160,7 +160,7 @@ def test_search_bar(driver):
 
 def test_colour_query(driver):
     driver.get(TEST_URL)
-    time.sleep(3)
+    time.sleep(5)
 
     input_element = driver.find_element(By.CSS_SELECTOR,
                                         'input[aria-label="Search by colour, status, shelf, or type..."]')
@@ -177,27 +177,27 @@ def test_colour_query(driver):
 
 def test_status_query(driver):
     driver.get(TEST_URL)
-    time.sleep(3)
+    time.sleep(5)
 
     input_element = driver.find_element(By.CSS_SELECTOR,
                                             'input[aria-label="Search by colour, status, shelf, or type..."]')
 
     # Status
     input_element.send_keys("In Stock")
-    time.sleep(2)
+    time.sleep(5)
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[7]")
     assert first_td.text == 'In Stock'
 
 def test_shelf_query(driver):
     driver.get(TEST_URL)
-    time.sleep(3)
+    time.sleep(5)
 
     input_element = driver.find_element(By.CSS_SELECTOR,
                                         'input[aria-label="Search by colour, status, shelf, or type..."]')
     # Shelf
     input_element.send_keys("1")
-    time.sleep(2)
+    time.sleep(5)
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[6]")
     assert first_td.text == '1'
@@ -205,13 +205,13 @@ def test_shelf_query(driver):
 
 def test_type_query(driver):
     driver.get(TEST_URL)
-    time.sleep(3)
+    time.sleep(5)
 
     input_element = driver.find_element(By.CSS_SELECTOR,
                                         'input[aria-label="Search by colour, status, shelf, or type..."]')
     # Type
     input_element.send_keys("PLA")
-    time.sleep(2)
+    time.sleep(5)
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[5]")
     # Levenstien Distance
