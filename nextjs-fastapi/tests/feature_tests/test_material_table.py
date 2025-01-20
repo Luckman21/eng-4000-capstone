@@ -8,7 +8,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import Remote
-import chromedriver_autoinstaller
+#import chromedriver_autoinstaller
 import re
 import os
 
@@ -60,10 +60,11 @@ def test_material_table_buttons(driver):
 
     # Check each row for the presence of two SVG elements
     for index, row in enumerate(rows):
+        WebDriverWait(row, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "svg")))
         svg_elements = row.find_elements(By.TAG_NAME, "svg")
 
         # Assert that each row has exactly 2 SVGs (or adjust as necessary)
-        assert len(svg_elements) == 3, f"Row {index + 1} does not have exactly 2 SVG elements."
+        assert len(svg_elements) == 3, f"Row {index + 1} does not have exactly 3 SVG elements."
 
 def test_material_table_order(driver):
 
@@ -83,7 +84,7 @@ def test_edit_button(driver):
 
     button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[8]/div/span[1]")
     button.click()
-    time.sleep(5)
+    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 
     panel = driver.find_element(By.TAG_NAME, "section")
 
@@ -106,7 +107,7 @@ def test_create_button(driver):
     buttons = driver.find_elements(By.CSS_SELECTOR, "button")
     button = buttons[0]
     button.click()
-    time.sleep(2)
+    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 
     panel = driver.find_element(By.CSS_SELECTOR, "section")
 
@@ -135,7 +136,7 @@ def test_delete_confirmation(driver):
     delete_icon = row.find_elements(By.TAG_NAME, "svg")[2]
 
     delete_icon.click()
-    time.sleep(2)
+    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 
     popup = driver.find_element(By.TAG_NAME, "section")
 
@@ -172,7 +173,7 @@ def test_colour_query(driver):
 
     # Colour
     input_element.send_keys("Red")
-    time.sleep(2)
+    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[2]")))
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[2]")
 
@@ -188,7 +189,7 @@ def test_status_query(driver):
 
     # Status
     input_element.send_keys("In Stock")
-    time.sleep(2)
+    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[7]")))
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[7]")
     assert first_td.text == 'In Stock'
@@ -201,7 +202,7 @@ def test_shelf_query(driver):
                                         'input[aria-label="Search by colour, status, shelf, or type..."]')
     # Shelf
     input_element.send_keys("1")
-    time.sleep(2)
+    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[6]")))
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[6]")
     assert first_td.text == '1'
@@ -216,7 +217,7 @@ def test_type_query(driver):
                                         'input[aria-label="Search by colour, status, shelf, or type..."]')
     # Type
     input_element.send_keys("PLA")
-    time.sleep(3)
+    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[5]")))
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[5]")
     # Levenstien Distance
