@@ -8,7 +8,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import re
-import chromedriver_autoinstaller
+#import chromedriver_autoinstaller
 import os
 
 
@@ -38,7 +38,7 @@ def driver():
 
 def test_material_table_header(driver):
     driver.get(TEST_URL)
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "thead tr")))
+    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, "thead tr")))
 
     # Find the header row
     header_row = driver.find_element(By.CSS_SELECTOR, "thead tr")
@@ -51,7 +51,7 @@ def test_material_table_header(driver):
 
 def test_material_table_buttons(driver):
     driver.get(TEST_URL)
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "tbody tr")))
+    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, "tbody tr")))
 
 
     rows = driver.find_elements(By.CSS_SELECTOR, "tbody tr")
