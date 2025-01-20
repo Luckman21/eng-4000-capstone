@@ -20,7 +20,7 @@ MqttClient mqttClient(wiFiClient);  // Connect wifiClient to MqttClient
 
 DHT_Unified dht(DHTPIN, DHTTYPE); // Specify pin and sensor model
 
-const char broker[] = "test.mqtt.org";
+const char broker[] = "test.mosquitto.org";
 int port = 1883;
 const char topic_temp[] = "temp_value";
 const char topic_humid[] = "humid_value";
@@ -54,8 +54,9 @@ void setup() {
   Serial.println(broker);
 
   if (!mqttClient.connect(broker, port)) {
-    Serial.print("MQTT connection failed\nError Code = "+ mqttClient.connectError());
-    while(1);
+    Serial.print("MQTT connection failed\nError Code = ");
+    Serial.println(mqttClient.connectError());  // Prints the error code for debugging
+    while (1);  // Keep trying until connection is successful
   }
 
   Serial.println("Connected to MQTT broker.\n");
@@ -69,11 +70,14 @@ void loop() {
   if (curr_ms - prev_ms >= interval) {
     prev_ms = curr_ms;
 
-    sensors_event_t event;
-    dht.temperature().getEvent(&event);
+    sensors_event_t temp_event;
+    dht.temperature().getEvent(&temp_event);
 
-    float temp = event.temperature;
-    float humid = event.relative_humidity;
+    sensors_event_t humid_event;
+    dht.humidity().getEvent(&humid_event);
+
+    float temp = temp_event.temperature;
+    float humid = humid_event.relative_humidity;
 
     // Log updates to serial monitor
     Serial.print("Send temp to topic_temp: ");
