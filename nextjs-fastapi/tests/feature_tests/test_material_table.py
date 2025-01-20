@@ -13,10 +13,8 @@ import re
 import os
 
 
-if os.getenv("CI"):
-    TEST_URL = "http://localhost:3000"
-else:
-    TEST_URL = "http://localhost:3000"
+
+TEST_URL = "http://localhost:3000"
 
 @pytest.fixture
 def driver():
