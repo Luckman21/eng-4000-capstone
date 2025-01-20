@@ -43,6 +43,10 @@ jobs:
         cd nextjs-fastapi/frontend
         npm install  # Install Node.js dependencies for frontend
 
+    # Set the database URL for Integration / Unit tests
+    - name: Set TEST_TYPE for Integration tests
+      run: echo "TEST_TYPE=integration" >> $GITHUB_ENV
+
     # Run unit tests (non-Selenium)
     - name: Run unit tests
       run: |
@@ -52,14 +56,6 @@ jobs:
     - name: Run integration tests
       run: |
         set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/integration_tests
-
-
-    # Run database population script
-    - name: Run database population script
-      run: |
-        cd nextjs-fastapi/db/scripts
-        python DatabasePopulate.py
-        echo "Database populated with test data"
 
 
       # Start the backend FastAPI service (run in background)
@@ -82,6 +78,9 @@ jobs:
         echo "Waiting for services to start..."
         sleep 20  # Adjust this value based on how long the services need to start
 
+      # Set the database URL for Selenium tests
+    - name: Set TEST_TYPE for Selenium tests
+      run: echo "TEST_TYPE=selenium" >> $GITHUB_ENV
 
       # Run Selenium tests
     - name: Run Selenium tests
