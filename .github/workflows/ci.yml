@@ -16,7 +16,7 @@ jobs:
       selenium:
         image: selenium/standalone-chrome:latest
         options: >-
-          --shm-size=8g
+          --shm-size=16g
         ports:
           - 4444:4444
 
