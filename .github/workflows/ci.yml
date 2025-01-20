@@ -92,6 +92,10 @@ jobs:
     # Clean up (optional) - You can skip if you don't need to stop the services
     - name: Clean up services
       run: |
-        kill $(ps aux | grep 'uvicorn' | awk '{print $1}')
-        kill $(ps aux | grep 'npm run dev' | awk '{print $1}')
+        # Kill the uvicorn process
+        kill $(ps aux | grep 'uvicorn' | grep -v 'grep' | awk '{print $2}')
+
+        # Kill the npm run dev process
+        kill $(ps aux | grep 'npm run dev' | grep -v 'grep' | awk '{print $2}')
+
         echo "Services stopped"
