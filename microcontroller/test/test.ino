@@ -1,17 +1,29 @@
-#define YORKU_SSID ""
-#define YORKU_PASS ""
+#define YORKU_SSID "" // move to cred.h
+#define YORKU_PASS "" // move to cred.h
+#define DHTPIN 7
+#define DHTTYPE 11
 
 //#include "cred.h" // wifi credentials
 #include <ArduinoMqttClient.h>
-#include <WifiNINA.h>
+#include <WiFiNINA.h>
+#include <Adafruit_Sensor.h>
+#include <DHT.h>
+#include <DHT_U.h>
 
 int temp_sensor_inPin = 7;
 
 char ssid[] = YORKU_SSID; // network SSID (name)
 char pass[] = YORKU_PASS; // network password (used for WPA, or as a key for WEP)
 
-WifiClient wifiClient;              // Create a wifiClient
-MqttClient mqttClient(wifiClient);  // Connect wifiClient to MqttClient
+WiFiClient wiFiClient;              // Create a wifiClient
+MqttClient mqttClient(wiFiClient);  // Connect wifiClient to MqttClient
+
+DHT_Unified dht(DHTPIN, DHTTYPE); // Specify pin and sensor model
+
+const char broker[] = "test.mqtt.org";
+int port = 1883;
+const char topic_temp[] = "temp_value";
+const char topic_humid[] = "humid_value";
 
 // Create an interval for sending messages (in milliseconds)
 const long interval = 8000;
@@ -23,6 +35,11 @@ void setup() {
     ; // wait for serial port to connect.  Needed for native USB port only
   }
 
+  // set up DHT sensor
+  dht.begin();
+  sensor_t sensor;
+  dht.temperature().getSensor(&sensor);
+
   // attempt to connect to Wifi network
   Serial.print("Attempting to connect to WPA SSID: ");
   Serial.println(ssid);
@@ -33,7 +50,8 @@ void setup() {
   }
 
   Serial.println("Connected to network.\n");
-  Serial.println("Attempting to connect to the MQTT broker: "+ broker);
+  Serial.println("Attempting to connect to the MQTT broker: ");
+  Serial.println(broker);
 
   if (!mqttClient.connect(broker, port)) {
     Serial.print("MQTT connection failed\nError Code = "+ mqttClient.connectError());
@@ -48,9 +66,33 @@ void loop() {
 
   unsigned long curr_ms = millis();
 
-  if (curr_ms - prev_ms >= inverval) {
+  if (curr_ms - prev_ms >= interval) {
     prev_ms = curr_ms;
 
-    int Rvalue = digitalRead(temp_sensor_inPin);
+    sensors_event_t event;
+    dht.temperature().getEvent(&event);
+
+    float temp = event.temperature;
+    float humid = event.relative_humidity;
+
+    // Log updates to serial monitor
+    Serial.print("Send temp to topic_temp: ");
+    Serial.println(topic_temp);
+    Serial.println(temp);
+
+    Serial.print("Send humid to topic_humid: ");
+    Serial.println(topic_humid);
+    Serial.println(humid);
+
+    // Send message, using print to send message contents
+    mqttClient.beginMessage(topic_temp);
+    mqttClient.print(temp);
+    mqttClient.endMessage();
+
+    mqttClient.beginMessage(topic_humid);
+    mqttClient.print(humid);
+    mqttClient.endMessage();
+
+    Serial.println();
   }
 }
