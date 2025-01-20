@@ -13,7 +13,7 @@ import os
 
 
 if os.getenv("CI"):
-    TEST_URL = "http://frontend:3000"
+    TEST_URL = "http://nextjs-frontend:3000"
 else:
     TEST_URL = "http://localhost:3000"
 

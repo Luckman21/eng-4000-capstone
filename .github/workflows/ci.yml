@@ -59,7 +59,7 @@ jobs:
     # Wait for services to start
     - name: Wait for services to start
       run: |
-        sleep 10  # Adjust the sleep time if necessary
+        sleep 5  # Adjust the sleep time if necessary
 
     # Set up Python environment
     - name: Set up Python
@@ -99,8 +99,17 @@ jobs:
     - name: Wait for services to start
       run: |
         sleep 5
+      # Set the TEST_URL based on where the tests are running
+    - name: Set TEST_URL environment variable
+      run: |
+        if [[ "$RUNNING_IN_DOCKER" == "true" ]]; then
+          echo "TEST_URL=http://nextjs-frontend:3000" >> $GITHUB_ENV
+        else
+          echo "TEST_URL=http://localhost:3000" >> $GITHUB_ENV
+        fi
 
-    # Run Selenium tests
+
+      # Run Selenium tests
     - name: Run Selenium tests
       run: |
         set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/feature_tests/
