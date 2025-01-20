@@ -1,0 +1,101 @@
+name: Python CI with Pytest and Selenium
+
+on:
+  push:
+    branches:
+      - '*'  # Trigger on any push to any branch
+  pull_request:
+    branches:
+      - main  # Trigger on pull requests targeting the 'main' branch
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      selenium:
+        image: selenium/standalone-chrome:latest
+        options: >-
+          --shm-size=32g
+        ports:
+          - 4444:4444
+
+    steps:
+    # Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Set up Python environment
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    # Install dependencies
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install sqlalchemy pytest fastapi selenium chromedriver_autoinstaller httpx
+        pip install uvicorn
+
+      # Install frontend dependencies
+    - name: Install frontend dependencies
+      run: |
+        cd nextjs-fastapi/frontend
+        npm install  # Install Node.js dependencies for frontend
+
+    # Set the database URL for Integration / Unit tests
+    - name: Set TEST_TYPE for Integration tests
+      run: echo "TEST_TYPE=integration" >> $GITHUB_ENV
+
+    # Run unit tests (non-Selenium)
+    - name: Run unit tests
+      run: |
+        set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/unit_tests
+
+    # Run integration tests
+    - name: Run integration tests
+      run: |
+        set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/integration_tests
+
+      # Set the database URL for Selenium tests
+    - name: Set TEST_TYPE for Selenium tests
+      run: echo "TEST_TYPE=selenium" >> $GITHUB_ENV
+
+      # Start the backend FastAPI service (run in background)
+    - name: Start FastAPI backend
+      run: |
+        cd nextjs-fastapi/backend/controller  # Navigate to the 'controller' folder where 'main.py' is located
+        nohup uvicorn main:app --host 0.0.0.0 --port 8000 --reload &
+        echo "Backend is running"
+
+
+      # Start the frontend Next.js service (run in background)
+    - name: Start Next.js frontend
+      run: |
+        cd nextjs-fastapi/frontend
+        nohup npm run dev &  # Starts Next.js frontend in the background
+        echo "Frontend is running"
+
+    # Wait for services to start
+    - name: Wait for services to start
+      run: |
+        echo "Waiting for services to start..."
+        sleep 20  # Adjust this value based on how long the services need to start
+
+
+      # Run Selenium tests
+    - name: Run Selenium tests
+      run: |
+        set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/feature_tests/
+
+    # Clean up (optional) - You can skip if you don't need to stop the services
+    - name: Clean up services
+      run: |
+        # Kill the uvicorn process
+        kill $(ps aux | grep 'uvicorn' | grep -v 'grep' | awk '{print $2}')
+
+        # Kill the npm run dev process
+        kill $(ps aux | grep 'npm run dev' | grep -v 'grep' | awk '{print $2}')
+
+        echo "Services stopped"

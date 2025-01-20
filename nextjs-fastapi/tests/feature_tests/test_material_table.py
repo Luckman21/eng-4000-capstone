@@ -1,31 +1,44 @@
 import subprocess
 import pytest
 import time
-import re
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver import Remote
+import chromedriver_autoinstaller
 import re
+import os
+
+
+
+TEST_URL = "http://localhost:3000"
 
 @pytest.fixture
 def driver():
-
     chrome_options = Options()
     chrome_options.add_argument("--headless") # This means you won't see the actual icon
-    chrome_options.add_argument("--disable-gpu")
-
+    chrome_options.add_argument("--disable-gpu") # Disable GPU acceleration (required in headless mode)
+    chrome_options.add_argument("--no-sandbox")  # Might help in some environments
     # This will change depending on your driver
-    path = '/Users/l_filippelli/Downloads/chromedriver-mac-x64/chromedriver'
-    driver = webdriver.Chrome(service=Service(path), options=chrome_options)
+    if os.getenv("CI"):  # If in CI environment
+        # Automatically installs the correct ChromeDriver version for your installed Chrome
+        chromedriver_autoinstaller.install()
+        driver = webdriver.Chrome(options=chrome_options)
+
+    else:
+        path = '/Users/l_filippelli/Downloads/chromedriver-mac-x64/chromedriver'
+
+        driver = webdriver.Chrome(service=Service(path), options=chrome_options)
+
     yield driver
     driver.quit()
 
 def test_material_table_header(driver):
-    driver.get("http://localhost:3000")
-    time.sleep(3)
+    driver.get(TEST_URL)
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "thead tr")))
 
     # Find the header row
     header_row = driver.find_element(By.CSS_SELECTOR, "thead tr")
@@ -37,24 +50,24 @@ def test_material_table_header(driver):
 
 
 def test_material_table_buttons(driver):
-
-    driver.get("http://localhost:3000")
-    time.sleep(3)
+    driver.get(TEST_URL)
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "tbody tr")))
 
 
     rows = driver.find_elements(By.CSS_SELECTOR, "tbody tr")
 
     # Check each row for the presence of two SVG elements
     for index, row in enumerate(rows):
+        WebDriverWait(row, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "svg")))
         svg_elements = row.find_elements(By.TAG_NAME, "svg")
 
         # Assert that each row has exactly 2 SVGs (or adjust as necessary)
-        assert len(svg_elements) == 3, f"Row {index + 1} does not have exactly 2 SVG elements."
+        assert len(svg_elements) == 3, f"Row {index + 1} does not have exactly 3 SVG elements."
 
 def test_material_table_order(driver):
 
-    driver.get("http://localhost:3000")
-    time.sleep(3)
+    driver.get(TEST_URL)
+    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[1]")))
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[1]")
     assert first_td.text == '1'
@@ -64,12 +77,12 @@ def test_material_table_order(driver):
 
 def test_edit_button(driver):
 
-    driver.get("http://localhost:3000")
-    time.sleep(3)
+    driver.get(TEST_URL)
+    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[8]")))
 
     button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[8]/div/span[1]")
     button.click()
-    time.sleep(2)
+    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 
     panel = driver.find_element(By.TAG_NAME, "section")
 
@@ -86,12 +99,13 @@ def test_edit_button(driver):
     assert labels[4].text == "Material Type"
 
 def test_create_button(driver):
-    driver.get("http://localhost:3000")
-    time.sleep(3)
+    driver.get(TEST_URL)
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "button")))
 
     buttons = driver.find_elements(By.CSS_SELECTOR, "button")
     button = buttons[0]
     button.click()
+    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 
     panel = driver.find_element(By.CSS_SELECTOR, "section")
 
@@ -111,16 +125,18 @@ def test_create_button(driver):
 
 
 def test_delete_confirmation(driver):
-    driver.get("http://localhost:3000")
-    time.sleep(3)
+    driver.get(TEST_URL)
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "tbody tr")))
 
     row = driver.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
     print(row.text)
 
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "svg")))
+
     delete_icon = row.find_elements(By.TAG_NAME, "svg")[2]
 
     delete_icon.click()
-    time.sleep(3)
+    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 
     popup = driver.find_element(By.TAG_NAME, "section")
 
@@ -137,8 +153,8 @@ def test_delete_confirmation(driver):
     assert len(buttons) == 2
 
 def test_search_bar(driver):
-    driver.get("http://localhost:3000")
-    time.sleep(3)
+    driver.get(TEST_URL)
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))
 
     input_element = driver.find_element(By.CSS_SELECTOR,
                                              'input[aria-label="Search by colour, status, shelf, or type..."]')
@@ -148,8 +164,8 @@ def test_search_bar(driver):
     assert aria_label_value == "Search by colour, status, shelf, or type..."
 
 def test_colour_query(driver):
-    driver.get("http://localhost:3000")
-    time.sleep(3)
+    driver.get(TEST_URL)
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))
 
     input_element = driver.find_element(By.CSS_SELECTOR,
                                         'input[aria-label="Search by colour, status, shelf, or type..."]')
@@ -157,7 +173,7 @@ def test_colour_query(driver):
 
     # Colour
     input_element.send_keys("Red")
-    time.sleep(2)
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[2]")))
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[2]")
 
@@ -165,42 +181,43 @@ def test_colour_query(driver):
     assert re.search("Re.", first_td.text) or re.search(".ed", first_td.text) or re.search("R.d", first_td.text) or re.search("..d", first_td.text) or re.search("R..", first_td.text) or re.search(".e.", first_td.text)
 
 def test_status_query(driver):
-    driver.get("http://localhost:3000")
-    time.sleep(3)
+    driver.get(TEST_URL)
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))
 
     input_element = driver.find_element(By.CSS_SELECTOR,
                                             'input[aria-label="Search by colour, status, shelf, or type..."]')
 
     # Status
     input_element.send_keys("In Stock")
-    time.sleep(2)
+    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[7]")))
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[7]")
     assert first_td.text == 'In Stock'
 
 def test_shelf_query(driver):
-    driver.get("http://localhost:3000")
-    time.sleep(3)
+    driver.get(TEST_URL)
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))
 
     input_element = driver.find_element(By.CSS_SELECTOR,
                                         'input[aria-label="Search by colour, status, shelf, or type..."]')
     # Shelf
     input_element.send_keys("1")
-    time.sleep(2)
+    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[6]")))
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[6]")
     assert first_td.text == '1'
 
 
 def test_type_query(driver):
-    driver.get("http://localhost:3000")
-    time.sleep(3)
+    driver.get(TEST_URL)
+
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))
 
     input_element = driver.find_element(By.CSS_SELECTOR,
                                         'input[aria-label="Search by colour, status, shelf, or type..."]')
     # Type
     input_element.send_keys("PLA")
-    time.sleep(2)
+    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[5]")))
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[5]")
     # Levenstien Distance

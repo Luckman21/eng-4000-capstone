@@ -39,25 +39,10 @@ def test_user_type_creation(session):
     # Rollback the session after the test
     session.rollback()
 
-'''
-# Test invalid type_name (non-string value) raises ValueError
-def test_user_type_invalid_name(session):
-    user_type = UserType(type_name=123)  # Invalid type_name (non-string value)
-    
-    session.add(user_type)
 
-    # Check for IntegrityError due to invalid type_name (if you want to enforce only strings)
-    with pytest.raises(ValueError):
-        session.commit()
-
-    # Rollback the session after the test
-    session.rollback()
-'''
-
-'''
 # Test setName method with valid and invalid inputs
 def test_set_name(session):
-    user_type = UserType(type_name='Admin')
+    user_type = UserType(type_name='Dummy')
     session.add(user_type)
     session.commit()
     
@@ -69,9 +54,12 @@ def test_set_name(session):
     with pytest.raises(ValueError):
         user_type.setName(123)  # Passing an integer instead of a string
 
+
     # Rollback the session after the test
     session.rollback()
-'''
+
+    session.query(UserType).filter_by(type_name="Dummy").delete()
+    session.commit()
 
 # Test getAll method for retrieving all user types
 def test_get_all_user_types(session):
@@ -91,13 +79,3 @@ def test_get_all_user_types(session):
 
     # Rollback the session after the test
     session.rollback()
-
-'''
-# Test invalid input types (type_name must be string)
-def test_invalid_input_types(session):
-    with pytest.raises(TypeError):
-        UserType(type_name=123)  # type_name should be a string
-
-    # Rollback the session after the test
-    session.rollback()
-'''

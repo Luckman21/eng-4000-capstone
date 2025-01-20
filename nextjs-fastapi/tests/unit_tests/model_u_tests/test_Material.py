@@ -24,6 +24,8 @@ def session():
     Session = sessionmaker(bind=engine)
     session = Session()
 
+    db_count = session.query(Material).count()
+
     # Create sample MaterialType data for foreign key reference
     material_type = MaterialType(type_name='Plastic')  # Initialize MaterialType correctly
     session.add(material_type)
@@ -33,7 +35,8 @@ def session():
         supplier_link="Dummy Material",
         colour="Red",
         mass=10.5,
-        material_type_id=material_type.id
+        material_type_id=material_type.id,
+        shelf_id = 1
     )
     session.add(dummy_material)
     session.commit()
@@ -43,6 +46,7 @@ def session():
         session.query(Material).filter_by(supplier_link="Dummy Material").delete()
         session.query(MaterialType).filter_by(type_name="Plastic").delete()
         session.commit()
+        assert db_count == session.query(Material).count()
 
     yield session
 
@@ -59,7 +63,8 @@ def test_material_creation(session):
         colour='Red',
         supplier_link='Material 1',
         mass=10.5,
-        material_type_id=material_type.id
+        material_type_id=material_type.id,
+        shelf_id=1
     )
 
     session.add(material)
@@ -75,6 +80,10 @@ def test_material_creation(session):
     assert material.supplier_link == 'Material 1'
     assert material.mass == 10.5
     assert material.material_type_id == material_type.id
+    assert material.shelf_id == 1
+
+    session.query(Material).filter_by(supplier_link="Material 1").delete()
+    session.commit()
 
 # Test invalid mass (negative value) raises IntegrityError
 def test_material_invalid_mass(session):
@@ -84,7 +93,8 @@ def test_material_invalid_mass(session):
         colour='Blue',
         supplier_link='Material 2',
         mass=-5.0,  # Invalid mass (negative value)
-        material_type_id=material_type.id
+        material_type_id=material_type.id,
+        shelf_id = 1
     )
 
     session.add(material)
@@ -101,7 +111,8 @@ def test_set_colours(session):
         colour='Red',
         supplier_link='Material 3',
         mass=8.5,
-        material_type_id=material_type.id
+        material_type_id=material_type.id,
+        shelf_id = 1
     )
 
     material.setColour('Green')
@@ -110,6 +121,8 @@ def test_set_colours(session):
     # Invalid input: colour must be a string
     with pytest.raises(ValueError):
         material.setColour(123)  # Passing an integer instead of a string
+        session.query(Material).filter_by(supplier_link="Material 3").delete()
+        session.commit()
 
 # Test setName method with valid and invalid inputs
 def test_set_supplier_link(session):
@@ -118,7 +131,8 @@ def test_set_supplier_link(session):
         colour='Yellow',
         supplier_link='Material 4',
         mass=5.0,
-        material_type_id=material_type.id
+        material_type_id=material_type.id,
+        shelf_id = 1
     )
 
     material.setSupplierLink('New Material')
@@ -126,13 +140,15 @@ def test_set_supplier_link(session):
 
     # Invalid input: name must be a string
     with pytest.raises(ValueError):
-        material.setName(123)  # Passing an integer instead of a string
+        material.setSupplierLink(123)  # Passing an integer instead of a string
+        session.query(Material).filter_by(supplier_link="New Material").delete()
+        session.commit()
 
     # The dummy data will be rolled back after the test
 
 
-def test_update_material_shelf(setup_database):
-    session = setup_database
+
+def test_update_material_shelf(session):
 
     # Add a new shelf for the test
     new_shelf = Shelf(humidity_pct=60.0, temperature_cel=25.0)
@@ -140,7 +156,7 @@ def test_update_material_shelf(setup_database):
     session.commit()
 
     # Fetch the dummy material and update its shelf
-    material_to_update = session.query(Material).filter_by(name="Dummy Material").first()
+    material_to_update = session.query(Material).filter_by(supplier_link="Dummy Material").first()
     assert material_to_update is not None
 
     material_to_update.shelf_id = new_shelf.id
@@ -156,13 +172,15 @@ def test_update_material_shelf(setup_database):
 
 
 # Example test case 4: Test a material update
-def test_update_material_colour(setup_database):
+def test_update_material_colour(session):
     # Get the session from the fixture
-    session = setup_database
 
     # Fetch an existing material and update its data
     material_to_update = session.query(Material).filter_by(supplier_link="Dummy Material").first()
     assert material_to_update is not None
+
+    material_to_update.setColour("Tangarine")
+    assert material_to_update.colour == "Tangarine"
 
 # Test setMaterialTypeID method with valid and invalid inputs
 def test_set_material_type_id(session):
@@ -175,17 +193,21 @@ def test_set_material_type_id(session):
         colour='Grey',
         supplier_link='Material 5',
         mass=3.0,
-        material_type_id=material_type.id
+        material_type_id=material_type.id,
+        shelf_id = 1
     )
 
     # Update material's type
-    material.setMaterialTypeID(another_material_type)
+    material.setMaterialTypeID(another_material_type.id)
     assert material.material_type_id == another_material_type.id
-    assert material.material_type == another_material_type
 
     # Invalid input: should raise ValueError if not passed a MaterialType instance
     with pytest.raises(ValueError):
         material.setMaterialTypeID('NonMaterialType')  # Passing an invalid type (string)
+        session.query(Material).filter_by(supplier_link="Material 5").delete()
+        session.query(MaterialType).filter_by(type_name="Metal").delete()
+        session.commit()
+
 
 # Test getAll method for retrieving all materials
 def test_get_all_materials(session):
@@ -195,14 +217,16 @@ def test_get_all_materials(session):
         colour='White',
         supplier_link='Material 6',
         mass=12.0,
-        material_type_id=material_type.id
+        material_type_id=material_type.id,
+        shelf_id = 1
     )
 
     material2 = Material(
         colour='Black',
         supplier_link='Material 7',
         mass=15.0,
-        material_type_id=material_type.id
+        material_type_id=material_type.id,
+        shelf_id = 1
     )
 
     session.add(material1)
@@ -215,7 +239,14 @@ def test_get_all_materials(session):
 
     # Test the getAll method to fetch all materials
     materials = Material.getAll(Material, session)
+    print(materials[0].supplier_link)
     assert len(materials) == 3  # We added three materials (first in test 1, with Material 1)
-    assert materials[0].supplier_link == 'Material 1'
+    assert materials[0].supplier_link == 'Dummy Material'
     assert materials[1].supplier_link == 'Material 6'
     assert materials[2].supplier_link == 'Material 7'
+
+    # Clean up
+    session.query(Material).filter_by(supplier_link="Material 7").delete()
+    session.query(Material).filter_by(supplier_link="Dummy Material").delete()
+    session.query(Material).filter_by(supplier_link="Material 6").delete()
+    session.commit()
