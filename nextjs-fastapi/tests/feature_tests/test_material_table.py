@@ -28,12 +28,8 @@ def driver():
     if os.getenv("CI"):  # If in CI environment
         # Automatically installs the correct ChromeDriver version for your installed Chrome
         chromedriver_autoinstaller.install()
+        driver = webdriver.Chrome(options=chrome_options)
 
-        # Use the remote selenium service
-        driver = Remote(
-            command_executor="http://selenium:4444/wd/hub",  # Selenium service URL in Docker
-            options=chrome_options  # Pass options directly
-        )
     else:
         path = '/Users/l_filippelli/Downloads/chromedriver-mac-x64/chromedriver'
 
