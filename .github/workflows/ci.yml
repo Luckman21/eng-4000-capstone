@@ -1,128 +1,103 @@
-name: Python CI with Pytest and Selenium
-
-on:
-  push:
-    branches:
-      - '*'  # Trigger on any push to any branch
-  pull_request:
-    branches:
-      - main  # Trigger on pull requests targeting the 'main' branch
-
 jobs:
   test:
-    runs-on: ubuntu-latest  # You can also use macos-latest or windows-latest depending on your environment needs
+    runs-on: ubuntu-latest
 
     services:
       selenium:
-        image: selenium/standalone-chrome:latest  # Using the latest Selenium image with Chrome
+        image: selenium/standalone-chrome:latest
         options: >-
           --shm-size=2g
         ports:
-          - 4444:4444  # Expose the Selenium WebDriver port
+          - 4444:4444
 
     steps:
     # Checkout the code
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # Set up Docker (to build and run the frontend/backend containers)
+    # Set up Docker
     - name: Set up Docker
       uses: docker/setup-buildx-action@v2
 
-    # Build the backend Docker image
+    # Build Backend Docker Image
     - name: Build Backend Docker Image
       run: |
         cd nextjs-fastapi/backend
         docker build -t nextjs-backend .
 
-    # Build the frontend Docker image
+    # Build Frontend Docker Image
     - name: Build Frontend Docker Image
       run: |
         cd nextjs-fastapi/frontend
         docker build -t nextjs-frontend .
 
-    # Run Backend in Docker
+    # Create a custom Docker network
+    - name: Create custom Docker network
+      run: |
+        docker network create my-network
+
+    # Run Backend Docker Container
     - name: Run Backend Docker Container
       run: |
-        docker run -d --name nextjs-backend -p 8000:8000 nextjs-backend
+        docker run -d --name nextjs-backend --network my-network -p 8000:8000 nextjs-backend
 
-    # Run Frontend in Docker
+    # Run Frontend Docker Container
     - name: Run Frontend Docker Container
       run: |
-        docker run -d --name nextjs-frontend -p 3000:3000 nextjs-frontend
+        docker run -d --name nextjs-frontend --network my-network -p 3000:3000 nextjs-frontend
 
-    # Wait for the services to be fully ready
+    # Wait for services to start
     - name: Wait for services to start
       run: |
-        echo "Waiting for services to start..."
-        sleep 10
+        sleep 10  # Adjust the sleep time if necessary
 
     # Set up Python environment
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.9  # Use the Python version you're working with
+        python-version: 3.9
 
-    # Install dependencies directly using pip
+    # Install dependencies
     - name: Install dependencies
       run: |
-        echo "Installing dependencies"
-        python -m pip install --upgrade pip  # Upgrade pip to the latest version
-        pip install sqlalchemy
-        pip install pytest
-        pip install fastapi
-        pip install httpx
-        pip install selenium
-        pip install chromedriver_autoinstaller
+        python -m pip install --upgrade pip
+        pip install sqlalchemy pytest fastapi selenium chromedriver_autoinstaller
 
-      # Run unit tests (non-Selenium)
+    # Run unit tests (non-Selenium)
     - name: Run unit tests
       run: |
-        echo "Running unit tests"
         set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/unit_tests
-        echo "Completed unit tests"
 
-      # Run database setup scripts (for in-memory DB)
-    - name: Run database setup scripts
-      run: |
-        echo "Running database setup scripts"
-        python nextjs-fastapi/db/scripts/TableCreation.py  # Run the first script
-        python nextjs-fastapi/db/scripts/DatabasePopulate.py  # Run the second script
-
-
-      # Run integration tests (non-Selenium)
+    # Run integration tests
     - name: Run integration tests
       run: |
-        echo "Running integration tests"
         set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/integration_tests
-        echo "Completed integration tests"
 
-    # Start the backend FastAPI service in the background
+    # Start FastAPI backend
     - name: Start FastAPI backend
       working-directory: nextjs-fastapi/backend/controller
       run: |
-        nohup uvicorn main:app --host 0.0.0.0 --port 8000 --reload &  # Starts FastAPI in the background
-        echo "Backend is running"
+        nohup uvicorn main:app --host 0.0.0.0 --port 8000 --reload &
 
-    # Start the frontend Next.js service in the background
+    # Start Next.js frontend
     - name: Start Next.js frontend
       working-directory: nextjs-fastapi/frontend
       run: |
-        nohup npm run dev &  # Starts Next.js frontend in the background
-        echo "Frontend is running"
+        nohup npm run dev &
 
-    # Wait for the services to start (you may need to adjust the time depending on your app's startup time)
+    # Wait for services to start
     - name: Wait for services to start
       run: |
-        sleep 10  # Adjust this value depending on how long your services need to start
+        sleep 10
 
-    # Run Selenium tests (only tests in the feature_tests directory)
+    # Run Selenium tests
     - name: Run Selenium tests
       run: |
         set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/feature_tests/
 
-    # Stop and remove containers after testing
+    # Clean up containers
     - name: Clean up containers
       run: |
         docker stop nextjs-backend nextjs-frontend selenium
         docker rm nextjs-backend nextjs-frontend selenium
+        docker network rm my-network
