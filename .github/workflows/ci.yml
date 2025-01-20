@@ -53,13 +53,19 @@ jobs:
       run: |
         set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/integration_tests
 
-      # Seed the database with test data
-    - name: Seed the database
+  # Run database table creation script
+    - name: Run table creation script
       run: |
-        cd db/scripts
+        cd nextjs-fastapi/db/scripts
         python TableCreation.py
+        echo "Database tables created"
+
+    # Run database population script
+    - name: Run database population script
+      run: |
+        cd nextjs-fastapi/db/scripts
         python DatabasePopulate.py
-        echo "Database seeded with test data"
+        echo "Database populated with test data"
 
 
       # Start the backend FastAPI service (run in background)
