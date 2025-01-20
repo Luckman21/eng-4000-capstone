@@ -16,7 +16,7 @@ jobs:
       selenium:
         image: selenium/standalone-chrome:latest
         options: >-
-          --shm-size=16g
+          --shm-size=32g
         ports:
           - 4444:4444
 
@@ -53,7 +53,16 @@ jobs:
       run: |
         set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/integration_tests
 
-    # Start the backend FastAPI service (run in background)
+      # Seed the database with test data
+    - name: Seed the database
+      run: |
+        cd db/scripts
+        python TableCreation.py
+        python DatabasePopulate.py
+        echo "Database seeded with test data"
+
+
+      # Start the backend FastAPI service (run in background)
     - name: Start FastAPI backend
       run: |
         cd nextjs-fastapi/backend

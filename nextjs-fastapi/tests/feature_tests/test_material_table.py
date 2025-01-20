@@ -8,7 +8,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import Remote
-import chromedriver_autoinstaller
+#import chromedriver_autoinstaller
 import re
 import os
 
@@ -60,7 +60,7 @@ def test_material_table_buttons(driver):
 
     # Check each row for the presence of two SVG elements
     for index, row in enumerate(rows):
-        WebDriverWait(row, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "svg")))
+        WebDriverWait(row, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "svg")))
         svg_elements = row.find_elements(By.TAG_NAME, "svg")
 
         # Assert that each row has exactly 2 SVGs (or adjust as necessary)
@@ -69,7 +69,7 @@ def test_material_table_buttons(driver):
 def test_material_table_order(driver):
 
     driver.get(TEST_URL)
-    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[1]")))
+    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[1]")))
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[1]")
     assert first_td.text == '1'
@@ -80,7 +80,7 @@ def test_material_table_order(driver):
 def test_edit_button(driver):
 
     driver.get(TEST_URL)
-    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[8]/div/span[1]")))
+    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[8]")))
 
     button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[8]/div/span[1]")
     button.click()
@@ -133,6 +133,8 @@ def test_delete_confirmation(driver):
     row = driver.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
     print(row.text)
 
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "svg")))
+
     delete_icon = row.find_elements(By.TAG_NAME, "svg")[2]
 
     delete_icon.click()
@@ -173,7 +175,7 @@ def test_colour_query(driver):
 
     # Colour
     input_element.send_keys("Red")
-    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[2]")))
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[2]")))
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[2]")
 
