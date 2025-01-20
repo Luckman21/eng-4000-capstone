@@ -28,11 +28,7 @@ def driver():
     if os.getenv("CI"):  # If in CI environment
         driver = Remote(
             command_executor="http://selenium:4444/wd/hub",  # Selenium service URL in Docker
-            capabilities={
-                "browserName": "chrome",  # Specifies the browser
-                "platform": "ANY",  # Platform type (you can also specify other platforms like Linux, Windows)
-                "goog:chromeOptions": {"args": chrome_options.arguments}  # Pass the chrome options to remote browser
-            }
+            options=chrome_options  # Pass options directly
         )
     else:
         path = '/Users/l_filippelli/Downloads/chromedriver-mac-x64/chromedriver'
