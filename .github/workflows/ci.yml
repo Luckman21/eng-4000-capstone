@@ -42,17 +42,6 @@ jobs:
       run: |
         cd nextjs-fastapi/frontend
         npm install  # Install Node.js dependencies for frontend
-
-    # Run unit tests (non-Selenium)
-    - name: Run unit tests
-      run: |
-        set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/unit_tests
-
-    # Run integration tests
-    - name: Run integration tests
-      run: |
-        set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/integration_tests
-
   # Run database table creation script
     - name: Run table creation script
       run: |
@@ -67,6 +56,17 @@ jobs:
         cd nextjs-fastapi/db/scripts
         python DatabasePopulate.py
         echo "Database populated with test data"
+    # Run unit tests (non-Selenium)
+    - name: Run unit tests
+      run: |
+        set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/unit_tests
+
+    # Run integration tests
+    - name: Run integration tests
+      run: |
+        set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/integration_tests
+
+
 
 
       # Start the backend FastAPI service (run in background)
