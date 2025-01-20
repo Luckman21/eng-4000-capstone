@@ -53,12 +53,6 @@ jobs:
       run: |
         set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/integration_tests
 
-# Run database table creation script
-    - name: Run table creation script
-      run: |
-        cd nextjs-fastapi/db/scripts
-        python TableCreation.py
-        echo "Database tables created"
 
     # Run database population script
     - name: Run database population script
