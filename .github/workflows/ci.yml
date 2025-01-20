@@ -36,7 +36,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install sqlalchemy pytest fastapi selenium chromedriver_autoinstaller httpx
-        pip install fastapi[standard]
+        pip install uvicorn
 
       # Install frontend dependencies
     - name: Install frontend dependencies
@@ -65,11 +65,12 @@ jobs:
       # Start the backend FastAPI service (run in background)
     - name: Start FastAPI backend
       run: |
-           cd nextjs-fastapi/backend/controller
-           nohup fastapi dev main.py
-           echo "Backend is running"
+        cd nextjs-fastapi/backend/controller  # Navigate to the 'controller' folder where 'main.py' is located
+        nohup uvicorn main:app --host 0.0.0.0 --port 8000 --reload &
+        echo "Backend is running"
 
-    # Start the frontend Next.js service (run in background)
+
+      # Start the frontend Next.js service (run in background)
     - name: Start Next.js frontend
       run: |
         cd nextjs-fastapi/frontend
