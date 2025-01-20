@@ -4,6 +4,7 @@ import { Material,MaterialType } from "@/types";
 import axios from "axios";
 import { useAsyncList } from "@react-stately/data";
 import { fetchMaterialTypes } from "@/constants/data";
+import { get as levenshtein } from 'fast-levenshtein';
 
 import React from "react";
 import {
@@ -14,6 +15,7 @@ import {
   TableRow,
   TableCell,
   Chip,
+  Input,
   Tooltip,
   Spinner,
   useDisclosure,
@@ -38,6 +40,8 @@ const TableComponent = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [editMaterial, setEditMaterial] = useState<Material | null>(null); 
   const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
+  const [statusFilter, setStatusFilter] = React.useState("all");
+  const [filterValue, setFilterValue] = React.useState("");
   const {
     isOpen: isModalOneOpen,
     onOpen: openModalOne,
@@ -108,7 +112,72 @@ const TableComponent = () => {
     setMaterials((prevMaterials) => prevMaterials.filter((mat) => mat.id !== deletedId));
   };
 
-      console.log(materialTypes)
+
+// Searching Logic
+  const hasSearchFilter = Boolean(filterValue);
+
+
+const filteredItems = React.useMemo(() => {
+  let filteredMaterials = [...materials];
+
+  if (hasSearchFilter) {
+    filteredMaterials = filteredMaterials
+      .map((material) => {
+
+      const mass = material.mass || 0; // Assuming material.mass is a float
+
+        // Differentiate thresholds given common sizes of each category's words
+        const levenshteinThresholdColour = 2;
+        const levenshteinThresholdStatus = 1;
+        const levenshteinThresholdType = 1;
+
+        const materialTypeName = materialTypes.find((type) => type.key === material.material_type_id)?.label || "";
+
+        // Calculate Levenshtein distances for each field
+        const colourDistance = levenshtein(filterValue.toLowerCase(), material.colour.toLowerCase());
+        const shelfIdDistance = levenshtein(filterValue.toLowerCase(), material.shelf_id.toString().toLowerCase());
+        const statusDistance = levenshtein(filterValue.toLowerCase(), material.status.toLowerCase());
+        const materialTypeDistance = levenshtein(filterValue.toLowerCase(), materialTypeName.toLowerCase());
+        // Sum of all Levenshtein distances
+        const totalDistance =
+          colourDistance + shelfIdDistance + statusDistance + materialTypeDistance;
+
+        console.log(filterValue);
+
+
+
+        // Add distance data to material for sorting
+        return {
+          ...material,
+          totalDistance, // Store the Levenshtein total distance for sorting
+          colourMatch: colourDistance <= levenshteinThresholdColour,
+          shelfIdMatch: filterValue.toLowerCase() === material.shelf_id.toString().toLowerCase(),
+          statusMatch: statusDistance <= levenshteinThresholdStatus,
+          materialTypeMatch: materialTypeDistance <= levenshteinThresholdType
+        };
+      })
+      .filter((material) => {
+        // Filter based on Levenshtein distance thresholds
+        return (
+          material.colourMatch ||
+          material.shelfIdMatch ||
+          material.statusMatch ||
+          material.materialTypeMatch
+        );
+      });
+  }
+
+  if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
+    filteredMaterials = filteredMaterials.filter((material) =>
+      Array.from(statusFilter).includes(material.status)
+    );
+  }
+
+  // Sort by the smallest total Levenshtein distance (ascending order)
+  filteredMaterials.sort((a, b) => a.totalDistance - b.totalDistance);
+
+  return filteredMaterials;
+}, [materials, filterValue, statusFilter, materialTypes]); // Add materialTypes as a dependency
 
   const renderCell = React.useCallback(
     (material, columnKey) => {
@@ -126,16 +195,11 @@ const TableComponent = () => {
             </Chip>
           );
         case "material_type_id":
-          // Ensure that materialTypes is loaded before accessing it
-          if (materialTypes.length > 0) {
-            const materialType = materialTypes.find(
-              (type) => Number(type.key) === Number(material.material_type_id)
-            );
+          const materialType = materialTypes.find(
+             (type) => Number(type.key) === Number(material.material_type_id)
+           );
 
-            return materialType ? materialType.label : "Unknown Type";
-          } else {
-            return "Loading Types...";
-          }
+          return materialType ? materialType.label : "Unknown Type";
         case "actions":
           return (
             <div className="relative flex items-center gap-2">
@@ -184,9 +248,38 @@ const TableComponent = () => {
     [materialTypes]
   );
 
+  const onSearchChange = React.useCallback((value) => {
+  if (value) {
+    setFilterValue(value);
+  } else {
+    setFilterValue("");
+  }
+}, []);
+
   return (
-    <div>
-      <Button onPress={()=> handleModalTwoChange()} color="primary" >Add Material</Button>
+ <div className="px-4 pt-4"> {/* Padding for spacing from the edges and top */}
+    {/* Flex container for the search bar and button */}
+    <div className="flex items-center gap-4" style={{ marginBottom: "16px" }}> {/* Gap between button and search bar, margin-bottom for space to the table */}
+      {/* Add Material button */}
+      <Button
+        onPress={() => handleModalTwoChange()}
+        color="primary"
+        className="self-start"  // Keeps the button at its default size, aligned at the start of the container
+      >
+        Add Material
+      </Button>
+
+      {/* Search Bar */}
+      <Input
+        isClearable
+        className="w-full sm:max-w-[70%]"  // Search bar takes 70% of the width on larger screens
+        placeholder="Search by colour, status, shelf, or type..."
+        startContent={<SearchIcon />}
+        value={filterValue}
+        onClear={() => onClear()}
+        onValueChange={onSearchChange}
+      />
+    </div>
       <Table
         aria-label="Visualize information through table"
         isStriped
@@ -216,7 +309,7 @@ const TableComponent = () => {
           <TableColumn key="actions">ACTIONS</TableColumn>
         </TableHeader>
         <TableBody
-          items={materials}
+          items={filteredItems}
           isLoading={isLoading}
           loadingContent={<Spinner label="Loading..." />}
         >
@@ -264,6 +357,36 @@ export const ExternalLinkIcon = ({ size = 18, stroke = "currentColor", ...props 
         strokeLinecap="round"
         strokeLinejoin="round"
         d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+      />
+    </svg>
+  );
+};
+
+export const SearchIcon = (props) => {
+  return (
+    <svg
+      aria-hidden="true"
+      fill="none"
+      focusable="false"
+      height="1em"
+      role="presentation"
+      viewBox="0 0 24 24"
+      width="1em"
+      {...props}
+    >
+      <path
+        d="M11.5 21C16.7467 21 21 16.7467 21 11.5C21 6.25329 16.7467 2 11.5 2C6.25329 2 2 6.25329 2 11.5C2 16.7467 6.25329 21 11.5 21Z"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+      />
+      <path
+        d="M22 22L20 20"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
       />
     </svg>
   );
