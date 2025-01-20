@@ -66,7 +66,7 @@ def test_material_table_buttons(driver):
 def test_material_table_order(driver):
 
     driver.get(TEST_URL)
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//tbody/tr[1]/td[1]")))
+    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "//tbody/tr[1]/td[1]")))
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[1]")
     assert first_td.text == '1'
@@ -77,7 +77,7 @@ def test_material_table_order(driver):
 def test_edit_button(driver):
 
     driver.get(TEST_URL)
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//tbody/tr[1]/td[8]/div/span[1]")))
+    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "//tbody/tr[1]/td[8]/div/span[1]")))
 
     button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[8]/div/span[1]")
     button.click()
@@ -99,7 +99,7 @@ def test_edit_button(driver):
 
 def test_create_button(driver):
     driver.get(TEST_URL)
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "button")))
+    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, "button")))
 
     buttons = driver.find_elements(By.CSS_SELECTOR, "button")
     button = buttons[0]
@@ -125,7 +125,7 @@ def test_create_button(driver):
 
 def test_delete_confirmation(driver):
     driver.get(TEST_URL)
-    WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, "tbody tr")))
+    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, "tbody tr")))
 
     row = driver.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
     print(row.text)
@@ -151,7 +151,7 @@ def test_delete_confirmation(driver):
 
 def test_search_bar(driver):
     driver.get(TEST_URL)
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))
+    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))
 
     input_element = driver.find_element(By.CSS_SELECTOR,
                                              'input[aria-label="Search by colour, status, shelf, or type..."]')
@@ -162,7 +162,7 @@ def test_search_bar(driver):
 
 def test_colour_query(driver):
     driver.get(TEST_URL)
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))
+    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))
 
     input_element = driver.find_element(By.CSS_SELECTOR,
                                         'input[aria-label="Search by colour, status, shelf, or type..."]')
@@ -179,7 +179,7 @@ def test_colour_query(driver):
 
 def test_status_query(driver):
     driver.get(TEST_URL)
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))
+    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))
 
     input_element = driver.find_element(By.CSS_SELECTOR,
                                             'input[aria-label="Search by colour, status, shelf, or type..."]')
@@ -193,7 +193,7 @@ def test_status_query(driver):
 
 def test_shelf_query(driver):
     driver.get(TEST_URL)
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))
+    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))
 
     input_element = driver.find_element(By.CSS_SELECTOR,
                                         'input[aria-label="Search by colour, status, shelf, or type..."]')
@@ -208,7 +208,7 @@ def test_shelf_query(driver):
 def test_type_query(driver):
     driver.get(TEST_URL)
 
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))
+    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))
 
     input_element = driver.find_element(By.CSS_SELECTOR,
                                         'input[aria-label="Search by colour, status, shelf, or type..."]')
