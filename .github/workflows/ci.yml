@@ -71,7 +71,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install sqlalchemy pytest fastapi selenium chromedriver_autoinstaller
+        pip install sqlalchemy pytest fastapi selenium chromedriver_autoinstaller httpx
 
     # Run unit tests (non-Selenium)
     - name: Run unit tests
@@ -98,7 +98,7 @@ jobs:
     # Wait for services to start
     - name: Wait for services to start
       run: |
-        sleep 10
+        sleep 5
 
     # Run Selenium tests
     - name: Run Selenium tests
