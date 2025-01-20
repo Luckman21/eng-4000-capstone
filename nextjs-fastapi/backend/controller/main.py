@@ -38,25 +38,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# MQTTReceiver configuration
-mqtt_broker = "test.mqtt.org"
-mqtt_port = 1883
-mqtt_topic_temp = "temp_value"
-mqtt_topic_humid = "humid_value"
-db_url = constants.DATABASE_URL
-
-# Create MQTTReceiver instance
-mqtt_receiver_temp = MQTTReceiver(mqtt_broker, mqtt_port, mqtt_topic_temp, db_url)
-mqtt_receiver_humid = MQTTReceiver(mqtt_broker, mqtt_port, mqtt_topic_humid, db_url)
-
 # Set up listeners on startup
 @app.on_event("startup")
 def setup_listeners():
     low_stock_listener()
 
-def setup_mqtt():   # Start the MQTTReceiver
-    mqtt_receiver_temp.start()
-    mqtt_receiver_humid.start()
+# Set up listeners on startup
+@app.on_event("startup")
+def setup_mqtt():
+    start_mqtt_receiver()
+
+# Define the MQTT receiver start function
+def start_mqtt_receiver():
+    mqtt_broker = "test.mosquitto.org"
+    mqtt_port = 1883
+    mqtt_temp_topic = "temp_value"
+    mqtt_humid_topic = "humid_value"
+    db_url = constants.DATABASE_URL
+
+    receiver = MQTTReceiver(mqtt_broker, mqtt_port, mqtt_temp_topic, mqtt_humid_topic, db_url)
+    receiver.start()
 
 # Create a listener that triggers when the Material table is updated, checks for Materials with a mass below the threshold
 def low_stock_listener():
@@ -64,11 +65,6 @@ def low_stock_listener():
         asyncio.create_task(listener.job_complete_listener(mapper, connection, target))
 
     event.listen(Material, 'after_update', listener_wrapper)
-
-@app.on_event("shutdown")
-async def shutdown():   # Stop the MQTTReceiver when FastAPI shuts down
-    mqtt_receiver_temp.stop()
-    mqtt_receiver_humid.stop()
 
 # Now define your API routes
 @app.get("/materials", response_model=list[MaterialSchema])
