@@ -8,7 +8,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import Remote
-#import chromedriver_autoinstaller
+import chromedriver_autoinstaller
 import re
 import os
 
