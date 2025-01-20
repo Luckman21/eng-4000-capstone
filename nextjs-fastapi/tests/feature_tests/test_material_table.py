@@ -104,6 +104,7 @@ def test_create_button(driver):
     buttons = driver.find_elements(By.CSS_SELECTOR, "button")
     button = buttons[0]
     button.click()
+    time.sleep(2)
 
     panel = driver.find_element(By.CSS_SELECTOR, "section")
 
@@ -124,7 +125,7 @@ def test_create_button(driver):
 
 def test_delete_confirmation(driver):
     driver.get(TEST_URL)
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "tbody tr")))
+    WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, "tbody tr")))
 
     row = driver.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
     print(row.text)
