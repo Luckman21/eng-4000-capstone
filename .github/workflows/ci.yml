@@ -57,6 +57,9 @@ jobs:
       run: |
         set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/integration_tests
 
+      # Set the database URL for Selenium tests
+    - name: Set TEST_TYPE for Selenium tests
+      run: echo "TEST_TYPE=selenium" >> $GITHUB_ENV
 
       # Start the backend FastAPI service (run in background)
     - name: Start FastAPI backend
@@ -78,9 +81,6 @@ jobs:
         echo "Waiting for services to start..."
         sleep 20  # Adjust this value based on how long the services need to start
 
-      # Set the database URL for Selenium tests
-    - name: Set TEST_TYPE for Selenium tests
-      run: echo "TEST_TYPE=selenium" >> $GITHUB_ENV
 
       # Run Selenium tests
     - name: Run Selenium tests
