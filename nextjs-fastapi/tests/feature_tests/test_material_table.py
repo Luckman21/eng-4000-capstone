@@ -8,22 +8,23 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import re
-#import chromedriver_autoinstaller
+import chromedriver_autoinstaller
 import os
 
 
 if os.getenv("CI"):
-    TEST_URL = "http://localhost:3000"
+    TEST_URL = "http://127.0.0.1:3000"
 else:
     TEST_URL = "http://localhost:3000"
 
 @pytest.fixture
 def driver():
-
+    if os.getenv("CI"):
+        chromedriver_autoinstaller.install()
     chrome_options = Options()
     chrome_options.add_argument("--headless") # This means you won't see the actual icon
     chrome_options.add_argument("--disable-gpu") # Disable GPU acceleration (required in headless mode)
-
+    chrome_options.add_argument("--no-sandbox")  # Might help in some environments
     # This will change depending on your driver
     if os.getenv("CI"):  # If in CI environment
         driver = webdriver.Chrome(options=chrome_options)
