@@ -37,6 +37,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install sqlalchemy pytest fastapi selenium chromedriver_autoinstaller httpx
         pip install uvicorn
+        pip install paho-mqtt
 
       # Install frontend dependencies
     - name: Install frontend dependencies
