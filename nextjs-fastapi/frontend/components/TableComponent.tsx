@@ -49,7 +49,12 @@ const TableComponent = () => {
   } = useDisclosure();
   const [deleteMaterial, setDeleteMaterial] = useState<Material | null>(null);
   const {isOpen: isDeleteOpen, onOpen: onDeleteOpen, onOpenChange: onDeleteOpenChange} = useDisclosure();
-
+  const socket = new WebSocket("ws://localhost:8000/ws/materials");
+  socket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    console.log("Materials below threshold:", data);
+    // Update your frontend state or UI here
+};
   
   const {
     isOpen: isModalTwoOpen,
@@ -72,7 +77,7 @@ const TableComponent = () => {
 
       const updatedMaterials = json.map((material: { mass: number; }) => ({
         ...material,
-        status: material.mass <= 50 ? "Low Stock" : "In Stock",
+        status: material.mass < 50 ? "Low Stock" : "In Stock",
       }));
       setMaterials(updatedMaterials);
       setIsLoading(false);
@@ -102,7 +107,7 @@ const TableComponent = () => {
     );
     list.reload();
   };
-  const addMaterial = (newMaterial) => {
+  const addMaterial = (newMaterial: Material) => {
     setMaterials((prevMaterials) => [...prevMaterials, newMaterial]);
     
       list.reload();

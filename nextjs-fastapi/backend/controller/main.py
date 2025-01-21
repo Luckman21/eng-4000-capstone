@@ -24,8 +24,13 @@ from backend.controller.schemas.UserCreateRequest import UserCreateRequest
 from backend.controller.schemas.MaterialTypeUpdateRequest import MaterialTypeUpdateRequest
 from backend.controller.schemas.MaterialTypeCreateRequest import MaterialTypeCreateRequest
 from backend.controller.data_receiver import MQTTReceiver
+from fastapi.websockets import WebSocket, WebSocketDisconnect
+
+from backend.controller.connection_manager import ConnectionManager
 
 app = FastAPI()
+manager = ConnectionManager()
+
 origins = [
     "http://localhost:3000",
 ]
@@ -63,10 +68,20 @@ def start_mqtt_receiver():
 def low_stock_listener():
     def listener_wrapper(mapper, connection, target):
         asyncio.create_task(listener.job_complete_listener(mapper, connection, target))
+       
 
     event.listen(Material, 'after_update', listener_wrapper)
 
-# Now define your API routes
+@app.websocket("/ws/materials")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+
+# API routes
 @app.get("/materials", response_model=list[MaterialSchema])
 async def get_Allmaterials(db: Session = Depends(get_db)):
     repo = MaterialRepository(db)

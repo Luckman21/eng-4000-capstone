@@ -1,3 +1,4 @@
+import json
 from db.repositories.MaterialRepository import MaterialRepository
 from db import connect
 from backend.controller import constants
@@ -5,6 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 import smtplib
 from email.mime.text import MIMEText
+from backend.controller.main import manager
 
 THRESHOLD = 50  # 50g threshold
 
@@ -52,6 +54,7 @@ async def job_complete_listener(mapper, connection, target):
     Returns:
         A list of materials that have a mass below the threshold value.
     """    
+    print("Job complete listener triggered")
     session = SessionLocal()    # Create a new session instance for interacting with the database
     
     # Create a MaterialRepository instance to get a list of all materials
@@ -62,5 +65,7 @@ async def job_complete_listener(mapper, connection, target):
     alert_materials = await quantity_poll(materials)
     
     session.close() # Close the session once we are done
+    
+    await manager.broadcast(json.dumps(alert_materials))
 
     return alert_materials  # Return the array of materials with a mass below the threshold
