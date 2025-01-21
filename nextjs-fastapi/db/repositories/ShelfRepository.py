@@ -41,13 +41,15 @@ class ShelfRepository:
         """
         return self.session.query(Shelf).all()
 
-    def update_shelf(self, shelf: Shelf, new_humidity_pct: float, new_temperature_cel: float) -> Shelf:
+    def update_shelf(self, shelf: Shelf, new_humidity_pct: float = None, new_temperature_cel: float = None) -> Shelf:
         """
         Update an existing Shelf's humidity and temperature.
         """
         try:
-            shelf.humidity_pct = new_humidity_pct
-            shelf.temperature_cel = new_temperature_cel
+            if new_humidity_pct:
+                shelf.humidity_pct = new_humidity_pct
+            if new_temperature_cel:
+                shelf.temperature_cel = new_temperature_cel
             self.session.commit()
             return shelf
         except SQLAlchemyError as e:
