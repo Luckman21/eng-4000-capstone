@@ -1,9 +1,7 @@
 import paho.mqtt.client as mqtt
-import json
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.exc import NoResultFound
-from db.model import Shelf  # Import Shelf class from your models (adjust import according to your project structure)
+from db.repositories.ShelfRepository import ShelfRepository
 
 class MQTTReceiver:
     def __init__(self, mqtt_broker, mqtt_port, mqtt_temp_topic, mqtt_humid_topic, db_url):
@@ -17,6 +15,9 @@ class MQTTReceiver:
         self.engine = create_engine(db_url)
         Session = sessionmaker(bind=self.engine)
         self.session = Session()
+
+        # Initialize ShelfRepository
+        self.shelf_repository = ShelfRepository(self.session)  # Proper initialization
 
         # MQTT client setup
         self.client = mqtt.Client()
@@ -65,14 +66,12 @@ class MQTTReceiver:
     def update_shelf(self, shelf_id, temperature, humidity):
         """Update the Shelf object in the database."""
         try:
-            # Fetch the shelf by its ID
-            shelf = self.session.query(Shelf).filter_by(id=shelf_id).first()
+            # Use ShelfRepository to fetch the shelf
+            shelf = self.shelf_repository.get_shelf_by_id(shelf_id)  # Use the instance here
 
             if shelf:
-                # Update the shelf's temperature and humidity
-                shelf.temperature_cel = temperature
-                shelf.humidity_pct = humidity
-                self.session.commit()
+                # Use ShelfRepository to update the shelf
+                updated_shelf = self.shelf_repository.update_shelf(shelf, humidity, temperature)  # Use the instance here
                 print(f"Shelf {shelf_id} updated with temperature: {temperature}, humidity: {humidity}")
             else:
                 print(f"Shelf with ID {shelf_id} not found.")
@@ -87,23 +86,3 @@ class MQTTReceiver:
     def stop(self):
         """Stop the MQTT client loop."""
         self.client.loop_stop()
-
-'''
-# Usage Example:
-if __name__ == "__main__":
-    mqtt_broker = "mqtt.example.com"
-    mqtt_port = 1883
-    mqtt_temp_topic = "temp_value"
-    mqtt_humid_topic = "humid_value"
-    db_url = "sqlite:///shelves.db"  # Adjust this to match your database
-
-    receiver = MQTTReceiver(mqtt_broker, mqtt_port, mqtt_temp_topic, mqtt_humid_topic, db_url)
-    receiver.start()
-
-    try:
-        while True:
-            pass
-    except KeyboardInterrupt:
-        receiver.stop()
-        print("Program stopped.")
-'''
