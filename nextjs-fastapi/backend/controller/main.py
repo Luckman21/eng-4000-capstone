@@ -14,6 +14,7 @@ from db.repositories.MaterialRepository import MaterialRepository
 from db.repositories.UserRepository import UserRepository
 import asyncio
 from sqlalchemy import event
+from backend.controller import constants
 from backend.controller import listener
 from backend.controller.schemas.MaterialUpdateRequest import MaterialUpdateRequest
 from backend.controller.schemas.MaterialCreateRequest import MaterialCreateRequest
@@ -22,6 +23,7 @@ from backend.controller.schemas.UserUpdateRequest import UserUpdateRequest
 from backend.controller.schemas.UserCreateRequest import UserCreateRequest
 from backend.controller.schemas.MaterialTypeUpdateRequest import MaterialTypeUpdateRequest
 from backend.controller.schemas.MaterialTypeCreateRequest import MaterialTypeCreateRequest
+from backend.controller.data_receiver import MQTTReceiver
 
 app = FastAPI()
 origins = [
@@ -40,6 +42,22 @@ app.add_middleware(
 @app.on_event("startup")
 def setup_listeners():
     low_stock_listener()
+
+# Set up listeners on startup
+@app.on_event("startup")
+def setup_mqtt():
+    start_mqtt_receiver()
+
+# Define the MQTT receiver start function
+def start_mqtt_receiver():
+    mqtt_broker = "test.mosquitto.org"
+    mqtt_port = 1883
+    mqtt_temp_topic = "temp_value"
+    mqtt_humid_topic = "humid_value"
+    db_url = constants.DATABASE_URL
+
+    receiver = MQTTReceiver(mqtt_broker, mqtt_port, mqtt_temp_topic, mqtt_humid_topic, db_url)
+    receiver.start()
 
 # Create a listener that triggers when the Material table is updated, checks for Materials with a mass below the threshold
 def low_stock_listener():
