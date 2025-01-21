@@ -8,11 +8,12 @@ class Shelf(Base):
     humidity_pct = Column(Float, nullable=False)
     temperature_cel = Column(Float, nullable=False)
 
-    # Enforce the CHECK constraint (humidity_pct >= 0, temperature_cel >= -273.15)
+    # Enforce the CHECK constraint (humidity_pct >= 0, temperature_cel >= 0 && temperature_cel <= 50)
     __table_args__ = (
-        CheckConstraint('humidity_pct >= 0', name='check_humidity_non_negative'),
-        CheckConstraint('temperature_cel >= -273.15', name='check_temp_below_possible'),
-        CheckConstraint('temperature_cel <= 1000', name='check_temp_too_high'),
+        CheckConstraint('humidity_pct >= 15', name='check_humidity_below_possible'),    # Minimum humidity recoreded by DHT11 sensor + Error
+        CheckConstraint('humidity_pct <= 85', name='check_humidity_above_possible'),    # Maximum humidity recoreded by DHT11 sensor + Error
+        CheckConstraint('temperature_cel >= -2', name='check_temp_below_possible'),     # Minimum temp recoreded by DHT11 sensor + Error
+        CheckConstraint('temperature_cel <= 52', name='check_temp_above_possible'),     # Maximum temp recoreded by DHT11 sensor + Error  
     )
 
     def __repr__(self):
