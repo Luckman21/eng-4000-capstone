@@ -12,6 +12,8 @@ if os.getenv('TEST_TYPE') == 'selenium' or os.getenv('LOCAL_ENV') == 'host':
 elif os.getenv('TEST_TYPE') == 'integration' or os.getenv('LOCAL_ENV') == 'test':
     # Use the database URL for integration tests
     DATABASE_URL = constants.DATABASE_URL_TEST
+else:
+    raise Exception("Wrong DB access command. Please either use 'host' or 'test'")
 
 # Create the SQLAlchemy engine and session
 engine = create_engine(DATABASE_URL, echo=True)
