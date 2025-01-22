@@ -1,24 +1,11 @@
 from db.repositories.MaterialRepository import MaterialRepository
-from db import connect
 from backend.controller import constants
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
-import smtplib
-from email.mime.text import MIMEText
-
-THRESHOLD = 50  # 50g threshold
 
 # Create an engine and local session for connection to the database
 engine = create_engine(constants.DATABASE_URL, echo=True)
 SessionLocal = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
-
-"""
-def send_email(material):
-    msg = MIMEText(f"{material} is running low.  Remaining: {material.mass}g.")
-    msg['Subject'] = 'Low Stock Alert: {material.mass}'
-    #msg['From'] = # create an email account to send from
-    #msg['To'] = #set email address to send info to
-"""
 
 # A polling function to check the mass of each material in the table
 async def quantity_poll(materials):
@@ -35,9 +22,9 @@ async def quantity_poll(materials):
 
     # Iterate through all materials, append those with a mass below the threshold value
     for material in materials:
-        if material.mass < THRESHOLD:
+        if material.mass < constants.THRESHOLD:
             alert.append(material)
-
+    
     return alert # return an array of materials with mass below 50g
 
 async def job_complete_listener(mapper, connection, target):
@@ -63,4 +50,11 @@ async def job_complete_listener(mapper, connection, target):
     
     session.close() # Close the session once we are done
 
+    # DEBUG PRINT STATEMENT REMOVE FROM FINAL VERSION
+    # Print the names (colours) of the materials returned
+    print("\n\n\nMATERIALS BELOW THRESHOLD VALUE!!!!")
+    material_names = [material.colour for material in alert_materials]
+    print(f"{material_names}")
+
+    print("\n\n\n")
     return alert_materials  # Return the array of materials with a mass below the threshold
