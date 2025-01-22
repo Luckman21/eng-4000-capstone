@@ -98,7 +98,7 @@ const EditUser = ({ user, isOpen, onOpenChange, onSave }) => {
             placeholder="Select user type"
             defaultSelectedKey={mat}
             defaultItems={userTypes}
-            onSelectionChange={(key) => handleChange("user_type_id", parseInt(key, 2))}
+            onSelectionChange={(key) => handleChange("user_type_id", parseInt(key, 10))}
           >
              {userTypes.map((item) => (
             <AutocompleteItem key={item.key} value={item.key}>
