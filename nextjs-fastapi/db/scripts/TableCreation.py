@@ -49,7 +49,7 @@ CREATE TABLE users (
     password TEXT NOT NULL, 
     email TEXT NOT NULL UNIQUE,
     user_type_id INTEGER,
-    FOREIGN KEY (user_type_id) REFERENCES user_types(id) ON DELETE SET NULL
+    FOREIGN KEY (user_type_id) REFERENCES user_types(id)
 )
 ''')
 

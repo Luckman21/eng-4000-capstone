@@ -3,7 +3,7 @@ import React from 'react'
 import { useEffect, useState } from "react";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Checkbox, Input, Link} from "@heroui/react";
 import { Autocomplete, AutocompleteItem } from "@heroui/react";
-import { fetchMaterialTypes, MaterialTypeName } from '@/constants/data';
+import { fetchUserTypes, UserTypeName } from '@/constants/data';
 
 const EditUser = ({ user, isOpen, onOpenChange, onSave }) => {
   const [editableUser, setEditableUser] = useState(user);
@@ -20,7 +20,7 @@ const EditUser = ({ user, isOpen, onOpenChange, onSave }) => {
    // Fetch user types on component mount
   useEffect(() => {
     const fetchTypes = async () => {
-      const types = await fetchMaterialTypes();
+      const types = await fetchUserTypes();
       setUserTypes(types);
 
     };
@@ -56,8 +56,8 @@ const EditUser = ({ user, isOpen, onOpenChange, onSave }) => {
          console.error("Error updating user:", errorData); // Log the error response from the backend
          throw new Error("Failed to update user");
       }
-        const updatedMaterial = { ...editableUser };
-        onSave(updatedMaterial); // Notify parent
+        const updatedUser = { ...editableUser };
+        onSave(updatedUser); // Notify parent
         onOpenChange(); // Close the modal
       } catch (error) {
         console.error("Error updating user:", error);
@@ -68,31 +68,31 @@ const EditUser = ({ user, isOpen, onOpenChange, onSave }) => {
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center" backdrop="opaque">
       <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">Edit Material</ModalHeader>
+        <ModalHeader className="flex flex-col gap-1">Edit User</ModalHeader>
         <ModalBody>
           <Input
             label="Username"
             placeholder="Enter username"
             variant="bordered"
-            value={editableUser?.name || ""}
-            onChange={(e) => handleChange("name", e.target.value)}
+            value={editableUser?.username  || ""}
+            onChange={(e) => handleChange("username", e.target.value)}
           />
           <Input
             label="Password"
             placeholder="Enter user password"
             variant="bordered"
-            value={editableUser?.colour || ""}
-            onChange={(e) => handleChange("colour", e.target.value)}
+            value={editableUser?.password  || ""}
+            onChange={(e) => handleChange("password", e.target.value)}
           />
           <Input
             label="Email"
             placeholder="Enter user email"
             variant="bordered"
-            value={editableUser?.mass || ""}
-            onChange={(e) => handleChange("mass", parseFloat(e.target.value))}
+            value={editableUser?.email  || ""}
+            onChange={(e) => handleChange("email", e.target.value)}
           />
 
-          {/* Autocomplete for Material Type */}
+          {/* Autocomplete for User Type */}
           <Autocomplete
             label="User Type"
             placeholder="Select user type"

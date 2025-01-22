@@ -14,7 +14,7 @@ elif os.getenv('TEST_TYPE') == 'integration':
     DATABASE_URL = constants.DATABASE_URL_TEST
 else:
     # Default to a test DB URL
-    DATABASE_URL = constants.DATABASE_URL_TEST
+    DATABASE_URL = constants.DATABASE_URL
 
 # Create the SQLAlchemy engine and session
 engine = create_engine(DATABASE_URL, echo=True)

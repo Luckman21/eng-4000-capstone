@@ -10,7 +10,7 @@ import {
   Input,
 } from "@heroui/react";
 import { Autocomplete, AutocompleteItem } from "@heroui/react";
-import { fetchMaterialTypes } from "@/constants/data";
+import { fetchUserTypes } from "@/constants/data";
 
 export const NewUser = ({ isOpen, onOpenChange, onAddUser, users }) => {
   const [userTypes, setUserTypes] = useState([]);
@@ -21,38 +21,38 @@ export const NewUser = ({ isOpen, onOpenChange, onAddUser, users }) => {
     user_type_id: NaN,
   });
 
-  // Fetch material types on component mount
+  // Fetch user types on component mount
   useEffect(() => {
     const fetchTypes = async () => {
-      const types = await fetchMaterialTypes();
+      const types = await fetchUserTypes();
       setUserTypes(types);
     };
     fetchTypes();
   }, []);
 
-  // Update editableMaterial state on input change
+  
   const handleChange = (field, value) => {
     setNewUser((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSave = async () => {
     try {
-      const response = await fetch("http://localhost:8000/create_material", {
+      const response = await fetch("http://localhost:8000/create_user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newUser),
       });
 
-      if (!response.ok) throw new Error("Failed to add material");
-      let createdMaterial = await response.json();
+      if (!response.ok) throw new Error("Failed to add user");
+      let createdUser = await response.json();
 
      
-      createdMaterial = {
-        ...createdMaterial,
-        id: createdMaterial.id || users.length +1, 
+      createdUser = {
+        ...createdUser,
+        id: createdUser.id || users.length +1, 
     };
 
-      onAddUser(createdMaterial);
+      onAddUser(createdUser);
       onOpenChange(); // Close the modal
 
     } catch (error) {
@@ -75,19 +75,19 @@ export const NewUser = ({ isOpen, onOpenChange, onAddUser, users }) => {
             label="Username"
             placeholder="Enter username"
             variant="bordered"
-            onChange={(e) => handleChange("name", e.target.value)}
+            onChange={(e) => handleChange("username", e.target.value)}
           />
           <Input
             label="Password"
             placeholder="Enter user password"
             variant="bordered"
-            onChange={(e) => handleChange("colour", e.target.value)}
+            onChange={(e) => handleChange("password", e.target.value)}
           />
           <Input
             label="Email"
             placeholder="Enter user email"
             variant="bordered"
-            onChange={(e) => handleChange("mass", parseFloat(e.target.value))}
+            onChange={(e) => handleChange("email", e.target.value)}
           />
           {/* Autocomplete for Material Type */}
           <Autocomplete
@@ -95,7 +95,7 @@ export const NewUser = ({ isOpen, onOpenChange, onAddUser, users }) => {
             placeholder="Select user type"
             defaultItems={userTypes}
             onSelectionChange={(key) => {
-                handleChange("material_type_id", key);
+                handleChange("user_type_id", key);
               }
             }
           >
@@ -112,7 +112,7 @@ export const NewUser = ({ isOpen, onOpenChange, onAddUser, users }) => {
             Close
           </Button>
           <Button color="primary" onPress={handleSave}>
-            Add Material
+            Add User
           </Button>
         </ModalFooter>
       </ModalContent>
