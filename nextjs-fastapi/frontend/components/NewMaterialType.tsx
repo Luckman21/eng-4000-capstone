@@ -48,7 +48,7 @@ export const NewMaterialType = ({ isOpen, onOpenChange, onAddMaterialType, mater
             id: createdMaterialType.id || materialtypes.length +1, 
         };
     
-          onAddUser(createdMaterialType);
+          onAddMaterialType(createdMaterialType);
           onOpenChange(); // Close the modal
     
         } catch (error) {
@@ -67,22 +67,12 @@ export const NewMaterialType = ({ isOpen, onOpenChange, onAddMaterialType, mater
             <ModalHeader className="flex flex-col gap-1">Add New Material Type</ModalHeader>
             <ModalBody>
               {/* Autocomplete for Material Type */}
-              <Autocomplete
+              <Input
                 label="Material Type"
                 placeholder="Select material type"
-                defaultItems={MaterialTypes}
-                onSelectionChange={(key) => {
-                    handleChange("type_name", key);
-                  }
-                }
-              >
-                {(item) => (
-                
-                <AutocompleteItem key={item.key} >
-                {item.label}
-              </AutocompleteItem>
-                )}
-              </Autocomplete>
+                variant="bordered"
+                onChange={(e) =>  handleChange("type_name", e.target.value)}
+              />
             </ModalBody>
             <ModalFooter>
               <Button color="danger" variant="flat" onPress={onOpenChange}>

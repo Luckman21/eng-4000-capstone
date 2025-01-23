@@ -38,7 +38,7 @@ const EditMaterialType = ({ materialType, isOpen, onOpenChange, onSave}) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
 
-        name: editableMaterialType.type_name
+        type_name: editableMaterialType.type_name
         }),
       });
         if (!response.ok) {
@@ -47,7 +47,9 @@ const EditMaterialType = ({ materialType, isOpen, onOpenChange, onSave}) => {
          console.error("Error updating material type:", errorData); // Log the error response from the backend
          throw new Error("Failed to update material type");
       }
-        const updatedMaterialType = { ...editableMaterialType };
+        const updatedMaterialType = { ...editableMaterialType,
+          type_name: editableMaterialType.type_name
+         };
         onSave(updatedMaterialType); // Notify parent
         onOpenChange(); // Close the modal
       } catch (error) {
@@ -61,10 +63,10 @@ const EditMaterialType = ({ materialType, isOpen, onOpenChange, onSave}) => {
             <ModalBody>
               <Autocomplete
                 label="Material Type Name"
-                placeholder="Enter material type name"
+                placeholder="Select material type name"
                 defaultSelectedKey={mat}
                 defaultItems={MaterialTypes}
-                onSelectionChange={(key) => handleChange("type_name", parseInt(key, 10))}
+                onSelectionChange={(key) => handleChange("type_name", key)}
               >
                 {MaterialTypes.map((item) => (
                 <AutocompleteItem key={item.key} value={item.key}>

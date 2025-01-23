@@ -27,7 +27,7 @@ import { NewMaterialType, EditMaterialType, DeletePopup } from "@/components";
 
 
 const MaterialTypeTable = () => {
-  const APIHEADER = "delete_material_type";  
+  const APIHEADER = "delete_mattype";  
   const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editMaterialType, setEditMaterialType] = useState<MaterialType | null>(null); 
@@ -46,13 +46,13 @@ const MaterialTypeTable = () => {
     onOpenChange: handleModalTwoChange,
   } = useDisclosure();
 
-  useEffect(() => {
-    const fetchTypes = async () => {
-      const types = await fetchMaterialTypes();
-      setMaterialTypes(types);
-    };
-    fetchTypes();
-  }, []);
+  //useEffect(() => {
+    //const fetchTypes = async () => {
+      //const types = await fetchMaterialTypes();
+      //setMaterialTypes(types);
+    //};
+    //fetchTypes();
+  //}, []);
 
   
 
@@ -95,6 +95,7 @@ const MaterialTypeTable = () => {
 
  const handleDeleteMaterialType = (deletedId: number) => {
     setMaterialTypes((prevMaterialType) => prevMaterialType.filter((mat) => mat.id !== deletedId));
+    list.reload();
   };
 
 
