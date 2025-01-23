@@ -8,7 +8,7 @@ export default function Home() {
       <Nav />
 
    
-      <TableComponent />
+      <UserTable />
     </div>
     
   );
