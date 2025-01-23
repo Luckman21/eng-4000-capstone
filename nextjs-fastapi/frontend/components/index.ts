@@ -6,6 +6,8 @@ import DeletePopup from "./DeletePopup";
 import NewUser from "./NewUser";
 import EditUser from "./EditUser";
 import MaterialTypeTable from "./MaterialTypeTable";
+import NewMaterialType from "./NewMaterialType";
+import EditMaterialType from "./EditMaterialType";
 
 
-export { TableComponent, Nav, Popup, NewMaterial, DeletePopup, NewUser, EditUser,MaterialTypeTable };
+export { TableComponent, Nav, Popup, NewMaterial, DeletePopup, NewUser, EditUser, MaterialTypeTable, NewMaterialType, EditMaterialType};

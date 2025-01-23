@@ -1,4 +1,4 @@
-import {TableComponent,Nav } from "@/components";
+import {TableComponent,Nav, MaterialTypeTable } from "@/components";
 import UserTable from "@/components/UserTable";
 
 
@@ -8,7 +8,7 @@ export default function Home() {
       <Nav />
 
    
-      <TableComponent />
+      <MaterialTypeTable />
     </div>
     
   );

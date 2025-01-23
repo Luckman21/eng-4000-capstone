@@ -56,7 +56,7 @@ export const NewUser = ({ isOpen, onOpenChange, onAddUser, users }) => {
       onOpenChange(); // Close the modal
 
     } catch (error) {
-      console.error("Error saving material:", error);
+      console.error("Error saving user:", error);
     }
   };
 
@@ -89,7 +89,7 @@ export const NewUser = ({ isOpen, onOpenChange, onAddUser, users }) => {
             variant="bordered"
             onChange={(e) => handleChange("email", e.target.value)}
           />
-          {/* Autocomplete for Material Type */}
+          {/* Autocomplete for User Type */}
           <Autocomplete
             label="User Type"
             placeholder="Select user type"
