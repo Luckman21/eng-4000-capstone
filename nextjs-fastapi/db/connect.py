@@ -16,6 +16,5 @@ else:
     # Default to a test DB URL
     DATABASE_URL = constants.DATABASE_URL
 
-# Create the SQLAlchemy engine and session
 engine = create_engine(DATABASE_URL, echo=True)
 session = sessionmaker(bind=engine)

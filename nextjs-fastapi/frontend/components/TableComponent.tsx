@@ -74,21 +74,38 @@ const TableComponent = () => {
     async load({ signal }) {
       let res = await fetch("http://localhost:8000/materials", { signal });
       let json = await res.json();
-
-      const updatedMaterials = json.map((material: { mass: number; }) => ({
+      console.log(json);
+      const updatedMaterials = json.map((material) => ({
         ...material,
         status: material.mass < 50 ? "Low Stock" : "In Stock",
       }));
-      setMaterials(updatedMaterials);
       setIsLoading(false);
+      setMaterials(updatedMaterials);
 
       return {
         items: updatedMaterials,
       };
     },
+    async sort({items, sortDescriptor}) {
+      return {
+        items: items.sort((a, b) => {
+          let first = a[sortDescriptor.column];
+          let second = b[sortDescriptor.column];
+          let cmp = (parseInt(first) || first) < (parseInt(second) || second) ? -1 : 1;
+
+          if (sortDescriptor.direction === "descending") {
+            cmp *= -1;
+          }
+
+          return cmp;
+        }),
+      };
+    },
   });
+  
 
   const handleEditClick = (material: Material) => {
+    console.log(material);
     setEditMaterial(material);
     openModalOne();
   };
@@ -288,8 +305,8 @@ const filteredItems = React.useMemo(() => {
       <Table
         aria-label="Visualize information through table"
         isStriped
-        onSortChange={list.sort}
-        sortDescriptor={list.sortDescriptor}
+        onSortChange={list.sort} 
+        sortDescriptor={list.sortDescriptor}  
       >
         <TableHeader>
           <TableColumn allowsSorting key="id">

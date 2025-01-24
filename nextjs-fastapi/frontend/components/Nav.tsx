@@ -3,12 +3,17 @@ import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button} from "@her
 
 
 const Nav= ()=> {
+  const [isInvisible, setIsInvisible] = React.useState(false);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    
+  
   return (
     <Navbar>
       <NavbarBrand>
+        
         <p className="font-bold text-inherit">Pantheon 3D Print</p>
       </NavbarBrand>
-      <NavbarContent className=" sm:flex gap-4" justify="center">
+      <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarItem>
           <Link color="foreground" href="#">
             Features
@@ -21,12 +26,12 @@ const Nav= ()=> {
         </NavbarItem>
         <NavbarItem>
           <Link color="foreground" href="#">
-            Add Material
+            Integrations
           </Link>
         </NavbarItem>
       </NavbarContent>
       <NavbarContent justify="end">
-        <NavbarItem className="lg:flex">
+        <NavbarItem className="hidden lg:flex">
           <Link href="#">Login</Link>
         </NavbarItem>
         <NavbarItem>
@@ -36,8 +41,7 @@ const Nav= ()=> {
         </NavbarItem>
       </NavbarContent>
     </Navbar>
-    
   );
-}
+};
 
 export default Nav;

@@ -16,6 +16,10 @@ import asyncio
 from sqlalchemy import event
 from backend.controller import constants
 from backend.controller import listener
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+
+class MassUpdateRequest(BaseModel):
+    mass: float
 from backend.controller.schemas.MaterialUpdateRequest import MaterialUpdateRequest
 from backend.controller.schemas.MaterialCreateRequest import MaterialCreateRequest
 from db.repositories.MaterialTypeRepository import MaterialTypeRepository
@@ -42,6 +46,40 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Track active WebSocket connections
+active_connections = []
+
+# WebSocket connection manager
+class WebSocketManager:
+    def __init__(self):
+        self.active_connections = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+    async def send_personal_message(self, user_id: str, message: dict):
+        """
+        Send a message to a specific WebSocket connection identified by user_id.
+        """
+        websocket = self.active_connections.get(user_id)
+        if websocket:
+            await websocket.send_json(message)
+            print(f"Sent message to {user_id}.")
+        else:
+            print(f"User {user_id} not connected.")
+
+    async def send_to_all(self, data: dict):
+        # Send data to all active WebSocket clients
+        for connection in self.active_connections:
+            await connection.send_json(data)
+
+# Create the WebSocket manager instance
+ws_manager = WebSocketManager()
 
 # Set up listeners on startup
 @app.on_event("startup")
@@ -72,16 +110,25 @@ def low_stock_listener():
 
     event.listen(Material, 'after_update', listener_wrapper)
 
-@app.websocket("/ws/materials")
-async def websocket_endpoint(websocket: WebSocket):
-    await manager.connect(websocket)
+# WebSocket connection handler
+@app.websocket("/ws/{user_id}")
+async def websocket_endpoint(websocket: WebSocket, user_id: str):
+    """
+    WebSocket endpoint where each user is identified by user_id.
+    """
+    print(f"WebSocket connection attempt for {user_id}...")
+    await ws_manager.connect(websocket, user_id)
+    print(f"WebSocket connection established for {user_id}.")
+
     try:
         while True:
+            # Keep the connection alive by receiving text (you can modify as needed)
             await websocket.receive_text()
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
+        print(f"Websocket {user_id} disconnected.")
+        ws_manager.disconnect(user_id)
 
-# API routes
+# Now define your API routes
 @app.get("/materials", response_model=list[MaterialSchema])
 async def get_Allmaterials(db: Session = Depends(get_db)):
     repo = MaterialRepository(db)
