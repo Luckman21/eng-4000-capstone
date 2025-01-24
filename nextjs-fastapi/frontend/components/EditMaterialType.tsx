@@ -61,19 +61,13 @@ const EditMaterialType = ({ materialType, isOpen, onOpenChange, onSave}) => {
           <ModalContent>
             <ModalHeader className="flex flex-col gap-1">Edit Material Type</ModalHeader>
             <ModalBody>
-              <Autocomplete
-                label="Material Type Name"
-                placeholder="Select material type name"
-                defaultSelectedKey={mat}
-                defaultItems={MaterialTypes}
-                onSelectionChange={(key) => handleChange("type_name", key)}
-              >
-                {MaterialTypes.map((item) => (
-                <AutocompleteItem key={item.key} value={item.key}>
-                    {item.label}
-                </AutocompleteItem>
-                ))}
-              </Autocomplete>
+                <Input
+            label="Material Type Name"
+            placeholder="Enter the Material Type's Name"
+            variant="bordered"
+            value={editableMaterialType?.type_name || ""}
+            onChange={(e) => handleChange("type_name", e.target.value)}
+          />
             </ModalBody>
             <ModalFooter>
               <Button color="danger" variant="flat" onPress={onOpenChange}>
