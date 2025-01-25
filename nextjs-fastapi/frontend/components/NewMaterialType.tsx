@@ -68,8 +68,8 @@ export const NewMaterialType = ({ isOpen, onOpenChange, onAddMaterialType, mater
             <ModalBody>
               {/* Autocomplete for Material Type */}
               <Input
-                label="Material Type"
-                placeholder="Select material type"
+                label="Material Type Name"
+                placeholder="Enter the material type's name"
                 variant="bordered"
                 onChange={(e) =>  handleChange("type_name", e.target.value)}
               />

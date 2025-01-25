@@ -8,13 +8,13 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import Remote
-import chromedriver_autoinstaller
+#import chromedriver_autoinstaller
 import re
 import os
 
 
 
-TEST_URL = "http://localhost:3000/users"
+TEST_URL = "http://localhost:3000/materialType"
 
 @pytest.fixture
 def driver():
@@ -36,7 +36,7 @@ def driver():
     yield driver
     driver.quit()
 
-def test_user_table_header(driver):
+def test_mattype_table_header(driver):
     driver.get(TEST_URL)
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "thead tr")))
 
@@ -46,14 +46,14 @@ def test_user_table_header(driver):
     # Get the full text of the header row (all titles in one string)
     header_text = header_row.text
 
-    assert header_text == "ID Username Password Email User Type ACTIONS"
+    assert header_text == "ID Name ACTIONS"
 
-def test_user_table_buttons(driver):
+def test_mattype_table_buttons(driver):
     driver.get(TEST_URL)
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "tbody tr")))
 
 
-    rows = driver.find_elements(By.CSS_SELECTOR, "tbody tr")
+    rows = driver.find_elements(By.CLASS_NAME, "relative flex items-center gap-2")
 
     # Check each row for the presence of two SVG elements
     for index, row in enumerate(rows):
@@ -63,10 +63,11 @@ def test_user_table_buttons(driver):
         # Assert that each row has exactly 2 SVGs (or adjust as necessary)
         assert len(svg_elements) == 2, f"Row {index + 1} does not have exactly 2 SVG elements."
 
-def test_user_table_order(driver):
+def test_mattype_table_order(driver):
 
     driver.get(TEST_URL)
     WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[1]")))
+    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[2]/td[1]")))
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[1]")
     assert first_td.text == '1'
@@ -77,9 +78,9 @@ def test_user_table_order(driver):
 def test_edit_button(driver):
 
     driver.get(TEST_URL)
-    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[6]")))
+    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[3]")))
 
-    button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[6]/div/span[1]")
+    button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[3]/div/span[1]")
     button.click()
     WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 
@@ -87,14 +88,12 @@ def test_edit_button(driver):
 
     header = panel.find_element(By.CSS_SELECTOR, "header")
 
-    assert header.text == "Edit User"
+    assert header.text == "Edit Material Type"
 
     labels = panel.find_elements(By.CSS_SELECTOR, "label")
 
-    assert labels[0].text == "Username"
-    assert labels[1].text == "Password"
-    assert labels[2].text == "Email"
-    assert labels[3].text == "User Type"
+    assert labels[0].text == "Material Type Name"
+
 
 def test_create_button(driver):
     driver.get(TEST_URL)
@@ -109,23 +108,20 @@ def test_create_button(driver):
 
     header = panel.find_element(By.CSS_SELECTOR, "header")
 
-    assert header.text == "Add New User"
+    assert header.text == "Add New Material Type"
 
     edit_fields = panel.find_element(By.CSS_SELECTOR, "div")
 
     labels = panel.find_elements(By.CSS_SELECTOR, "label")
 
-    assert labels[0].text == "Username"
-    assert labels[1].text == "Password"
-    assert labels[2].text == "Email"
-    assert labels[3].text == "User Type"
+    assert labels[0].text == "Material Type Name"
 
 
 def test_delete_confirmation(driver):
     driver.get(TEST_URL)
-    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[6]")))
+    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[3]")))
 
-    button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[6]/div/span[2]")
+    button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[3]/div/span[2]")
     button.click()
     WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 

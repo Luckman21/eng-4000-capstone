@@ -14,7 +14,7 @@ import os
 
 
 
-TEST_URL = "http://localhost:3000"
+TEST_URL = "http://localhost:3000/inventory"
 
 @pytest.fixture
 def driver():
