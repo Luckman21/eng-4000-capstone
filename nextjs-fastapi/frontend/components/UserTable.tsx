@@ -125,7 +125,7 @@ const UserTable = () => {
             </div>
           );
           case "user_type_id":
-          return cellValue === 1 ? "Admin" : cellValue === 2 ? "Super Admin" : "Not Assigned";
+          return user.role || "Not Assigned";
         default:
           return cellValue;
       }
