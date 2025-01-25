@@ -12,7 +12,7 @@ const Nav= ()=> {
       <NavbarContent className=" sm:flex gap-4" justify="center">
         <NavbarItem>
           <Link href="/inventory">
-            Inventory
+          Inventory
           </Link>
         </NavbarItem>
         <NavbarItem isActive>
@@ -21,7 +21,7 @@ const Nav= ()=> {
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link href="/materialtype">
+          <Link href="/materialType">
             Material Type
           </Link>
         </NavbarItem>
