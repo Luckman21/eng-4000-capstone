@@ -46,7 +46,7 @@ def test_mattype_table_header(driver):
     # Get the full text of the header row (all titles in one string)
     header_text = header_row.text
 
-    assert header_text == "ID Name ACTIONS"
+    assert header_text == "ID NAME ACTIONS"
 
 def test_mattype_table_buttons(driver):
     driver.get(TEST_URL)

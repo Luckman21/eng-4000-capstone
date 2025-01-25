@@ -146,7 +146,7 @@ const MaterialTypeTable = () => {
             ID
           </TableColumn>
           <TableColumn allowsSorting key="type_name">
-            Name
+            NAME
           </TableColumn>
           <TableColumn key="actions">ACTIONS</TableColumn>
         </TableHeader>

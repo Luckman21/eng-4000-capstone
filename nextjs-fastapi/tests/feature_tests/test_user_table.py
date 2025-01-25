@@ -46,7 +46,7 @@ def test_user_table_header(driver):
     # Get the full text of the header row (all titles in one string)
     header_text = header_row.text
 
-    assert header_text == "ID Username Password Email User Type ACTIONS"
+    assert header_text == "ID USERNAME PASSWORD EMAIL USER TYPE ACTIONS"
 
 def test_user_table_buttons(driver):
     driver.get(TEST_URL)

@@ -147,16 +147,16 @@ const UserTable = () => {
             ID
           </TableColumn>
           <TableColumn allowsSorting key="username">
-            Username
+            USERNAME
           </TableColumn>
           <TableColumn allowsSorting key="password">
-            Password
+            PASSWORD
           </TableColumn>
           <TableColumn allowsSorting key="email">
-            Email
+            EMAIL
           </TableColumn>
           <TableColumn allowsSorting key="user_type_id">
-            User Type
+            USER TYPE
           </TableColumn>
           <TableColumn key="actions">ACTIONS</TableColumn>
         </TableHeader>
