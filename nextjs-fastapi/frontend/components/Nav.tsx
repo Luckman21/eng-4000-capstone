@@ -1,4 +1,5 @@
-import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button} from "@heroui/react";
+import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Button} from "@heroui/react";
+import Link from "next/link";
 
 
 
@@ -10,18 +11,18 @@ const Nav= ()=> {
       </NavbarBrand>
       <NavbarContent className=" sm:flex gap-4" justify="center">
         <NavbarItem>
-          <Link color="foreground" href="#">
-            Features
+          <Link href="/inventory">
+          Inventory
           </Link>
         </NavbarItem>
         <NavbarItem isActive>
-          <Link href="#" aria-current="page">
-            Customers
+          <Link href="/users">
+            Users
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link color="foreground" href="#">
-            Add Material
+          <Link href="/materialType">
+            Material Type
           </Link>
         </NavbarItem>
       </NavbarContent>

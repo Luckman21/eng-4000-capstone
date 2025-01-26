@@ -16,7 +16,8 @@ import {
   Tooltip,
   Spinner,
   useDisclosure,
-  Button
+  Button,
+  user
 } from "@heroui/react";
 
 import { EditIcon } from "@/constants/EditIcon";
@@ -30,6 +31,8 @@ const UserTable = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editUser, setEditUser] = useState<User | null>(null); 
+  const [statusFilter, setStatusFilter] = React.useState("all");
+  const [filterValue, setFilterValue] = React.useState("");
   const {
     isOpen: isModalOneOpen,
     onOpen: openModalOne,
@@ -51,10 +54,16 @@ const UserTable = () => {
     async load({ signal }) {
       let res = await fetch("http://localhost:8000/users", { signal });
       let json = await res.json();
+
+      const UpdatedUsers = json.map((user) => ({
+        ...user, 
+        role: user.user_type_id === 1 ? "Admin" : user.user_type_id === 2 ? "Super Admin" : "Not Assigned",
+      }));
+      setUsers(UpdatedUsers);
       setIsLoading(false);
 
       return {
-        items: json,
+        items: UpdatedUsers,
       };
     },
   });
@@ -90,24 +99,24 @@ const UserTable = () => {
 
 
   const renderCell = React.useCallback(
-    (material, columnKey) => {
-      const cellValue = material[columnKey];
+    (user, columnKey) => {
+      const cellValue = user[columnKey];
       switch (columnKey) {
         
         case "actions":
           return (
             <div className="relative flex items-center gap-2">
-              <Tooltip content="Edit material">
+              <Tooltip content="Edit User">
                 <span
-                  onClick={() => handleEditClick(material)}
+                  onClick={() => handleEditClick(user)}
                   className="text-lg text-default-400 cursor-pointer active:opacity-50"
                 >
                   <EditIcon />
                 </span>
               </Tooltip>
-              <Tooltip color="danger" content="Delete material">
+              <Tooltip color="danger" content="Delete User">
                   <span
-                  onClick={() => handleDeleteClick(material)}
+                  onClick={() => handleDeleteClick(user)}
                   className="text-lg text-danger cursor-pointer active:opacity-50"
                 >
                   <DeleteIcon />
@@ -115,8 +124,8 @@ const UserTable = () => {
               </Tooltip>
             </div>
           );
-          case "shelf_id":
-          return cellValue || "Not Assigned";
+          case "user_type_id":
+          return user.role || "Not Assigned";
         default:
           return cellValue;
       }
@@ -126,7 +135,7 @@ const UserTable = () => {
 
   return (
     <div>
-      <Button onPress={()=> handleModalTwoChange()} color="primary" >Add Material</Button>
+      <Button onPress={()=> handleModalTwoChange()} color="primary" className="self-start" >Add User</Button>
       <Table
         aria-label="Visualize information through table"
         isStriped
@@ -138,16 +147,16 @@ const UserTable = () => {
             ID
           </TableColumn>
           <TableColumn allowsSorting key="username">
-            Username
+            USERNAME
           </TableColumn>
           <TableColumn allowsSorting key="password">
-            Password
+            PASSWORD
           </TableColumn>
           <TableColumn allowsSorting key="email">
-            Email
+            EMAIL
           </TableColumn>
           <TableColumn allowsSorting key="user_type_id">
-            User Type
+            USER TYPE
           </TableColumn>
           <TableColumn key="actions">ACTIONS</TableColumn>
         </TableHeader>

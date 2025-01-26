@@ -26,4 +26,32 @@ async function MaterialTypeName(id: number): Promise<string | null> {
   return type ? type.label : null; 
 }
 
-export { fetchMaterialTypes, MaterialTypeName };
+
+
+
+const fetchUserTypes = async () => {
+  try {
+    const res = await fetch("http://localhost:8000/user_types");
+    const data = await res.json();
+
+    // Transform fetched data to match AutocompleteItem structure
+    const types = data.map((type) => ({
+      label: type.type_name,
+      key: type.id,
+    }));
+    return types;
+    
+  } catch (error) {
+    console.error("Error fetching user types:", error);
+    return []; // Return an empty array in case of an error
+  }
+}
+
+async function UserTypeName(id: number): Promise<string | null> {
+  const types = await fetchUserTypes(); 
+  const type = types.find((t) => t.id === id); 
+  return type ? type.label : null; 
+}
+
+
+export { fetchMaterialTypes, MaterialTypeName, fetchUserTypes, UserTypeName };

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { MaterialType } from "@/types";
 import axios from "axios";
 import { useAsyncList } from "@react-stately/data";
+import { fetchMaterialTypes } from "@/constants/data";
 
 import React from "react";
 import {
@@ -21,12 +22,12 @@ import {
 
 import { EditIcon } from "@/constants/EditIcon";
 import { DeleteIcon } from "@/constants/DeleteIcon";
-import { NewUser, EditUser,DeletePopup } from "@/components";
+import { NewMaterialType, EditMaterialType, DeletePopup } from "@/components";
 
 
 
 const MaterialTypeTable = () => {
-  const APIHEADER = "delete_material_type";  
+  const APIHEADER = "delete_mattype";  
   const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editMaterialType, setEditMaterialType] = useState<MaterialType | null>(null); 
@@ -45,11 +46,19 @@ const MaterialTypeTable = () => {
     onOpenChange: handleModalTwoChange,
   } = useDisclosure();
 
+  //useEffect(() => {
+    //const fetchTypes = async () => {
+      //const types = await fetchMaterialTypes();
+      //setMaterialTypes(types);
+    //};
+    //fetchTypes();
+  //}, []);
+
   
 
   const list = useAsyncList({
     async load({ signal }) {
-      let res = await fetch("http://localhost:8000/users", { signal });
+      let res = await fetch("http://localhost:8000/material_types", { signal });
       let json = await res.json();
       setIsLoading(false);
 
@@ -86,6 +95,7 @@ const MaterialTypeTable = () => {
 
  const handleDeleteMaterialType = (deletedId: number) => {
     setMaterialTypes((prevMaterialType) => prevMaterialType.filter((mat) => mat.id !== deletedId));
+    list.reload();
   };
 
 
@@ -135,13 +145,13 @@ const MaterialTypeTable = () => {
           <TableColumn allowsSorting key="id">
             ID
           </TableColumn>
-          <TableColumn allowsSorting key="name">
-            Name
+          <TableColumn allowsSorting key="type_name">
+            NAME
           </TableColumn>
           <TableColumn key="actions">ACTIONS</TableColumn>
         </TableHeader>
         <TableBody
-          items={materialTypes}
+          items={list.items}
           isLoading={isLoading}
           loadingContent={<Spinner label="Loading..." />}
         >
@@ -152,13 +162,13 @@ const MaterialTypeTable = () => {
           )}
         </TableBody>
       </Table>
-      <EditUser
-        user={editMaterialType}
+      <EditMaterialType
+        materialType={editMaterialType}
         isOpen={isModalOneOpen}
         onOpenChange={handleModalOneChange}
         onSave={handleSaveMaterialType} // Pass callback to Popup
       />
-      <NewUser isOpen={isModalTwoOpen} onOpenChange={handleModalTwoChange} onAddUser={addMaterialType} materialTypes={materialTypes} />
+      <NewMaterialType isOpen={isModalTwoOpen} onOpenChange={handleModalTwoChange} onAddMaterialType={addMaterialType} materialtypes={materialTypes} />
        <DeletePopup
         item={deleteMaterialType}
         isOpen={isDeleteOpen}

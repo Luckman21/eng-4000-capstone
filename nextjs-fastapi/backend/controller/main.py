@@ -12,6 +12,7 @@ from db.model.UserType import UserType
 from fastapi.middleware.cors import CORSMiddleware
 from db.repositories.MaterialRepository import MaterialRepository
 from db.repositories.UserRepository import UserRepository
+from db.repositories.UserTypeRepository import UserTypeRepository
 import asyncio
 from sqlalchemy import event
 from backend.controller import constants
@@ -76,6 +77,11 @@ async def get_Allmaterials(db: Session = Depends(get_db)):
 async def get_all_material_types(db: Session = Depends(get_db)):
     repo =MaterialTypeRepository(db)
     return repo.get_all_material_types()
+
+@app.get("/user_types")
+async def get_all_user_types(db: Session = Depends(get_db)):
+    repo =UserTypeRepository(db)
+    return repo.get_all_user_types()
 
 @app.get("/users")
 async def get_all_users(db: Session = Depends(get_db)):
@@ -220,9 +226,10 @@ async def update_user(entity_id: int, request: UserUpdateRequest, db: Session = 
         # Call the setter method to update the user
         repo.update_user(user,
                              username=request.username,
+                             password=request.password,
                              email=request.email,
-                             user_type_id=request.user_type_id,
-                             password=request.password)
+                             user_type_id=request.user_type_id
+                             )
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
