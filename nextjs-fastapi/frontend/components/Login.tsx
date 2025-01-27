@@ -37,13 +37,8 @@ const Login = () => {
       onSubmit={async (e) => {
         e.preventDefault();
         const data = Object.fromEntries(new FormData(e.currentTarget));
-
-        console.log("Submitting:", data); // Log the form data for debugging
-        const success = await login(data); // Pass the form data directly to the login function
-        if (success) {
-          console.log("Redirecting to dashboard...");
-          // Redirect to another page or perform further actions
-        }
+        login(data); 
+        
       }}
     >
       <Input

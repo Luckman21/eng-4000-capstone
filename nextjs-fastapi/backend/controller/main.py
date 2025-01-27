@@ -99,22 +99,13 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 
     # Create JWT access token
     access_token = create_access_token(
-        data={"username": user.username, "user_type_id": user.user_type_id},  # Use dot notation for user.username
+        data={"username": user.username, "user_type_id": user.user_type_id}, 
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     )
     return {"access_token": access_token, "token_type": "bearer"}
 @app.post("/logout")
 def logout(token: str = Depends(oauth2_scheme)):
-    # If using a token blacklist, add the token to the blacklist here.
     return {"message": "Logged out successfully"}
-    
-@app.get("/protected")
-def protected_route(token: str = Depends(oauth2_scheme)):
-    payload = decode_access_token(token)
-    username = payload.get("sub")
-    if username is None:
-        raise HTTPException(status_code=401, detail="Invalid token")
-    return {"message": f"Hello, {username}! This is a protected route."}
 ############################################################################################################
 
 
