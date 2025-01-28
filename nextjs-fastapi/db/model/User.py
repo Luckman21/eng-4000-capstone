@@ -2,6 +2,8 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from .UserType import UserType  # Import UserType from user_type.py
 from .base import Base  # Import Base from a separate file
+from sqlalchemy.orm import validates
+from backend.service.PasswordHashService import PasswordHashService
 
 class User(Base):
 
@@ -19,6 +21,15 @@ class User(Base):
 
     def __repr__(self):
         return f"<User(id={self.id}, username={self.username}, email={self.email})>"
+
+    @validates('password')
+    def validate_password(self, key, password):
+        """
+        Automatically hash the password when it's set.
+        """
+        if password:
+            return PasswordHashService.hash_password(password)
+        return password
 
     # Set Methods
 
