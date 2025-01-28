@@ -45,7 +45,7 @@ const EditUser = ({ user, isOpen, onOpenChange, onSave }) => {
         body: JSON.stringify({
 
         username: editableUser.username,
-        password: editableUser.password,
+        password: NaN,
         email: editableUser.email,
         user_type_id: editableUser.user_type_id,
         }),
@@ -76,13 +76,6 @@ const EditUser = ({ user, isOpen, onOpenChange, onSave }) => {
             variant="bordered"
             value={editableUser?.username  || ""}
             onChange={(e) => handleChange("username", e.target.value)}
-          />
-          <Input
-            label="Password"
-            placeholder="Enter user password"
-            variant="bordered"
-            value={editableUser?.password  || ""}
-            onChange={(e) => handleChange("password", e.target.value)}
           />
           <Input
             label="Email"

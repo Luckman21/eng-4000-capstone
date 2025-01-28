@@ -149,9 +149,6 @@ const UserTable = () => {
           <TableColumn allowsSorting key="username">
             USERNAME
           </TableColumn>
-          <TableColumn allowsSorting key="password">
-            PASSWORD
-          </TableColumn>
           <TableColumn allowsSorting key="email">
             EMAIL
           </TableColumn>
