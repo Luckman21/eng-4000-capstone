@@ -38,7 +38,7 @@ def test_user_creation(session):
     # Create a valid User
     user = User(
         username='testuser',
-        password='hashedpassword123',
+        password=PasswordHashService.hash_password('hashedpassword123'),
         email='testuser@example.com',
         user_type_id=user_type.id
     )
