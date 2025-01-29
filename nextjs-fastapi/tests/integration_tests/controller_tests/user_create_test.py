@@ -50,7 +50,7 @@ def test_create_user_success(setup_database):
     # Assert that the response message and new mass are correct
     assert response.json() == {"message": "User successfully created"}
 
-    user = session.query(User).filter_by(username="Mickey Mouse", password= "123", email='red3@email.com').delete()
+    user = session.query(User).filter_by(username="Mickey Mouse", email='red3@email.com').delete()
     session.commit()
     assert db_count == session.query(User).count()
 

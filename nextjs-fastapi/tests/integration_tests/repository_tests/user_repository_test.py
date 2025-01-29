@@ -10,6 +10,7 @@ from db.model.base import Base
 from db.repositories.UserRepository import UserRepository
 from db.repositories.UserTypeRepository import UserTypeRepository
 from backend.controller import constants
+from backend.service.PasswordHashService import PasswordHashService
 
 # Use an existing database instead of an in-memory one
 @pytest.fixture(scope='module')
@@ -68,17 +69,33 @@ def test_get_user_by_id(setup_database):
 
     assert user.id == queried_user.id
 
+def test_get_user_by_email(setup_database):
+    # Get the session from the fixture
+    session = setup_database
+
+    # Fetch an existing material and update its data
+    user = session.query(User).filter_by(email="fake@google.ca").first()
+
+    repository = UserRepository(session)
+
+    queried_user = repository.get_user_by_email(user.email)
+
+    assert user.email == queried_user.email
 
 def test_create_user(setup_database):
     # Get the session from the fixture
     session = setup_database
     repository = UserRepository(session)
     user_type = session.query(UserType).filter_by(type_name="Cheese").first()
+    password = "cheesewhiz"
+    hashed_password = PasswordHashService.hash_password(password)
 
-    user = repository.create_user("James", "cheesewhiz", "fake@email.com", user_type.id)
+    user = repository.create_user("James", hashed_password, "fake@email.com", user_type.id)
+
     queried_user = repository.get_user_by_id(user.id)
 
     assert queried_user is not None
+    assert PasswordHashService.check_password(queried_user.email, password, session) is True
 
 
     # Destroy
