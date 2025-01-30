@@ -1,11 +1,11 @@
 "use client";
 import React from 'react'
 import { useEffect, useState } from "react";
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Checkbox, Input, Link} from "@heroui/react";
+import { Button, useDisclosure, Input, Link} from "@heroui/react";
 import { Autocomplete, AutocompleteItem } from "@heroui/react";
+import { fetchUserTypes, UserTypeName } from '@/constants/data';
 
-
-const UserProfile = ({ user, isOpen, onOpenChange, onSave }) => {
+const UserProfile = ({ user }) => {
   const [editableUser, setEditableUser] = useState(user);
   const [userTypes, setUserTypes] = useState([]);
   const mat = (user?.user_type_id)?.toString();
@@ -17,6 +17,16 @@ const UserProfile = ({ user, isOpen, onOpenChange, onSave }) => {
     setEditableUser(user);
   }, [user]);
 
+   // Fetch user types on component mount
+  useEffect(() => {
+    const fetchTypes = async () => {
+      const types = await fetchUserTypes();
+      setUserTypes(types);
+
+    };
+    fetchTypes();
+
+  }, []);
 
   const handleChange = (field, value) => {
     setEditableUser((prev) => ({ ...prev, [field]: value }));
@@ -47,8 +57,6 @@ const UserProfile = ({ user, isOpen, onOpenChange, onSave }) => {
          throw new Error("Failed to update user");
       }
         const updatedUser = { ...editableUser };
-        onSave(updatedUser); // Notify parent
-        onOpenChange(); // Close the modal
       } catch (error) {
         console.error("Error updating user:", error);
       }
@@ -56,42 +64,41 @@ const UserProfile = ({ user, isOpen, onOpenChange, onSave }) => {
 
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center" backdrop="opaque">
-      <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">Edit User</ModalHeader>
-        <ModalBody>
+    <div className="flex items-center justify-center h-screen bg-black">
+      <div className="w-full max-w-lg p-8 bg-neutral-900 text-white rounded-xl shadow-lg">
+      <h1 className="text-2xl font-bold mb-4 text-center text-gray-100">User Profile</h1>
+        
+        {/* Add spacing between input fields */}
+        <div className="space-y-4">
           <Input
             label="Username"
             placeholder="Enter username"
             variant="bordered"
-            value={editableUser?.username  || ""}
+            value={editableUser?.username || ""}
             onChange={(e) => handleChange("username", e.target.value)}
           />
           <Input
             label="Password"
             placeholder="Enter user password"
             variant="bordered"
-            value={"*****"}
+            value={editableUser?.password || ""}
             onChange={(e) => handleChange("password", e.target.value)}
           />
           <Input
             label="Email"
             placeholder="Enter user email"
             variant="bordered"
-            value={editableUser?.email  || ""}
+            value={editableUser?.email || ""}
             onChange={(e) => handleChange("email", e.target.value)}
           />
-        </ModalBody>
-        <ModalFooter>
-          <Button color="danger" variant="flat" onPress={onOpenChange}>
-            Close
-          </Button>
-          <Button color="primary" onPress={handleSave}>
-            Save Changes
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+      <div className="flex gap-4 mt-6">
+        <Button color="primary" onPress={handleSave}>
+          Save Changes
+        </Button>
+      </div>
+    </div>
+    </div>
+    </div>
   );
 };
 

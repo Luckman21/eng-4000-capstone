@@ -110,17 +110,17 @@ def logout(token: str = Depends(oauth2_scheme)):
 
 
 # Set up listeners on startup
-@app.on_event("startup")
-def setup_listeners():
-    low_stock_listener()
+#@app.on_event("startup")
+#def setup_listeners():
+ #   low_stock_listener()
 
 # Set up listeners on startup
-@app.on_event("startup")
-def setup_mqtt():
+#@app.on_event("startup")
+#def setup_mqtt():
     start_mqtt_receiver()
 
 # Define the MQTT receiver start function
-def start_mqtt_receiver():
+#def start_mqtt_receiver():
     mqtt_broker = "test.mosquitto.org"
     mqtt_port = 1883
     mqtt_temp_topic = "temp_value"
@@ -131,7 +131,7 @@ def start_mqtt_receiver():
     receiver.start()
 
 # Create a listener that triggers when the Material table is updated, checks for Materials with a mass below the threshold
-def low_stock_listener():
+#def low_stock_listener():
     def listener_wrapper(mapper, connection, target):
         asyncio.create_task(listener.job_complete_listener(mapper, connection, target))
 

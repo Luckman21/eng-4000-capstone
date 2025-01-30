@@ -1,5 +1,5 @@
-import {Nav, UserProfile } from "@/components";
-;
+import {Nav } from "@/components";
+import UserProfile from "@/components/UserProfile";
 
 
 export default function Home() {
