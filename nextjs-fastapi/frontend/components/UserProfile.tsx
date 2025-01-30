@@ -91,7 +91,7 @@ const UserProfile = ({ user }) => {
             value={editableUser?.email || ""}
             onChange={(e) => handleChange("email", e.target.value)}
           />
-      <div className="flex gap-4 mt-6">
+      <div className="flex justify-end gap-4 mt-6">
         <Button color="primary" onPress={handleSave}>
           Save Changes
         </Button>
