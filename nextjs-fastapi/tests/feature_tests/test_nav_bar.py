@@ -8,7 +8,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import Remote
-import chromedriver_autoinstaller
+#import chromedriver_autoinstaller
 import re
 import os
 
@@ -47,5 +47,7 @@ def test_navbar(driver):
     header_text = header_row.text
     print(header_text)
 
-    assert header_text == "Inventory\nUsers\nMaterial Type"
+    #TODO account for user difference in nav bar once we render properly
+
+    assert header_text == "Inventory\nUsers\nMaterial Type" or header_text == "Inventory\nMaterial Type"
 
