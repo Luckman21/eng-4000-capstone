@@ -25,6 +25,14 @@ from backend.controller.schemas.UserCreateRequest import UserCreateRequest
 from backend.controller.schemas.MaterialTypeUpdateRequest import MaterialTypeUpdateRequest
 from backend.controller.schemas.MaterialTypeCreateRequest import MaterialTypeCreateRequest
 from backend.controller.data_receiver import MQTTReceiver
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+import jwt
+from datetime import datetime, timedelta
+from passlib.context import CryptContext
+from typing import Optional
+
+
 
 app = FastAPI()
 origins = [
@@ -38,6 +46,63 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+############################################################################################################ Testing login stuff
+# Configurations
+
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+# Password hashing
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# OAuth2 scheme
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
+def authenticate_user(username: str, password: str, db: Session):
+    repo = UserRepository(db)  # Pass the database session to the repository
+    user = repo.get_user_by_username(username)  # Fetch the user by username
+
+    # if not user or not verify_password(password, user.password):  You can use this when we apply hashing
+    #     return None
+    if not user or password != user.password:
+        return None
+    return user
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, constants.SECRET_KEY, algorithm=ALGORITHM)
+
+def decode_access_token(token: str):
+    try:
+        payload = jwt.decode(token, constants.SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except jwt.JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+@app.post("/login")
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = authenticate_user(form_data.username, form_data.password, db)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+
+    # Create JWT access token
+    access_token = create_access_token(
+        data={"username": user.username, "user_type_id": user.user_type_id}, 
+        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+@app.post("/logout")
+def logout(token: str = Depends(oauth2_scheme)):
+    return {"message": "Logged out successfully"}
+############################################################################################################
+
 
 # Set up listeners on startup
 @app.on_event("startup")

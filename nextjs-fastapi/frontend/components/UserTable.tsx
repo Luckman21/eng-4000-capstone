@@ -31,8 +31,6 @@ const UserTable = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editUser, setEditUser] = useState<User | null>(null); 
-  const [statusFilter, setStatusFilter] = React.useState("all");
-  const [filterValue, setFilterValue] = React.useState("");
   const {
     isOpen: isModalOneOpen,
     onOpen: openModalOne,

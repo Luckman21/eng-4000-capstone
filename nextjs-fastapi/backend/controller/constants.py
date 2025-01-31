@@ -9,3 +9,5 @@ LOCALHOST_TEST =  "http://localhost:3000"
 DOCKER_TEST = "http://frontend:3000"
 
 THRESHOLD = 50  # 50g mass threshold for materials
+
+SECRET_KEY = "your-secret-key"
