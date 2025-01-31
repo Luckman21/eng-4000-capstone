@@ -39,6 +39,7 @@ jobs:
         pip install uvicorn
         pip install paho-mqtt
         pip install argon2-cffi
+        pip install pyjwt "passlib[bcrypt]" python-multipart
 
       # Install frontend dependencies
     - name: Install frontend dependencies

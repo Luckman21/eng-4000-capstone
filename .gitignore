@@ -4,6 +4,8 @@
 /nextjs-fastapi/frontend/node_modules
 /.pnp
 .pnp.js
+*.pyc
+__pycache__/
 
 # testing
 /coverage
