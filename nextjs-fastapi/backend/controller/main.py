@@ -31,6 +31,7 @@ import jwt
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from typing import Optional
+from constants import SECRET_KEY
 
 
 app = FastAPI()
@@ -49,7 +50,7 @@ app.add_middleware(
 
 ############################################################################################################ Testing login stuff
 # Configurations
-SECRET_KEY = "your-secret-key"
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 # Password hashing
