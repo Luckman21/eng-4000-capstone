@@ -31,7 +31,7 @@ import jwt
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from typing import Optional
-from constants import SECRET_KEY
+
 
 
 app = FastAPI()
@@ -75,11 +75,11 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(to_encode, constants.SECRET_KEY, algorithm=ALGORITHM)
 
 def decode_access_token(token: str):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, constants.SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired")
