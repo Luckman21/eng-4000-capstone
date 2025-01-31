@@ -25,6 +25,7 @@ from backend.controller.schemas.UserCreateRequest import UserCreateRequest
 from backend.controller.schemas.MaterialTypeUpdateRequest import MaterialTypeUpdateRequest
 from backend.controller.schemas.MaterialTypeCreateRequest import MaterialTypeCreateRequest
 from backend.controller.data_receiver import MQTTReceiver
+from backend.service.PasswordHashService import PasswordHashService
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 import jwt
@@ -85,7 +86,7 @@ def decode_access_token(token: str):
         raise HTTPException(status_code=401, detail="Token has expired")
     except jwt.JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
-    
+
 @app.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(form_data.username, form_data.password, db)
@@ -94,7 +95,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 
     # Create JWT access token
     access_token = create_access_token(
-        data={"username": user.username, "user_type_id": user.user_type_id}, 
+        data={"username": user.username, "user_type_id": user.user_type_id},
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     )
     return {"access_token": access_token, "token_type": "bearer"}
@@ -245,7 +246,7 @@ async def create_user(request: UserCreateRequest, db: Session = Depends(get_db))
         repo.create_user(
                              username=request.username,
                              user_type_id=request.user_type_id,
-                             password=request.password,
+                             password=PasswordHashService.hash_password(request.password),
                              email=request.email
                              )
 
@@ -289,9 +290,13 @@ async def update_user(entity_id: int, request: UserUpdateRequest, db: Session = 
     user = repo.get_user_by_id(entity_id)
     try:
         # Call the setter method to update the user
+        password = None
+        if request.password is not None:
+            password = PasswordHashService.hash_password(request.password)
+
         repo.update_user(user,
                              username=request.username,
-                             password=request.password,
+                             password= password,
                              email=request.email,
                              user_type_id=request.user_type_id
                              )
