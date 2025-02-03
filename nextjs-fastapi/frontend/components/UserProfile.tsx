@@ -7,12 +7,13 @@ import { fetchUserTypes, UserTypeName } from '@/constants/data';
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 
-const UserProfile = () => {
+const UserProfile = (onSave) => {
   const [user, setUser] = useState(null);
   const [editableUser, setEditableUser] = useState({
     username: "",
     email: "",
     password: "",
+    id: "",
   });
 
 
@@ -27,6 +28,7 @@ const UserProfile = () => {
         setEditableUser({
           username: decoded.username,
           email: decoded.email, // Default to empty if not in token
+          id: decoded.id,
           password: "", // Leave password blank for security
         });
       } catch (err) {
@@ -46,16 +48,22 @@ const UserProfile = () => {
     try {
 
       // Send update request to backend
-      const response = await axios.put(`http://localhost:8000/update_user/${user.id}`, {
-        username: editableUser.username,
-        email: editableUser.email,
-        password: editableUser.password // Send only if not empty
+      const response = await fetch(`http://localhost:8000/update_user/${editableUser.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: editableUser.username,
+          email: editableUser.email,
+          password: editableUser.password // Send only if not empty
+        }),
       });
 
       if (response.status === 200) {
         console.log("User updated successfully");
         alert("Profile updated!");
       }
+      const updatedMaterial = { ...editableUser };
+      onSave(updatedMaterial);
 
     } catch (error) {
       console.error("Failed to update user:", error);
@@ -77,23 +85,19 @@ const UserProfile = () => {
             onChange={(e) => handleChange("username", e.target.value)}
           />
           <Input
-            label="Password"
-            placeholder="Enter user password"
-            variant="bordered"
-            value={editableUser?.password || ""}
-            onChange={(e) => handleChange("password", e.target.value)}
-          />
-          <Input
             label="Email"
             placeholder="Enter user email"
             variant="bordered"
             value={editableUser?.email || ""}
             onChange={(e) => handleChange("email", e.target.value)}
           />
-      <div className="flex justify-end gap-4 mt-6">
-        <Button color="primary" onPress={handleSave}>
-          Save Changes
-        </Button>
+      <div className="flex justify-between items-center gap-4 mt-6">
+            <Button color="primary">
+              Update Password
+            </Button>
+            <Button color="primary" onPress={handleSave}>
+              Save Changes
+            </Button>
       </div>
     </div>
     </div>
