@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { Button, useDisclosure, Input, Link} from "@heroui/react";
 import { Autocomplete, AutocompleteItem } from "@heroui/react";
 import { fetchUserTypes, UserTypeName } from '@/constants/data';
+import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 
 const UserProfile = (onSave) => {
+  const router = useRouter();
   const [user, setUser] = useState(null);
   const [editableUser, setEditableUser] = useState({
     username: "",
@@ -57,6 +59,8 @@ const UserProfile = (onSave) => {
       if (response.status === 200) {
         console.log("User updated successfully");
         alert("Profile updated!");
+        router.push("/inventory");
+
       }
       const updatedMaterial = { ...editableUser };
       onSave(updatedMaterial);
