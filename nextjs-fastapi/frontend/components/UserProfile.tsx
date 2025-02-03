@@ -63,7 +63,6 @@ const UserProfile = (onSave) => {
 
     } catch (error) {
       console.error("Failed to update user:", error);
-      alert("Failed to update profile.");
     }
   };
 
