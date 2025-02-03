@@ -48,14 +48,10 @@ const UserProfile = (onSave) => {
     try {
 
       // Send update request to backend
-      const response = await fetch(`http://localhost:8000/update_user/${editableUser.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: editableUser.username,
-          email: editableUser.email,
-          password: editableUser.password // Send only if not empty
-        }),
+      const response = await axios.put(`http://localhost:8000/update_user/${editableUser.id}`, {
+        username: editableUser.username,
+        email: editableUser.email,
+        password: editableUser.password // Send only if not empty
       });
 
       if (response.status === 200) {
