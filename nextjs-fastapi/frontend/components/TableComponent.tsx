@@ -57,13 +57,18 @@ const TableComponent = () => {
     onOpenChange: handleModalTwoChange,
   } = useDisclosure();
 
-  useEffect(() => {
-      const fetchTypes = async () => {
-        const types = await fetchMaterialTypes();
-        setMaterialTypes(types);
-      };
-      fetchTypes();
-    }, []);
+
+
+  // useEffect(() => {
+  //     const fetchTypes = async () => {
+  //       const types = await fetchMaterialTypes();
+  //       setIsLoading(true);
+  //       setMaterialTypes(types);
+  //       setIsLoading(false);
+  //     };
+  //     fetchTypes();
+  //   }, []);
+    
   
   const list = useAsyncList({
     async load({ signal }) {
@@ -72,8 +77,12 @@ const TableComponent = () => {
 
       const updatedMaterials = json.map((material: { mass: number; }) => ({
         ...material,
-        status: material.mass <= 50 ? "Low Stock" : "In Stock",
+        status: material.mass < 50 ? "Low Stock" : "In Stock",
       }));
+      const types = await fetchMaterialTypes();
+      
+        setMaterialTypes(types);
+       
       setMaterials(updatedMaterials);
       setIsLoading(false);
 
@@ -226,7 +235,6 @@ const filteredItems = React.useMemo(() => {
         if (cellValue) {
           return (
           <Chip
-              clickable
               color="primary"
               variant="flat"
               size="sm"

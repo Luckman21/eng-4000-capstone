@@ -32,6 +32,7 @@ import jwt
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from typing import Optional
+from backend.service.PasswordHashService import PasswordHashService
 
 
 
@@ -54,19 +55,18 @@ app.add_middleware(
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+hash = PasswordHashService()
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # OAuth2 scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 def authenticate_user(username: str, password: str, db: Session):
-    repo = UserRepository(db)  # Pass the database session to the repository
-    user = repo.get_user_by_username(username)  # Fetch the user by username
-
-    # if not user or not verify_password(password, user.password):  You can use this when we apply hashing
-    #     return None
-    if not user or password != user.password:
+    repo = UserRepository(db)
+    user = repo.get_user_by_username(username)
+    if not hash.check_password(username, password, db):
         return None
+    
     return user
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):

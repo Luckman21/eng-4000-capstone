@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 
 
 const Nav= ()=> {
+  const header = window.location.href.split("/").pop()
+
   const [user, setUser] = useState(null);
   const router = useRouter();
   useEffect(() => {
@@ -31,7 +33,8 @@ const Nav= ()=> {
         <p className="font-bold text-inherit">Pantheon 3D Print</p>
       </NavbarBrand>
       <NavbarContent className=" sm:flex gap-4" justify="center">
-        <NavbarItem >
+       
+        <NavbarItem  >
           <Link href="/inventory" >
           Inventory
           </Link>
@@ -52,11 +55,16 @@ const Nav= ()=> {
         <Dropdown>
               <DropdownTrigger>
                 <Avatar
+                  color="primary"
+                  src="https://img.icons8.com/?size=100&id=23265&format=png&color=FFFFFF"
+                  isBordered
                   showFallback
-                  src={ "https://images.unsplash.com/broken"}
+                  
                   name={user?.username}
                   className="cursor-pointer"
                 />
+                
+                
               </DropdownTrigger>
               <DropdownMenu>
                 <DropdownItem key="profile">
