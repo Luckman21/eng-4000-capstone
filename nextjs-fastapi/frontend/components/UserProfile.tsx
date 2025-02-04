@@ -21,7 +21,7 @@ const UserProfile = (onSave) => {
 
 
 
-  useEffect(() => {
+  const loadUserData = () => {
     const token = localStorage.getItem("access_token");
     if (token) {
       try {
@@ -37,6 +37,11 @@ const UserProfile = (onSave) => {
         console.error("Failed to decode token:", err);
       }
     }
+  };
+
+
+  useEffect(() => {
+    loadUserData();
   }, []);
 
   const handleChange = (field, value) => {
@@ -59,6 +64,13 @@ const UserProfile = (onSave) => {
       if (response.status === 200) {
         console.log("User updated successfully");
         alert("Profile updated!");
+
+        const { access_token } = response.data;
+        if (access_token) {
+          localStorage.setItem("access_token", access_token);
+        }
+
+        loadUserData();
         router.push("/inventory");
 
       }

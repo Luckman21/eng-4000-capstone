@@ -302,8 +302,15 @@ async def update_user(entity_id: int, request: UserUpdateRequest, db: Session = 
                              )
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+    new_token = create_access_token(data={
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "user_type_id": user.user_type_id,
+    })
 
-    return {'message': "User updated successfully"}
+    return {'message': "User updated successfully", "access_token": new_token}
 
 @app.post("/create_mattype")
 async def create_material_type(request: MaterialTypeCreateRequest, db: Session = Depends(get_db)):
