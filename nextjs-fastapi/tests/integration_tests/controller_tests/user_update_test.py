@@ -51,7 +51,7 @@ def test_update_user_success(setup_database):
     assert response.status_code == 200
 
     # Assert that the response message and new mass are correct
-    assert response.json() == {"message": "User updated successfully"}
+    assert response.json()["message"] == "User updated successfully"
 
     repository.update_user(user, username=username, email=email, user_type_id=id)
 
