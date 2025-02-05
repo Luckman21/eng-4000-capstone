@@ -5,6 +5,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from unittest.mock import MagicMock
 from backend.service.mailer.TempPasswordMailer import TempPasswordMailer
 from backend.service.mailer.PasswordChangeMailer import PasswordChangeMailer
+from backend.service.mailer.LowStockMailer import LowStockMailer
 
 verified_email = 'pantheonprototyping@gmail.com'
 
@@ -73,7 +74,6 @@ def test_send_password_change_email_success(mock_sendgrid):
 
     # Mock sending an email
     recipient = "recipient@example.com"
-    temp_password = "temp123password"
     response = password_change_mailer.send_notification(recipient)
 
     # Assert that the send_email method was called once
@@ -104,3 +104,49 @@ def test_send_password_change_email_failure(mock_sendgrid):
     # Call the method and assert that it prints the error
     with pytest.raises(Exception):  # Expect an exception to be raised
         password_change_mailer.send_notification(recipient, temp_password)
+
+
+def test_send_low_stock_email_success(mock_sendgrid):
+
+    # Initialize TempPasswordMailer with a mock sendgrid service
+    low_stock_mailer = LowStockMailer(from_addr=verified_email)
+    low_stock_mailer.client = mock_sendgrid  # Use the mocked service
+
+    # Mock sending an email
+    recipient = "recipient@example.com"
+    type = "type"
+    colour = "colour"
+    link = "link.com"
+
+    response = low_stock_mailer.send_notification(recipient, type, colour, link)
+
+    # Assert that the send_email method was called once
+    mock_sendgrid.send_email.assert_called_once_with(
+        recipient,
+        "Pantheon Inventory Management: Low Stock Warning",
+        f"Well met,\n\n You have 50g left of {colour} {type}.\n\n Use {link} to purchase more.",
+        verified_email
+    )
+
+    # Assert that the response is successful
+    assert response.status_code == 202
+
+
+def test_send_low_stock_email_failure(mock_sendgrid):
+
+    # Simulate failure by making send_email raise an exception
+    mock_sendgrid.send_email.side_effect = Exception("SendGrid API error")
+
+    # Initialize TempPasswordMailer with a mock sendgrid service
+    low_stock_mailer = LowStockMailer(from_addr=verified_email)
+    low_stock_mailer.client = mock_sendgrid  # Use the mocked service
+
+    # Mock sending an email
+    recipient = "recipient@example.com"
+    type = "type"
+    colour = "colour"
+    link = "link.com"
+
+    # Call the method and assert that it prints the error
+    with pytest.raises(Exception):  # Expect an exception to be raised
+        low_stock_mailer.send_notification(recipient, type, colour, link)
