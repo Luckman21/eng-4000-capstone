@@ -1,4 +1,4 @@
-import MailerService
+from backend.service.mailer.MailerService import _MailerService
 
 class TempPasswordMailer:
 
@@ -11,4 +11,4 @@ class TempPasswordMailer:
         body = f"Well met,\n\nYour temporary password is: {temp_password}\n\nPlease use this password to log in and reset it as soon as possible.\n\nIf you have not requested a change, you can ignore this email."
 
         # Send the email using the private _MailerService
-        self.client.send_email(to_addr, subject, body, self.from_addr)
+        return self.client.send_email(to_addr, subject, body, self.from_addr)

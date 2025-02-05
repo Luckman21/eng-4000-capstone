@@ -1,4 +1,4 @@
-import MailerService
+from backend.service.mailer.MailerService import _MailerService
 
 class PasswordChangeMailer:
 
@@ -11,4 +11,4 @@ class PasswordChangeMailer:
         body = f"Well met, Your password has successfully been changed. If this was not you, please contact a system Super Admin for support."
 
         # Send the email using the private _MailerService
-        self.client.send_email(to_addr, subject, body, self.from_addr)
+        return self.client.send_email(to_addr, subject, body, self.from_addr)
