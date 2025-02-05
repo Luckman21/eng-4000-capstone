@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from .UserType import UserType  # Import UserType from user_type.py
 from .base import Base  # Import Base from a separate file
+from sqlalchemy.orm import validates
 
 class User(Base):
 
@@ -19,6 +20,7 @@ class User(Base):
 
     def __repr__(self):
         return f"<User(id={self.id}, username={self.username}, email={self.email})>"
+
 
     # Set Methods
 

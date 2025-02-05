@@ -25,12 +25,14 @@ from backend.controller.schemas.UserCreateRequest import UserCreateRequest
 from backend.controller.schemas.MaterialTypeUpdateRequest import MaterialTypeUpdateRequest
 from backend.controller.schemas.MaterialTypeCreateRequest import MaterialTypeCreateRequest
 from backend.controller.data_receiver import MQTTReceiver
+from backend.service.PasswordHashService import PasswordHashService
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 import jwt
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from typing import Optional
+
 
 
 app = FastAPI()
@@ -49,19 +51,13 @@ app.add_middleware(
 
 ############################################################################################################ Testing login stuff
 # Configurations
-SECRET_KEY = "your-secret-key"
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 # OAuth2 scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
-def get_password_hash(password):
-    return pwd_context.hash(password)
 
 def authenticate_user(username: str, password: str, db: Session):
     repo = UserRepository(db)  # Pass the database session to the repository
@@ -80,17 +76,17 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(to_encode, constants.SECRET_KEY, algorithm=ALGORITHM)
 
 def decode_access_token(token: str):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, constants.SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired")
     except jwt.JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
-    
+
 @app.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(form_data.username, form_data.password, db)
@@ -99,7 +95,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 
     # Create JWT access token
     access_token = create_access_token(
-        data={"username": user.username, "user_type_id": user.user_type_id, "email": user.email, "id": user.id}, 
+        data={"username": user.username, "user_type_id": user.user_type_id},
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     )
     return {"access_token": access_token, "token_type": "bearer"}
@@ -110,17 +106,17 @@ def logout(token: str = Depends(oauth2_scheme)):
 
 
 # Set up listeners on startup
-#@app.on_event("startup")
-#def setup_listeners():
- #   low_stock_listener()
+@app.on_event("startup")
+def setup_listeners():
+    low_stock_listener()
 
 # Set up listeners on startup
-#@app.on_event("startup")
-#def setup_mqtt():
+@app.on_event("startup")
+def setup_mqtt():
     start_mqtt_receiver()
 
 # Define the MQTT receiver start function
-#def start_mqtt_receiver():
+def start_mqtt_receiver():
     mqtt_broker = "test.mosquitto.org"
     mqtt_port = 1883
     mqtt_temp_topic = "temp_value"
@@ -131,7 +127,7 @@ def logout(token: str = Depends(oauth2_scheme)):
     receiver.start()
 
 # Create a listener that triggers when the Material table is updated, checks for Materials with a mass below the threshold
-#def low_stock_listener():
+def low_stock_listener():
     def listener_wrapper(mapper, connection, target):
         asyncio.create_task(listener.job_complete_listener(mapper, connection, target))
 
@@ -250,7 +246,7 @@ async def create_user(request: UserCreateRequest, db: Session = Depends(get_db))
         repo.create_user(
                              username=request.username,
                              user_type_id=request.user_type_id,
-                             password=request.password,
+                             password=PasswordHashService.hash_password(request.password),
                              email=request.email
                              )
 
@@ -294,15 +290,19 @@ async def update_user(entity_id: int, request: UserUpdateRequest, db: Session = 
     user = repo.get_user_by_id(entity_id)
     try:
         # Call the setter method to update the user
+        password = None
+        if request.password is not None:
+            password = PasswordHashService.hash_password(request.password)
+
         repo.update_user(user,
                              username=request.username,
-                             password=request.password,
+                             password= password,
                              email=request.email,
                              user_type_id=request.user_type_id
                              )
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
+
     new_token = create_access_token(data={
         "id": user.id,
         "username": user.username,

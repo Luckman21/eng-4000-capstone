@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from db.model.User import User
 from db.model.UserType import UserType
 from db.model.base import Base
+from backend.service.PasswordHashService import PasswordHashService
 
 # Fixture to setup an in-memory database for testing
 @pytest.fixture(scope='module')
@@ -37,7 +38,7 @@ def test_user_creation(session):
     # Create a valid User
     user = User(
         username='testuser',
-        password='hashedpassword123',
+        password=PasswordHashService.hash_password('hashedpassword123'),
         email='testuser@example.com',
         user_type_id=user_type.id
     )
@@ -48,7 +49,8 @@ def test_user_creation(session):
     # Test that the user was successfully added
     assert user.id is not None
     assert user.username == 'testuser'
-    assert user.password == 'hashedpassword123'
+    assert user.password != 'hashedpassword123'
+    assert PasswordHashService.verify_password(user.password, "hashedpassword123") is True
     assert user.email == 'testuser@example.com'
     assert user.user_type_id == user_type.id
 

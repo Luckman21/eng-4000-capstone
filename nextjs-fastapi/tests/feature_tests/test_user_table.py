@@ -46,7 +46,7 @@ def test_user_table_header(driver):
     # Get the full text of the header row (all titles in one string)
     header_text = header_row.text
 
-    assert header_text == "ID USERNAME PASSWORD EMAIL USER TYPE ACTIONS"
+    assert header_text == "ID USERNAME EMAIL USER TYPE ACTIONS"
 
 def test_user_table_buttons(driver):
     driver.get(TEST_URL)
@@ -77,9 +77,9 @@ def test_user_table_order(driver):
 def test_edit_button(driver):
 
     driver.get(TEST_URL)
-    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[6]")))
+    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[5]")))
 
-    button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[6]/div/span[1]")
+    button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[5]/div/span[1]")
     button.click()
     WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 
@@ -92,9 +92,8 @@ def test_edit_button(driver):
     labels = panel.find_elements(By.CSS_SELECTOR, "label")
 
     assert labels[0].text == "Username"
-    assert labels[1].text == "Password"
-    assert labels[2].text == "Email"
-    assert labels[3].text == "User Type"
+    assert labels[1].text == "Email"
+    assert labels[2].text == "User Type"
 
 def test_create_button(driver):
     driver.get(TEST_URL)
@@ -123,9 +122,9 @@ def test_create_button(driver):
 
 def test_delete_confirmation(driver):
     driver.get(TEST_URL)
-    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[6]")))
+    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[5]")))
 
-    button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[6]/div/span[2]")
+    button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[5]/div/span[2]")
     button.click()
     WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 
