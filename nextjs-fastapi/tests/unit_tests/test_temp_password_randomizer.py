@@ -26,4 +26,4 @@ def test_generate_temp_password_randomness():
     passwords = {create_temp_password() for _ in range(100)}  # Generate 100 passwords]
 
     # Check if there's more than one unique password
-    assert len(passwords) > 1, "Passwords are not random; all generated passwords are the same."
+    assert len(passwords) > 90, "Passwords are not random; many generated passwords are the same."
