@@ -95,14 +95,14 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 
     # Create JWT access token
     access_token = create_access_token(
-        data={"username": user.username, "user_type_id": user.user_type_id},
+        data={"username": user.username, "user_type_id": user.user_type_id, "email": user.email, "id": user.id},
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     )
     return {"access_token": access_token, "token_type": "bearer"}
 @app.post("/logout")
 def logout(token: str = Depends(oauth2_scheme)):
     return {"message": "Logged out successfully"}
-############################################################################################################
+
 
 
 # Set up listeners on startup
@@ -303,7 +303,14 @@ async def update_user(entity_id: int, request: UserUpdateRequest, db: Session = 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    return {'message': "User updated successfully"}
+    new_token = create_access_token(data={
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "user_type_id": user.user_type_id,
+    })
+
+    return {'message': "User updated successfully", "access_token": new_token}
 
 @app.post("/create_mattype")
 async def create_material_type(request: MaterialTypeCreateRequest, db: Session = Depends(get_db)):
