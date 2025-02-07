@@ -125,16 +125,40 @@ def logout(response: Response):
     )
     return {"message": "Logged out successfully"}
 
-@app.get("/protected")
-def protected_route(request: Request):
-    token = request.cookies.get("access_token")
-    print(f"Cookies received: {request.cookies}")  # Debugging output
 
+
+@app.get("/protected")
+def protected_route(request: Request, response: Response):
+    token = request.cookies.get("access_token")
+    
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
-    user_data = decode_access_token(token)
-    return {"message": "Access granted", "user": user_data}
+    try:
+        payload = decode_access_token(token)
+        # Generate a new token with an updated expiration time
+        new_token = create_access_token(
+            data={"username": payload["username"], "user_type_id": payload["user_type_id"]},
+            expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),  # Reset expiration
+        )
+
+        # Update the cookie with the new token
+        response.set_cookie(
+            key="access_token",
+            value=new_token,
+            httponly=True,
+            secure=False,
+            samesite="Lax",
+            max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+            path="/",
+        )
+
+        return {"message": "Access granted", "user": payload}
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except jwt.JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
 
 ############################################################################################################
 
