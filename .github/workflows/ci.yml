@@ -38,6 +38,7 @@ jobs:
         pip install sqlalchemy pytest fastapi selenium chromedriver_autoinstaller httpx
         pip install uvicorn
         pip install paho-mqtt
+        pip install python-dotenv
         pip install argon2-cffi
         pip install sendgrid
         pip install pyjwt "passlib[bcrypt]" python-multipart
