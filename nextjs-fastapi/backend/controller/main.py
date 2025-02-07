@@ -66,7 +66,7 @@ def authenticate_user(username: str, password: str, db: Session):
 
     # if not user or not verify_password(password, user.password):  You can use this when we apply hashing
     #     return None
-    if not user or password != user.password:
+    if not user or not PasswordHashService.verify_password(user.password, password):
         return None
     return user
 
