@@ -119,30 +119,30 @@ const MaterialTypeTable = () => {
 
   const renderCell = React.useCallback(
     (materialType, columnKey) => {
-     
+      if (!columns.find(col => col.key === columnKey)) return null;
   
-      // if (columnKey === "actions") {
-      //   return (
-      //     <div className="relative flex items-center gap-2">
-      //       <Tooltip content="Edit Material Type">
-      //         <span
-      //           onClick={() => handleEditClick(materialType)}
-      //           className="text-lg text-default-400 cursor-pointer active:opacity-50"
-      //         >
-      //           <EditIcon />
-      //         </span>
-      //       </Tooltip>
-      //       <Tooltip color="danger" content="Delete Material Type">
-      //         <span
-      //           onClick={() => handleDeleteClick(materialType)}
-      //           className="text-lg text-danger cursor-pointer active:opacity-50"
-      //         >
-      //           <DeleteIcon />
-      //         </span>
-      //       </Tooltip>
-      //     </div>
-      //   );
-      // }
+      if (columnKey === "actions") {
+        return (
+          <div className="relative flex items-center gap-2">
+            <Tooltip content="Edit Material Type">
+              <span
+                onClick={() => handleEditClick(materialType)}
+                className="text-lg text-default-400 cursor-pointer active:opacity-50"
+              >
+                <EditIcon />
+              </span>
+            </Tooltip>
+            <Tooltip color="danger" content="Delete Material Type">
+              <span
+                onClick={() => handleDeleteClick(materialType)}
+                className="text-lg text-danger cursor-pointer active:opacity-50"
+              >
+                <DeleteIcon />
+              </span>
+            </Tooltip>
+          </div>
+        );
+      }
   
       return materialType[columnKey];
     },
