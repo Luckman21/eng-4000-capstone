@@ -33,6 +33,7 @@ from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from typing import Optional
 from backend.service.mailer.TempPasswordMailer import TempPasswordMailer
+from backend.service.mailer.PasswordChangeMailer import PasswordChangeMailer
 from backend.service.TempPasswordRandomizeService import create_temp_password
 
 
@@ -303,6 +304,13 @@ async def update_user(entity_id: int, request: UserUpdateRequest, db: Session = 
                              )
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+    try:
+        if request.password is not None:
+            mailer = PasswordChangeMailer(from_addr=constants.MAILER_EMAIL)
+            mailer.send_notification(user.email)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
     new_token = create_access_token(data={
         "id": user.id,
