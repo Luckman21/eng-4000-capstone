@@ -4,11 +4,12 @@ import Link from "next/link";
 import { jwtDecode } from "jwt-decode";
 import { useState, useEffect } from "react";
 import { useRouter,usePathname } from "next/navigation";
+import { getUserServer } from "../app/userCreds";
 
 
 
 
-const Nav= ()=> {
+const Nav=  ()=> {
   
   const pathname = usePathname(); // Get the current path
   const [user, setUser] = useState(null);
@@ -36,7 +37,7 @@ const Nav= ()=> {
   
       if (!response.ok) throw new Error("Logout failed");
   
-      setUser(null); // Clear user state
+      // setUser(null); // Clear user state
       router.push("/"); // Redirect to login
     } catch (error) {
       console.error("Logout failed:", error);
