@@ -32,7 +32,8 @@ import jwt
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from typing import Optional
-
+from backend.service.mailer.TempPasswordMailer import TempPasswordMailer
+from backend.service.TempPasswordRandomizeService import create_temp_password
 
 
 app = FastAPI()
@@ -377,5 +378,38 @@ async def update_material_type(entity_id: int, request: MaterialTypeUpdateReques
 
     return {'message': "Material Type updated successfully"}
 
+@app.post("/forgot_password/{entity_id}")
+async def forgot_password(entity_id: int, db: Session = Depends(get_db)):
+
+    repo = UserRepository(db)
+    # Check if the entity exists
+    if not repo.user_exists(entity_id):
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user = repo.get_user_by_id(entity_id)
+
+    # Create password, update, and send
+
+    plain_password = create_temp_password()
+    hashed_password = PasswordHashService.hash_password(plain_password)
+
+    try:
+        # Call the setter method to update the user
+
+        repo.update_user(user,
+                           password=hashed_password)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    try:
+        mailer = TempPasswordMailer(from_addr=constants.MAILER_EMAIL)
+        mailer.send_notification(user.email, plain_password)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    return {'message': "Password successfully sent"}
+
+
 def get_app():
+
     return app
