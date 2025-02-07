@@ -56,19 +56,6 @@ const TableComponent = () => {
     onOpen: openModalTwo,
     onOpenChange: handleModalTwoChange,
   } = useDisclosure();
-
-
-
-  // useEffect(() => {
-  //     const fetchTypes = async () => {
-  //       const types = await fetchMaterialTypes();
-  //       setIsLoading(true);
-  //       setMaterialTypes(types);
-  //       setIsLoading(false);
-  //     };
-  //     fetchTypes();
-  //   }, []);
-    
   
   const list = useAsyncList({
     async load({ signal }) {
@@ -80,8 +67,7 @@ const TableComponent = () => {
         status: material.mass < 50 ? "Low Stock" : "In Stock",
       }));
       const types = await fetchMaterialTypes();
-      
-        setMaterialTypes(types);
+      setMaterialTypes(types);
        
       setMaterials(updatedMaterials);
       setIsLoading(false);

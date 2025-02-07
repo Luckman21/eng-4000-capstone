@@ -6,27 +6,43 @@ import { useState, useEffect } from "react";
 import { useRouter,usePathname } from "next/navigation";
 
 
+
+
 const Nav= ()=> {
   
   const pathname = usePathname(); // Get the current path
   const [user, setUser] = useState(null);
   const router = useRouter();
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (token) {
-      try {
-        const decoded = jwtDecode(token) // Extract user info from JWT
-        setUser(decoded); 
-      } catch (err) {
-        console.error("Failed to decode token:", err);
-      }
-    }
+    fetch("http://127.0.0.1:8000/protected", {
+      method: "GET",
+      credentials: "include", // Ensures cookies are included in the request
+    })
+      .then((res) => res.json())
+      .then((data) => setUser(data.user))
+      .catch((err) => console.error(err));
+      
   }, []);
-  const handleLogout = () => {
-    localStorage.removeItem("access_token"); // Remove token
-    setUser(null); // Clear user state
-    router.push("/"); // Redirect to login
+ 
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/logout", {
+        method: "POST",
+        credentials: "include", // REQUIRED to send cookies
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (!response.ok) throw new Error("Logout failed");
+  
+      setUser(null); // Clear user state
+      router.push("/"); // Redirect to login
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
+  
   return (
     <Navbar>
       <NavbarBrand>

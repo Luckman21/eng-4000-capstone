@@ -6,16 +6,20 @@ import { useRouter } from "next/navigation";
 
 const Login = () => {
   const router = useRouter();
-  const login = async () => {
+  const login = async (data) => {
+    const params= new URLSearchParams();
+      params.append('username', data.username);
+      params.append('password', data.password);
     const response = await fetch("http://127.0.0.1:8000/login", {
       method: "POST",
-      body: new URLSearchParams({ username, password }),
+      body: params,
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       credentials: "include", // Ensures cookies are sent & received
     });
   
     if (response.ok) {
-      window.location.href = "/inventory"; // Redirect to protected page
+      router.push("/inventory");
+      console.log("Login successful");
     } else {
       console.error("Login failed");
     }

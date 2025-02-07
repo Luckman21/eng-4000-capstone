@@ -38,15 +38,16 @@ from backend.service.PasswordHashService import PasswordHashService
 
 app = FastAPI()
 origins = [
+    "http://127.0.0.1:3000",
     "http://localhost:3000",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins= origins,  # Allow frontend origin
+    allow_credentials=True,  # REQUIRED to allow cookies
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all headers
 )
 
 
@@ -98,11 +99,13 @@ def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), 
         data={"username": user.username, "user_type_id": user.user_type_id},
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     )
+    
+
     response.set_cookie(
         key="access_token",
         value=access_token,
         httponly=True,  # Prevent JavaScript access (XSS protection)
-        secure=True,  # Requires HTTPS in production
+        secure=False,  # Requires HTTPS in production
         samesite="Lax",  # Prevents CSRF but allows login flow
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,  # Set expiration
         path="/",  # Apply to all routes
@@ -110,25 +113,29 @@ def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), 
 
     return {"message": "Login successful"}
 @app.post("/logout")
-def logout(response: Response, token: str = Depends(oauth2_scheme)):
+def logout(response: Response):
     response.set_cookie(
         key="access_token",
         value="",
         httponly=True,
-        secure=True,
+        secure=False,  # Secure=True only in production
         samesite="Lax",
         max_age=0,  # Expire immediately
         path="/",
     )
     return {"message": "Logged out successfully"}
+
 @app.get("/protected")
 def protected_route(request: Request):
     token = request.cookies.get("access_token")
+    print(f"Cookies received: {request.cookies}")  # Debugging output
+
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
     user_data = decode_access_token(token)
     return {"message": "Access granted", "user": user_data}
+
 ############################################################################################################
 
 
