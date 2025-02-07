@@ -24,6 +24,7 @@ from backend.controller.schemas.UserUpdateRequest import UserUpdateRequest
 from backend.controller.schemas.UserCreateRequest import UserCreateRequest
 from backend.controller.schemas.MaterialTypeUpdateRequest import MaterialTypeUpdateRequest
 from backend.controller.schemas.MaterialTypeCreateRequest import MaterialTypeCreateRequest
+from backend.controller.schemas.MaterialMutationRequest import MaterialMutationRequest
 from backend.controller.data_receiver import MQTTReceiver
 from backend.service.PasswordHashService import PasswordHashService
 from fastapi import FastAPI, Depends, HTTPException
@@ -416,6 +417,53 @@ async def forgot_password(entity_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
     return {'message': "Password successfully sent"}
+
+
+@app.patch("/replenish_mass/{entity_id}")
+def replenish_mass(entity_id: int, request: MaterialMutationRequest, db: Session = Depends(get_db) ):
+    repo = MaterialRepository(db)
+    # Check if the entity exists
+
+    if not repo.material_exists(entity_id):
+        raise HTTPException(status_code=404, detail="Material not found")
+
+    # Call the update method
+    material = repo.get_material_by_id(entity_id)
+    try:
+        # Call the setter method to update the material
+        repo.update_material(material,
+                             mass=(material.mass + request.mass_change),
+                             colour=None,
+                             material_type_id=None,
+                             supplier_link=None,
+                             shelf_id=None)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    return {'message': f"{request.mass_change} grams replenished"}
+
+
+@app.patch("/consume_mass/{entity_id}")
+def consume_mass(entity_id: int, request: MaterialMutationRequest, db: Session = Depends(get_db)):
+    repo = MaterialRepository(db)
+    # Check if the entity exists
+    if not repo.material_exists(entity_id):
+        raise HTTPException(status_code=404, detail="Material not found")
+
+    # Call the update method
+    material = repo.get_material_by_id(entity_id)
+    try:
+        # Call the setter method to update the material
+        repo.update_material(material,
+                             mass=(material.mass - request.mass_change),
+                             colour=None,
+                             material_type_id=None,
+                             supplier_link=None,
+                             shelf_id=None)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    return {'message': f"{request.mass_change} grams consumed"}
 
 
 def get_app():
