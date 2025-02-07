@@ -3,12 +3,12 @@ import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Avatar,Dropdown, Dropdow
 import Link from "next/link";
 import { jwtDecode } from "jwt-decode";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter,usePathname } from "next/navigation";
 
 
 const Nav= ()=> {
-  const header = window.location.href.split("/").pop()
-
+  
+  const pathname = usePathname(); // Get the current path
   const [user, setUser] = useState(null);
   const router = useRouter();
   useEffect(() => {
@@ -34,24 +34,24 @@ const Nav= ()=> {
       </NavbarBrand>
       <NavbarContent className=" sm:flex gap-4" justify="center">
        
-        <NavbarItem  >
+        <NavbarItem isActive={pathname === "/inventory"} >
           <Link href="/inventory" >
           Inventory
           </Link>
         </NavbarItem>
         {user?.user_type_id === 2 && ( // Only render this if user_type_id is 2
-          <NavbarItem>
+          <NavbarItem isActive={pathname === "/users"}>
             <Link href="/users">Users</Link>
           </NavbarItem>
         )}
-        <NavbarItem>
+        <NavbarItem  isActive={pathname === "/materialType"}>
           <Link href="/materialType">
             Material Type
           </Link>
         </NavbarItem>
       </NavbarContent>
       <NavbarContent justify="end">
-        <NavbarItem className="lg:flex ">
+        <NavbarItem className="lg:flex " >
         <Dropdown>
               <DropdownTrigger>
                 <Avatar

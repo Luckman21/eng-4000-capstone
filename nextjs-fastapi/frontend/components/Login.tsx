@@ -6,27 +6,18 @@ import { useRouter } from "next/navigation";
 
 const Login = () => {
   const router = useRouter();
-  const login = async (data) => {
-    try {
-      const params= new URLSearchParams();
-      params.append('username', data.username);
-      params.append('password', data.password);
-      const response = await axios.post("http://localhost:8000/login", params,{
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      });
-
-      const { access_token } = response.data;
-
-      // Store the token in localStorage
-      localStorage.setItem("access_token", access_token);
-      console.log("Login successful");
-      router.push("/inventory"); // Redirect to dashboard
-      return true;
-    } catch (error) {
-      console.error("Login failed:", error);
-      return false;
+  const login = async () => {
+    const response = await fetch("http://127.0.0.1:8000/login", {
+      method: "POST",
+      body: new URLSearchParams({ username, password }),
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      credentials: "include", // Ensures cookies are sent & received
+    });
+  
+    if (response.ok) {
+      window.location.href = "/inventory"; // Redirect to protected page
+    } else {
+      console.error("Login failed");
     }
   };
 

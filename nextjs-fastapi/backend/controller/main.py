@@ -26,7 +26,7 @@ from backend.controller.schemas.MaterialTypeUpdateRequest import MaterialTypeUpd
 from backend.controller.schemas.MaterialTypeCreateRequest import MaterialTypeCreateRequest
 from backend.controller.data_receiver import MQTTReceiver
 from backend.service.PasswordHashService import PasswordHashService
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Response,Request 
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 import jwt
 from datetime import datetime, timedelta
@@ -88,7 +88,7 @@ def decode_access_token(token: str):
         raise HTTPException(status_code=401, detail="Invalid token")
 
 @app.post("/login")
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid username or password")
@@ -98,10 +98,37 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
         data={"username": user.username, "user_type_id": user.user_type_id},
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,  # Prevent JavaScript access (XSS protection)
+        secure=True,  # Requires HTTPS in production
+        samesite="Lax",  # Prevents CSRF but allows login flow
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,  # Set expiration
+        path="/",  # Apply to all routes
+    )
+
+    return {"message": "Login successful"}
 @app.post("/logout")
-def logout(token: str = Depends(oauth2_scheme)):
+def logout(response: Response, token: str = Depends(oauth2_scheme)):
+    response.set_cookie(
+        key="access_token",
+        value="",
+        httponly=True,
+        secure=True,
+        samesite="Lax",
+        max_age=0,  # Expire immediately
+        path="/",
+    )
     return {"message": "Logged out successfully"}
+@app.get("/protected")
+def protected_route(request: Request):
+    token = request.cookies.get("access_token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    user_data = decode_access_token(token)
+    return {"message": "Access granted", "user": user_data}
 ############################################################################################################
 
 
