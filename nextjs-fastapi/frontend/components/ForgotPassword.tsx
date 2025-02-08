@@ -23,7 +23,7 @@ const ForgotPassword = ({ user, isOpen, onOpenChange }) => {
   const handleForgotPassword = async () => {
     try {
       // Send the email to the backend for the forgot password process
-      const response = await axios.post('http://localhost:8000/forgot_password/{editableUser.id}', {
+      const response = await axios.post('http://localhost:8000/forgot_password/${editableUser.id}', {
         email: forgotEmail,
       });
 
