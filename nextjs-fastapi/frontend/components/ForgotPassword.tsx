@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -11,13 +11,19 @@ import {
 } from "@heroui/react";
 import axios from "axios";
 
-const ForgotPassword = ({ isOpen, onOpenChange }) => {
+const ForgotPassword = ({ user, isOpen, onOpenChange }) => {
   const [forgotEmail, setForgotEmail] = useState("");
+  const [editableUser, setEditableUser] = useState(user);
+
+
+  useEffect(() => {
+      setEditableUser(user);
+    }, [user]);
 
   const handleForgotPassword = async () => {
     try {
       // Send the email to the backend for the forgot password process
-      const response = await axios.post("http://localhost:8000/forgot_password", {
+      const response = await axios.post('http://localhost:8000/forgot_password/{editableUser.id}', {
         email: forgotEmail,
       });
 
