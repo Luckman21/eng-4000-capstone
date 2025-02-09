@@ -35,7 +35,7 @@ from typing import Optional
 from backend.service.mailer.TempPasswordMailer import TempPasswordMailer
 from backend.service.mailer.PasswordChangeMailer import PasswordChangeMailer
 from backend.service.TempPasswordRandomizeService import create_temp_password
-
+from backend.controller.schemas.ForgotPasswordRequest import ForgotPasswordRequest
 
 app = FastAPI()
 origins = [
@@ -386,15 +386,15 @@ async def update_material_type(entity_id: int, request: MaterialTypeUpdateReques
 
     return {'message': "Material Type updated successfully"}
 
-@app.post("/forgot_password/{entity_id}")
-async def forgot_password(entity_id: int, db: Session = Depends(get_db)):
+@app.post("/forgot_password/")
+async def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
 
     repo = UserRepository(db)
     # Check if the entity exists
-    if not repo.user_exists(entity_id):
+    if not repo.user_email_exists(request.email):
         raise HTTPException(status_code=404, detail="User not found")
 
-    user = repo.get_user_by_id(entity_id)
+    user = repo.get_user_by_email(request.email)
 
     # Create password, update, and send
 

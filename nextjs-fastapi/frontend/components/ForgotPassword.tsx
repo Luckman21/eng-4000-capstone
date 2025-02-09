@@ -15,7 +15,6 @@ const ForgotPassword = ({ user, isOpen, onOpenChange }) => {
   const [forgotEmail, setForgotEmail] = useState("");
   const [editableUser, setEditableUser] = useState(user);
 
-
   useEffect(() => {
       setEditableUser(user);
     }, [user]);
@@ -23,7 +22,7 @@ const ForgotPassword = ({ user, isOpen, onOpenChange }) => {
   const handleForgotPassword = async () => {
     try {
       // Send the email to the backend for the forgot password process
-      const response = await axios.post('http://localhost:8000/forgot_password/${editableUser.id}', {
+      const response = await axios.post('http://localhost:8000/forgot_password/', {
         email: forgotEmail,
       });
 

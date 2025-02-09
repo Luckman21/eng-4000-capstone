@@ -103,3 +103,8 @@ class UserRepository:
         if self.get_user_by_id(user_id) is None:
             return False
         return True
+
+    def user_email_exists(self, email: str):
+        if self.get_user_by_email(email) is None:
+            return False
+        return True
