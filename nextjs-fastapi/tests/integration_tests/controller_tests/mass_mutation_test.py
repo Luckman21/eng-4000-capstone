@@ -60,6 +60,32 @@ def test_material_consume_success(setup_database):
     repository.update_material(material, mass=mass, supplier_link=link, material_type_id=id, shelf_id=1)
 
 
+def test_material_consume_out_of_bounds_error(setup_database):
+    session = setup_database
+
+    repository = MaterialRepository(session)
+
+    material = repository.get_material_by_id(1)
+
+    mass = material.mass
+    link = material.supplier_link
+    id = material.material_type_id
+    shelf = material.shelf_id
+
+    # Send a PUT request with valid entity_id and new mass
+    response = client.patch("/consume_mass/1", json={"mass_change": 50000})
+
+    print(f"Response: {response.json()}")
+
+    # Assert that the response status code is 200
+    assert response.status_code == 400
+
+    # Assert that the response message and new mass are correct
+    assert response.json() == {"detail": f"Consumed mass greater than material's mass"}
+
+    repository.update_material(material, mass=mass, supplier_link=link, material_type_id=id, shelf_id=1)
+
+
 # Test invalid material_id (material not found)
 def test_material_consume_not_found():
 

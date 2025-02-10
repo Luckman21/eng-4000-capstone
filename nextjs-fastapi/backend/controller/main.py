@@ -452,6 +452,11 @@ def consume_mass(entity_id: int, request: MaterialMutationRequest, db: Session =
 
     # Call the update method
     material = repo.get_material_by_id(entity_id)
+
+    #Check mass diference
+
+    if request.mass_change > material.mass:
+        raise HTTPException(status_code=400, detail="Consumed mass greater than material's mass")
     try:
         # Call the setter method to update the material
         repo.update_material(material,
