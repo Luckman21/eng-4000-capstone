@@ -66,7 +66,7 @@ def test_email_temp_success(setup_database):
         mock_send.return_value = None  # The mocked method doesn't need to return anything
 
         # Trigger the password reset
-        response = client.post(f"/forgot_password/{user.id}")
+        response = client.post(f"/forgot_password/", json={"email": user.email})
 
         # Assert the status code is 200
         assert response.status_code == 200
@@ -78,7 +78,7 @@ def test_email_temp_success(setup_database):
 # Test invalid user
 def test_update_user_not_found():
     # Send a PUT request with an invalid entity_id
-    response = client.post("/forgot_password/-999")
+    response = client.post("/forgot_password/", json={"email" : "fakest_email_of_all"})
 
     # Assert that the response status code is 404
     assert response.status_code == 404
