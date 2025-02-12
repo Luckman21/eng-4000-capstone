@@ -9,7 +9,7 @@ import MaterialTypeTable from "./MaterialTypeTable";
 import NewMaterialType from "./NewMaterialType";
 import EditMaterialType from "./EditMaterialType";
 import Login from "./Login";
+import UserProfile from "./UserProfile";
 
 
-
-export { TableComponent, Nav, Popup, NewMaterial, DeletePopup, NewUser, EditUser, MaterialTypeTable, NewMaterialType, EditMaterialType,Login};
+export { TableComponent, Nav, Popup, NewMaterial, DeletePopup, NewUser, EditUser, MaterialTypeTable, NewMaterialType, EditMaterialType,Login, UserProfile};

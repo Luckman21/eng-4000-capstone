@@ -11,10 +11,8 @@ from sqlalchemy.orm import sessionmaker
 from db.model.User import User
 from db.model.UserType import UserType
 from db.model.base import Base
-from db.repositories.UserRepository import UserRepository
 from db.repositories.MaterialRepository import MaterialRepository
-from backend.service.mailer.PasswordChangeMailer import PasswordChangeMailer
-
+from backend.service.mailer.TempPasswordMailer import TempPasswordMailer
 
 @pytest.fixture(scope='module')
 def setup_database(request):
@@ -28,45 +26,60 @@ def setup_database(request):
     Session = sessionmaker(bind=engine)
     session = Session()
 
+    db_count = session.query(User).count()
+
+    dummy_user = User(
+        username="Dummy User",
+        email="lucafili@my.yorku.ca",
+        password="123",
+        user_type_id=1
+    )
+    session.add(dummy_user)
+    session.commit()
+
+    # Register a finalizer to clean up the data after the test
+    def cleanup():
+        session.query(User).filter_by(username="Dummy User").delete()
+        session.commit()
+        assert db_count == session.query(User).count()
+
+    # Register cleanup to be executed after the test, even if it fails
+    request.addfinalizer(cleanup)
+
     yield session  # Yield the session to the test
 
     # Cleanup manually after the test has finished (this could be redundant)
     session.close()
 
+
 # Initialize the TestClient to simulate schemas
 client = TestClient(get_app())
 
-# Test valid mass update
-def test_update_user_success(setup_database):
+def test_email_temp_success(setup_database):
     session = setup_database
 
-    repository = UserRepository(session)
+    user = session.query(User).filter_by(username="Dummy User").first()
 
-    user = repository.get_user_by_id(1)
-    email = user.email
-    username = user.username
-    id = user.user_type_id
+    assert user is not None, "Dummy user should exist in the database"
 
-    with mock.patch.object(PasswordChangeMailer, 'send_notification') as mock_send:
+    with mock.patch.object(TempPasswordMailer, 'send_notification') as mock_send:
         mock_send.return_value = None  # The mocked method doesn't need to return anything
 
-        # Send a PUT request with valid entity_id and new mass
-        response = client.put("/update_user/1", json={"username": "hi", "email": None, "password": "cookies", "user_type_id": 1})
+        # Trigger the password reset
+        response = client.post(f"/forgot_password/", json={"email": user.email})
 
-        # Assert that the response status code is 200
+        # Assert the status code is 200
         assert response.status_code == 200
 
-        # Assert that the response message and new mass are correct
-        assert response.json()["message"] == "User updated successfully"
+        # Ensure send_notification was called once
+        mock_send.assert_called_once_with(user.email, mock.ANY)  # Check if the method was called with correct args
 
-        mock_send.assert_called_once_with(user.email)  # Check if the method was called with correct args
 
-    repository.update_user(user, username=username, email=email, user_type_id=id)
-
-# Test invalid material_id (material not found)
+# Test invalid user
 def test_update_user_not_found():
     # Send a PUT request with an invalid entity_id
-    response = client.put("/update_user/9999", json={"username": "hi", "email": "cookies@gmail.com", "password": None, "user_type_id": 2})
+    response = client.post("/forgot_password/", json={"email" : "fakest_email_of_all"})
+
     # Assert that the response status code is 404
     assert response.status_code == 404
 

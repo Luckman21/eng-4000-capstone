@@ -24,14 +24,19 @@ from backend.controller.schemas.UserUpdateRequest import UserUpdateRequest
 from backend.controller.schemas.UserCreateRequest import UserCreateRequest
 from backend.controller.schemas.MaterialTypeUpdateRequest import MaterialTypeUpdateRequest
 from backend.controller.schemas.MaterialTypeCreateRequest import MaterialTypeCreateRequest
+from backend.controller.schemas.MaterialMutationRequest import MaterialMutationRequest
 from backend.controller.data_receiver import MQTTReceiver
 from backend.service.PasswordHashService import PasswordHashService
-from fastapi import FastAPI, Depends, HTTPException, Response,Request 
+from fastapi import FastAPI, Depends, HTTPException, Response,Request
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 import jwt
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from typing import Optional
+from backend.service.mailer.TempPasswordMailer import TempPasswordMailer
+from backend.service.mailer.PasswordChangeMailer import PasswordChangeMailer
+from backend.service.TempPasswordRandomizeService import create_temp_password
+from backend.controller.schemas.ForgotPasswordRequest import ForgotPasswordRequest
 from backend.service.PasswordHashService import PasswordHashService
 
 
@@ -66,8 +71,14 @@ def authenticate_user(username: str, password: str, db: Session):
     repo = UserRepository(db)
     user = repo.get_user_by_username(username)
     if not hash.check_password(username, password, db):
+    repo = UserRepository(db)  # Pass the database session to the repository
+    user = repo.get_user_by_username(username)  # Fetch the user by username
+
+    # if not user or not verify_password(password, user.password):  You can use this when we apply hashing
+    #     return None
+    if not user or not PasswordHashService.verify_password(user.password, password):
         return None
-    
+
     return user
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
@@ -96,10 +107,10 @@ def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), 
 
     # Create JWT access token
     access_token = create_access_token(
-        data={"username": user.username, "user_type_id": user.user_type_id},
+        data={"username": user.username, "user_type_id": user.user_type_id, "email": user.email, "id": user.id},
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     )
-    
+
 
     response.set_cookie(
         key="access_token",
@@ -127,10 +138,11 @@ def logout(response: Response):
 
 
 
+
 @app.get("/protected")
 def protected_route(request: Request, response: Response):
     token = request.cookies.get("access_token")
-    
+
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
@@ -361,7 +373,21 @@ async def update_user(entity_id: int, request: UserUpdateRequest, db: Session = 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    return {'message': "User updated successfully"}
+    try:
+        if request.password is not None:
+            mailer = PasswordChangeMailer(from_addr=constants.MAILER_EMAIL)
+            mailer.send_notification(user.email)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    new_token = create_access_token(data={
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "user_type_id": user.user_type_id,
+    })
+
+    return {'message': "User updated successfully", "access_token": new_token}
 
 @app.post("/create_mattype")
 async def create_material_type(request: MaterialTypeCreateRequest, db: Session = Depends(get_db)):
@@ -428,5 +454,90 @@ async def update_material_type(entity_id: int, request: MaterialTypeUpdateReques
 
     return {'message': "Material Type updated successfully"}
 
+@app.post("/forgot_password/")
+async def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
+
+    repo = UserRepository(db)
+    # Check if the entity exists
+    if not repo.user_email_exists(request.email):
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user = repo.get_user_by_email(request.email)
+
+    # Create password, update, and send
+
+    plain_password = create_temp_password()
+    hashed_password = PasswordHashService.hash_password(plain_password)
+
+    try:
+        # Call the setter method to update the user
+
+        repo.update_user(user,
+                           password=hashed_password)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    try:
+        mailer = TempPasswordMailer(from_addr=constants.MAILER_EMAIL)
+        mailer.send_notification(user.email, plain_password)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    return {'message': "Password successfully sent"}
+
+
+@app.patch("/replenish_mass/{entity_id}")
+def replenish_mass(entity_id: int, request: MaterialMutationRequest, db: Session = Depends(get_db) ):
+    repo = MaterialRepository(db)
+    # Check if the entity exists
+
+    if not repo.material_exists(entity_id):
+        raise HTTPException(status_code=404, detail="Material not found")
+
+    # Call the update method
+    material = repo.get_material_by_id(entity_id)
+    try:
+        # Call the setter method to update the material
+        repo.update_material(material,
+                             mass=(material.mass + request.mass_change),
+                             colour=None,
+                             material_type_id=None,
+                             supplier_link=None,
+                             shelf_id=None)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    return {'message': f"{request.mass_change} grams replenished"}
+
+
+@app.patch("/consume_mass/{entity_id}")
+def consume_mass(entity_id: int, request: MaterialMutationRequest, db: Session = Depends(get_db)):
+    repo = MaterialRepository(db)
+    # Check if the entity exists
+    if not repo.material_exists(entity_id):
+        raise HTTPException(status_code=404, detail="Material not found")
+
+    # Call the update method
+    material = repo.get_material_by_id(entity_id)
+
+    #Check mass diference
+
+    if request.mass_change > material.mass:
+        raise HTTPException(status_code=400, detail="Consumed mass greater than material's mass")
+    try:
+        # Call the setter method to update the material
+        repo.update_material(material,
+                             mass=(material.mass - request.mass_change),
+                             colour=None,
+                             material_type_id=None,
+                             supplier_link=None,
+                             shelf_id=None)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    return {'message': f"{request.mass_change} grams consumed"}
+
+
 def get_app():
+
     return app

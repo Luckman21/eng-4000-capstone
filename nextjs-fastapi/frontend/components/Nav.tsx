@@ -85,7 +85,7 @@ const Nav=  ()=> {
               </DropdownTrigger>
               <DropdownMenu>
                 <DropdownItem key="profile">
-                  <Link href="/profile">Edit Profile</Link>
+                  <Link href="/userProfile">Edit Profile</Link>
                 </DropdownItem>
                 <DropdownItem className="text-danger" color="danger" key="logout" onClick={handleLogout}>Logout</DropdownItem>
               </DropdownMenu>
