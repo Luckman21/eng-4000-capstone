@@ -69,16 +69,13 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 def authenticate_user(username: str, password: str, db: Session):
     repo = UserRepository(db)
-    user = repo.get_user_by_username(username)
-    repo = UserRepository(db)  # Pass the database session to the repository
-    user = repo.get_user_by_username(username)  # Fetch the user by username
 
-    # if not user or not verify_password(password, user.password):  You can use this when we apply hashing
-    #     return None
-    if not user or not PasswordHashService.verify_password(user.password, password):
-        return None
+    user = PasswordHashService.check_password(username, password, db)
 
-    return user
+    if user:
+        return user
+
+    return None
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
