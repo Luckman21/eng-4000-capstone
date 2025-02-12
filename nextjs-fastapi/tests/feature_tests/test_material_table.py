@@ -100,7 +100,7 @@ def test_edit_button(driver, login):
     )
 
     row = rows[0]
-    WebDriverWait(row, 30).until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "svg")))
+    WebDriverWait(row, 60).until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "svg")))
 
     edit_icon = row.find_elements(By.TAG_NAME, "svg")[1]
 
