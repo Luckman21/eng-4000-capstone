@@ -11,10 +11,11 @@ from selenium.webdriver import Remote
 import chromedriver_autoinstaller
 import re
 import os
+from tests.feature_tests.login_helper import log_admin_in, log_super_admin_in
 
 
 
-TEST_URL = "http://localhost:3000/inventory"
+TEST_URL = "http://127.0.0.1:3000/inventory"
 
 @pytest.fixture
 def driver():
@@ -26,6 +27,7 @@ def driver():
 
     chromedriver_autoinstaller.install()
     driver = webdriver.Chrome(options=chrome_options)
+    log_super_admin_in(driver)
 
     yield driver
     driver.quit()
