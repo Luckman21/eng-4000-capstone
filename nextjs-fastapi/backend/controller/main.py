@@ -70,7 +70,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 def authenticate_user(username: str, password: str, db: Session):
     repo = UserRepository(db)
     user = repo.get_user_by_username(username)
-    if not hash.check_password(username, password, db):
     repo = UserRepository(db)  # Pass the database session to the repository
     user = repo.get_user_by_username(username)  # Fetch the user by username
 
