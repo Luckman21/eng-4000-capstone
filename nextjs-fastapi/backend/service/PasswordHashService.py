@@ -31,10 +31,9 @@ class PasswordHashService:
             return False
 
     @staticmethod
-    def check_password(username: str, password: str, db : Session) -> bool:
+    def check_password(email: str, password: str, db : Session) -> bool:
 
-        user = db.query(User).filter_by(username=username).first()
+        user = db.query(User).filter_by(email=email).first()
 
         if user:
-            return True
-            # return PasswordHashService.verify_password(user.password, password)
+            return PasswordHashService.verify_password(user.password, password)
