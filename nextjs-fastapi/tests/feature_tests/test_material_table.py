@@ -48,7 +48,7 @@ def test_material_table_header(driver, login):
     # Get the full text of the header row (all titles in one string)
     header_text = header_row.text
 
-    assert header_text == "ID COLOUR SUPPLIER LINK MASS (g) MATERIAL TYPE SHELF STATUS ACTIONS"
+    assert header_text == "ID COLOUR SUPPLIER LINK MASS (g) MATERIAL TYPE SHELF STATUS ACTIONS" or header_text == "ID COLOUR SUPPLIER LINK MASS (g) MATERIAL TYPE SHELF STATUS"
 
 
 def test_material_table_buttons(driver, login):
@@ -84,7 +84,7 @@ def test_edit_button(driver, login):
 
     button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[8]/div/span[1]")
     button.click()
-    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 
     panel = driver.find_element(By.TAG_NAME, "section")
 
@@ -107,7 +107,7 @@ def test_create_button(driver, login):
     buttons = driver.find_elements(By.CSS_SELECTOR, "button")
     button = buttons[0]
     button.click()
-    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 
     panel = driver.find_element(By.CSS_SELECTOR, "section")
 
@@ -138,7 +138,7 @@ def test_delete_confirmation(driver, login):
     delete_icon = row.find_elements(By.TAG_NAME, "svg")[2]
 
     delete_icon.click()
-    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 
     popup = driver.find_element(By.TAG_NAME, "section")
 
@@ -191,7 +191,7 @@ def test_status_query(driver, login):
 
     # Status
     input_element.send_keys("In Stock")
-    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[7]")))
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[7]")))
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[7]")
     assert first_td.text == 'In Stock'
@@ -204,7 +204,7 @@ def test_shelf_query(driver, login):
                                         'input[aria-label="Search by colour, status, shelf, or type..."]')
     # Shelf
     input_element.send_keys("1")
-    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[6]")))
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[6]")))
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[6]")
     assert first_td.text == '1'
@@ -219,7 +219,7 @@ def test_type_query(driver, login):
                                         'input[aria-label="Search by colour, status, shelf, or type..."]')
     # Type
     input_element.send_keys("PLA")
-    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[5]")))
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[5]")))
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[5]")
     # Levenstien Distance

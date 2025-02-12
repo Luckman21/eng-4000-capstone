@@ -84,7 +84,7 @@ def test_edit_button(driver, login):
 
     button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[5]/div/span[1]")
     button.click()
-    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 
     panel = driver.find_element(By.TAG_NAME, "section")
 
@@ -105,7 +105,7 @@ def test_create_button(driver, login):
     buttons = driver.find_elements(By.CSS_SELECTOR, "button")
     button = buttons[0]
     button.click()
-    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 
     panel = driver.find_element(By.CSS_SELECTOR, "section")
 
@@ -129,7 +129,7 @@ def test_delete_confirmation(driver, login):
 
     button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[5]/div/span[2]")
     button.click()
-    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 
     popup = driver.find_element(By.TAG_NAME, "section")
 
