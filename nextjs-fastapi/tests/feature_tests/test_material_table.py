@@ -153,11 +153,12 @@ def test_delete_confirmation(driver, login):
             row = rows[0]
             print(row.text)
 
-            WebDriverWait(row, 30).until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "svg")))
+            driver.get(TEST_URL)
+            WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[8]")))
 
-            delete_icon = row.find_elements(By.TAG_NAME, "svg")[2]
-
+            delete_icon = driver.find_element(By.XPATH, "//tbody/tr[1]/td[8]/div/span[2]")
             delete_icon.click()
+
             WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 
             popup = driver.find_element(By.TAG_NAME, "section")
