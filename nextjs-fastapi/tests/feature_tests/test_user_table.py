@@ -23,15 +23,10 @@ def driver():
     chrome_options.add_argument("--disable-gpu") # Disable GPU acceleration (required in headless mode)
     chrome_options.add_argument("--no-sandbox")  # Might help in some environments
     # This will change depending on your driver
-    if os.getenv("CI"):  # If in CI environment
-        # Automatically installs the correct ChromeDriver version for your installed Chrome
-        chromedriver_autoinstaller.install()
-        driver = webdriver.Chrome(options=chrome_options)
 
-    else:
-        path = '/Users/l_filippelli/Downloads/chromedriver-mac-x64/chromedriver'
-
-        driver = webdriver.Chrome(service=Service(path), options=chrome_options)
+    # Automatically installs the correct ChromeDriver version for your installed Chrome
+    chromedriver_autoinstaller.install()
+    driver = webdriver.Chrome(options=chrome_options)
 
     yield driver
     driver.quit()
