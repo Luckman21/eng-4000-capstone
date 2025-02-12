@@ -69,11 +69,12 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 def authenticate_user(username: str, password: str, db: Session):
     repo = UserRepository(db)
+    user = repo.get_user_by_username(username)
 
-    user = PasswordHashService.check_password(username, password, db)
-
-    if user:
+    if hash.check_password(username, password, db):
         return user
+    else:
+        raise HTTPException(status_code=401, detail=f"{user.password}")
 
     return None
 

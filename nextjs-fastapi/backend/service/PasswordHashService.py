@@ -36,4 +36,4 @@ class PasswordHashService:
         user = db.query(User).filter_by(username=username).first()
 
         if user and PasswordHashService.verify_password(user.password, password):
-            return user
+            return True
