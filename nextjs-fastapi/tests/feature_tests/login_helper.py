@@ -42,18 +42,7 @@ def log_admin_in(driver):
     submit_button = form.find_element(By.CSS_SELECTOR, "button")
     submit_button.click()
     form.submit()
-
-    # Set cookie after login
-    cookie = {
-        'name': 'access_token',
-        'value': 'your_token_value_here',
-        'domain': '127.0.0.1',
-        'path': '/',
-    }
-    driver.add_cookie(cookie)
-
-    # Refresh to apply the cookie
-    driver.refresh()
+    set_cookie(driver)
 
 
 def log_super_admin_in(driver):
@@ -88,6 +77,9 @@ def log_super_admin_in(driver):
     submit_button = form.find_element(By.CSS_SELECTOR, "button")
     submit_button.click()
     form.submit()
+    set_cookie(driver)
+
+def set_cookie(driver):
 
     # Set cookie after login
     cookie = {
