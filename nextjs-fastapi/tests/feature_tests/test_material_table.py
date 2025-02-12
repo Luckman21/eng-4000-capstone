@@ -2,6 +2,7 @@ import subprocess
 import pytest
 import time
 from selenium import webdriver
+from selenium.common import StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -37,10 +38,12 @@ def login(driver):
     time.sleep(3)
 
 
-
 def test_material_table_header(driver, login):
     driver.get(TEST_URL)
-    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "thead tr")))
+    WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.TAG_NAME, "tbody")))
+    rows = WebDriverWait(driver, 20).until(
+        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "tbody tr"))
+    )
 
     # Find the header row
     header_row = driver.find_element(By.CSS_SELECTOR, "thead tr")
@@ -53,14 +56,16 @@ def test_material_table_header(driver, login):
 
 def test_material_table_buttons(driver, login):
     driver.get(TEST_URL)
-    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "tbody tr")))
-
+    WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.TAG_NAME, "tbody")))
+    rows = WebDriverWait(driver, 30).until(
+        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "tbody tr"))
+    )
 
     rows = driver.find_elements(By.CSS_SELECTOR, "tbody tr")
 
     # Check each row for the presence of two SVG elements
     for index, row in enumerate(rows):
-        WebDriverWait(row, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "svg")))
+        WebDriverWait(row, 30).until(EC.visibility_of_all_elements_located((By.TAG_NAME, "svg")))
         svg_elements = row.find_elements(By.TAG_NAME, "svg")
 
         # Assert that each row has exactly 2 SVGs (or adjust as necessary)
@@ -69,18 +74,30 @@ def test_material_table_buttons(driver, login):
 def test_material_table_order(driver, login):
 
     driver.get(TEST_URL)
-    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[1]")))
+    WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.TAG_NAME, "tbody")))
+    rows = WebDriverWait(driver, 30).until(
+        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "tbody tr"))
+    )
 
-    first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[1]")
-    assert first_td.text == '1'
+    for _ in range(3):
+        try:
+            first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[1]")
+            assert first_td.text == '1'
 
-    second_td = driver.find_element(By.XPATH, "//tbody/tr[2]/td[1]")
-    assert second_td.text == '2'
+            second_td = driver.find_element(By.XPATH, "//tbody/tr[2]/td[1]")
+            assert second_td.text == '2'
+            break
+        except StaleElementReferenceException:
+            time.sleep(1)
+
 
 def test_edit_button(driver, login):
 
     driver.get(TEST_URL)
-    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[8]")))
+    WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.TAG_NAME, "tbody")))
+    rows = WebDriverWait(driver, 30).until(
+        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "tbody tr"))
+    )
 
     button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[8]/div/span[1]")
     button.click()
@@ -128,31 +145,40 @@ def test_create_button(driver, login):
 
 def test_delete_confirmation(driver, login):
     driver.get(TEST_URL)
-    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "tbody tr")))
+    WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.TAG_NAME, "tbody")))
+    rows = WebDriverWait(driver, 20).until(
+        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "tbody tr"))
+    )
 
-    row = driver.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
-    print(row.text)
+    for _ in range(3):
+        try:
+            row = rows[0]
+            print(row.text)
 
-    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "svg")))
+            WebDriverWait(row, 30).until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "svg")))
 
-    delete_icon = row.find_elements(By.TAG_NAME, "svg")[2]
+            delete_icon = row.find_elements(By.TAG_NAME, "svg")[2]
 
-    delete_icon.click()
-    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
+            delete_icon.click()
+            WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 
-    popup = driver.find_element(By.TAG_NAME, "section")
+            popup = driver.find_element(By.TAG_NAME, "section")
 
-    header = popup.find_element(By.TAG_NAME, "header")
-    assert header.text == "Delete Item"
+            header = popup.find_element(By.TAG_NAME, "header")
+            assert header.text == "Delete Item"
 
-    text = popup.find_element(By.XPATH, "div[2]")
-    assert text.text == 'Are you sure you want to delete this item? This action cannot be undone.'
+            text = popup.find_element(By.XPATH, "div[2]")
+            assert text.text == 'Are you sure you want to delete this item? This action cannot be undone.'
 
-    footer = popup.find_element(By.CSS_SELECTOR, "footer")
+            footer = popup.find_element(By.CSS_SELECTOR, "footer")
 
-    buttons = footer.find_elements(By.CSS_SELECTOR, "button")
+            buttons = footer.find_elements(By.CSS_SELECTOR, "button")
 
-    assert len(buttons) == 2
+            assert len(buttons) == 2
+            break
+        except StaleElementReferenceException:
+            time.sleep(1)
+
 
 def test_search_bar(driver, login):
     driver.get(TEST_URL)

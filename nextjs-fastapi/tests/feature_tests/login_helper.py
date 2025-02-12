@@ -80,7 +80,7 @@ def log_super_admin_in(driver):
     set_cookie(driver)
 
 def set_cookie(driver):
-
+    driver.delete_all_cookies()  # Clear existing cookies
     # Set cookie after login
     cookie = {
         'name': 'access_token',
@@ -90,8 +90,9 @@ def set_cookie(driver):
     }
     driver.add_cookie(cookie)
 
-    # Refresh to apply the cookie
-    driver.refresh()
+    driver.get("http://127.0.0.1:3000/inventory")  # Reload page after setting cookie
+    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "tbody")))
+
 
 
 

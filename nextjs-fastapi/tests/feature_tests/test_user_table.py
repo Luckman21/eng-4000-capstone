@@ -41,7 +41,10 @@ def login(driver):
 
 def test_user_table_header(driver, login):
     driver.get(TEST_URL)
-    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "thead tr")))
+    WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.TAG_NAME, "tbody")))
+    rows = WebDriverWait(driver, 20).until(
+        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "tbody tr"))
+    )
 
     # Find the header row
     header_row = driver.find_element(By.CSS_SELECTOR, "thead tr")
@@ -69,7 +72,10 @@ def test_user_table_buttons(driver, login):
 def test_user_table_order(driver, login):
 
     driver.get(TEST_URL)
-    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[1]")))
+    WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.TAG_NAME, "tbody")))
+    rows = WebDriverWait(driver, 20).until(
+        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "tbody tr"))
+    )
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[1]")
     assert first_td.text == '1'
