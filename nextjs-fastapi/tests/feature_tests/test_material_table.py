@@ -94,17 +94,10 @@ def test_material_table_order(driver, login):
 def test_edit_button(driver, login):
 
     driver.get(TEST_URL)
-    WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.TAG_NAME, "tbody")))
-    rows = WebDriverWait(driver, 30).until(
-        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "tbody tr"))
-    )
+    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[8]")))
 
-    row = rows[0]
-    WebDriverWait(row, 60).until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "svg")))
-
-    edit_icon = row.find_elements(By.TAG_NAME, "svg")[1]
-
-    edit_icon.click()
+    button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[8]/div/span[1]")
+    button.click()
 
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 
