@@ -110,7 +110,8 @@ const MaterialTypeTable = () => {
         ]
       : [
           { key: "id", label: "ID" },
-          { key: "type_name", label: "NAME" }, 
+          { key: "type_name", label: "NAME" },
+          { key: "actions", label: "ACTIONS" },
         ];
   })();
   

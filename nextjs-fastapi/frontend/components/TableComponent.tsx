@@ -207,7 +207,7 @@ const filteredItems = React.useMemo(() => {
 
           return materialType ? materialType.label : "Unknown Type";
         case "actions":
-          return user?.user_type_id === 2 ? (
+          return  (
             <div className="relative flex items-center gap-2">
               <Tooltip content="Edit material">
                 <span
@@ -226,7 +226,7 @@ const filteredItems = React.useMemo(() => {
                 </span>
               </Tooltip>
             </div>
-          ) : null;
+          );
         case "supplier_link":
         // Check if there is a link and it's valid
         if (cellValue) {
@@ -312,7 +312,7 @@ const filteredItems = React.useMemo(() => {
           </TableColumn>
           <TableColumn key="status">STATUS</TableColumn>
           <TableColumn key="actions">
-            {user?.user_type_id === 2 ? "ACTIONS" : null}
+             ACTIONS
           </TableColumn>
         </TableHeader>
         <TableBody
