@@ -17,7 +17,7 @@ from tests.feature_tests.login_helper import log_admin_in, log_super_admin_in
 
 TEST_URL = "http://127.0.0.1:3000/inventory"
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def driver():
     chrome_options = Options()
     chrome_options.add_argument("--headless") # This means you won't see the actual icon
@@ -27,12 +27,18 @@ def driver():
 
     chromedriver_autoinstaller.install()
     driver = webdriver.Chrome(options=chrome_options)
-    log_super_admin_in(driver)
 
     yield driver
     driver.quit()
 
-def test_material_table_header(driver):
+@pytest.fixture(scope="module")
+def login(driver):
+    log_super_admin_in(driver)
+    time.sleep(3)
+
+
+
+def test_material_table_header(driver, login):
     driver.get(TEST_URL)
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "thead tr")))
 
@@ -45,7 +51,7 @@ def test_material_table_header(driver):
     assert header_text == "ID COLOUR SUPPLIER LINK MASS (g) MATERIAL TYPE SHELF STATUS ACTIONS"
 
 
-def test_material_table_buttons(driver):
+def test_material_table_buttons(driver, login):
     driver.get(TEST_URL)
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "tbody tr")))
 
@@ -60,7 +66,7 @@ def test_material_table_buttons(driver):
         # Assert that each row has exactly 2 SVGs (or adjust as necessary)
         assert len(svg_elements) == 3, f"Row {index + 1} does not have exactly 3 SVG elements."
 
-def test_material_table_order(driver):
+def test_material_table_order(driver, login):
 
     driver.get(TEST_URL)
     WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[1]")))
@@ -71,7 +77,7 @@ def test_material_table_order(driver):
     second_td = driver.find_element(By.XPATH, "//tbody/tr[2]/td[1]")
     assert second_td.text == '2'
 
-def test_edit_button(driver):
+def test_edit_button(driver, login):
 
     driver.get(TEST_URL)
     WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[8]")))
@@ -94,7 +100,7 @@ def test_edit_button(driver):
     assert labels[3].text == "Shelf"
     assert labels[4].text == "Material Type"
 
-def test_create_button(driver):
+def test_create_button(driver, login):
     driver.get(TEST_URL)
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "button")))
 
@@ -120,7 +126,7 @@ def test_create_button(driver):
     assert labels[4].text == "Material Type"
 
 
-def test_delete_confirmation(driver):
+def test_delete_confirmation(driver, login):
     driver.get(TEST_URL)
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "tbody tr")))
 
@@ -148,7 +154,7 @@ def test_delete_confirmation(driver):
 
     assert len(buttons) == 2
 
-def test_search_bar(driver):
+def test_search_bar(driver, login):
     driver.get(TEST_URL)
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))
 
@@ -159,7 +165,7 @@ def test_search_bar(driver):
     aria_label_value = input_element.get_attribute('aria-label')
     assert aria_label_value == "Search by colour, status, shelf, or type..."
 
-def test_colour_query(driver):
+def test_colour_query(driver, login):
     driver.get(TEST_URL)
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))
 
@@ -176,7 +182,7 @@ def test_colour_query(driver):
     # Levenstien Distance
     assert re.search("Re.", first_td.text) or re.search(".ed", first_td.text) or re.search("R.d", first_td.text) or re.search("..d", first_td.text) or re.search("R..", first_td.text) or re.search(".e.", first_td.text)
 
-def test_status_query(driver):
+def test_status_query(driver, login):
     driver.get(TEST_URL)
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))
 
@@ -190,7 +196,7 @@ def test_status_query(driver):
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[7]")
     assert first_td.text == 'In Stock'
 
-def test_shelf_query(driver):
+def test_shelf_query(driver, login):
     driver.get(TEST_URL)
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))
 
@@ -204,7 +210,7 @@ def test_shelf_query(driver):
     assert first_td.text == '1'
 
 
-def test_type_query(driver):
+def test_type_query(driver, login):
     driver.get(TEST_URL)
 
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))

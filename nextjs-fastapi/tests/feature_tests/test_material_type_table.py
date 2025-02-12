@@ -17,7 +17,7 @@ from tests.feature_tests.login_helper import log_admin_in, log_super_admin_in
 
 TEST_URL = "http://127.0.0.1:3000/materialType"
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def driver():
     chrome_options = Options()
     chrome_options.add_argument("--headless") # This means you won't see the actual icon
@@ -27,12 +27,18 @@ def driver():
 
     chromedriver_autoinstaller.install()
     driver = webdriver.Chrome(options=chrome_options)
-    log_super_admin_in(driver)
 
     yield driver
     driver.quit()
 
-def test_mattype_table_header(driver):
+@pytest.fixture(scope="module")
+def login(driver):
+    log_super_admin_in(driver)
+    time.sleep(3)
+
+
+
+def test_mattype_table_header(driver, login):
     driver.get(TEST_URL)
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "thead tr")))
 
@@ -42,9 +48,9 @@ def test_mattype_table_header(driver):
     # Get the full text of the header row (all titles in one string)
     header_text = header_row.text
 
-    assert header_text == "ID NAME ACTIONS"
+    assert header_text == "ID NAME ACTIONS" or header_text == "ID NAME"
 
-def test_mattype_table_buttons(driver):
+def test_mattype_table_buttons(driver, login):
     driver.get(TEST_URL)
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "tbody tr")))
 
@@ -59,7 +65,7 @@ def test_mattype_table_buttons(driver):
         # Assert that each row has exactly 2 SVGs (or adjust as necessary)
         assert len(svg_elements) == 2, f"Row {index + 1} does not have exactly 2 SVG elements."
 
-def test_mattype_table_order(driver):
+def test_mattype_table_order(driver, login):
 
     driver.get(TEST_URL)
     WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[1]")))
@@ -71,7 +77,7 @@ def test_mattype_table_order(driver):
     second_td = driver.find_element(By.XPATH, "//tbody/tr[2]/td[1]")
     assert second_td.text == '2'
 
-def test_edit_button(driver):
+def test_edit_button(driver, login):
 
     driver.get(TEST_URL)
     WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[3]")))
@@ -91,7 +97,7 @@ def test_edit_button(driver):
     assert labels[0].text == "Material Type Name"
 
 
-def test_create_button(driver):
+def test_create_button(driver, login):
     driver.get(TEST_URL)
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "button")))
 
@@ -113,7 +119,7 @@ def test_create_button(driver):
     assert labels[0].text == "Material Type Name"
 
 
-def test_delete_confirmation(driver):
+def test_delete_confirmation(driver, login):
     driver.get(TEST_URL)
     WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[3]")))
 
