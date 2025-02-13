@@ -74,9 +74,7 @@ def authenticate_user(username: str, password: str, db: Session):
     if hash.check_password(username, password, db):
         return user
     else:
-        raise HTTPException(status_code=401, detail=f"{user.password}")
-
-    return None
+        return None
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
