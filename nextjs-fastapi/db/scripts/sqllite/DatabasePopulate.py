@@ -3,7 +3,7 @@ import sqlite3
 
 def populate_db():
     # Connecting to the database
-    conn = sqlite3.connect('../capstone_db.db')
+    conn = sqlite3.connect('../../capstone_db.db')
 
     # Define some links
 
