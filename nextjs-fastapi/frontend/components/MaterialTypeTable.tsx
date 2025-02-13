@@ -29,6 +29,7 @@ import { NewMaterialType, EditMaterialType, DeletePopup } from "@/components";
 const MaterialTypeTable = () => {
   const APIHEADER = "delete_mattype";  
   const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
+  const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [editMaterialType, setEditMaterialType] = useState<MaterialType | null>(null); 
   const {
@@ -46,13 +47,16 @@ const MaterialTypeTable = () => {
     onOpenChange: handleModalTwoChange,
   } = useDisclosure();
 
-  //useEffect(() => {
-    //const fetchTypes = async () => {
-      //const types = await fetchMaterialTypes();
-      //setMaterialTypes(types);
-    //};
-    //fetchTypes();
-  //}, []);
+  useEffect(() => {
+      fetch("http://127.0.0.1:8000/protected", {
+        method: "GET",
+        credentials: "include", // Ensures cookies are included in the request
+      })
+        .then((res) => res.json())
+        .then((data) => setUser(data.user))
+        .catch((err) => console.error(err));
+        
+    }, []);
 
   
 
@@ -97,40 +101,55 @@ const MaterialTypeTable = () => {
     setMaterialTypes((prevMaterialType) => prevMaterialType.filter((mat) => mat.id !== deletedId));
     list.reload();
   };
+  const columns = (() => {
+    return user?.user_type_id === 2
+      ? [
+          { key: "id", label: "ID" },
+          { key: "type_name", label: "NAME" },
+          { key: "actions", label: "ACTIONS" }, 
+        ]
+      : [
+          { key: "id", label: "ID" },
+          { key: "type_name", label: "NAME" },
+          { key: "actions", label: "ACTIONS" },
+        ];
+  })();
+  
+  
 
 
   const renderCell = React.useCallback(
     (materialType, columnKey) => {
-      const cellValue = materialType[columnKey];
-      switch (columnKey) {
-        
-        case "actions":
-          return (
-            <div className="relative flex items-center gap-2">
-              <Tooltip content="Edit Material Type">
-                <span
-                  onClick={() => handleEditClick(materialType)}
-                  className="text-lg text-default-400 cursor-pointer active:opacity-50"
-                >
-                  <EditIcon />
-                </span>
-              </Tooltip>
-              <Tooltip color="danger" content="Delete Material Type">
-                  <span
-                  onClick={() => handleDeleteClick(materialType)}
-                  className="text-lg text-danger cursor-pointer active:opacity-50"
-                >
-                  <DeleteIcon />
-                </span>
-              </Tooltip>
-            </div>
-          );
-        default:
-          return cellValue;
+      if (!columns.find(col => col.key === columnKey)) return null;
+  
+      if (columnKey === "actions") {
+        return (
+          <div className="relative flex items-center gap-2">
+            <Tooltip content="Edit Material Type">
+              <span
+                onClick={() => handleEditClick(materialType)}
+                className="text-lg text-default-400 cursor-pointer active:opacity-50"
+              >
+                <EditIcon />
+              </span>
+            </Tooltip>
+            <Tooltip color="danger" content="Delete Material Type">
+              <span
+                onClick={() => handleDeleteClick(materialType)}
+                className="text-lg text-danger cursor-pointer active:opacity-50"
+              >
+                <DeleteIcon />
+              </span>
+            </Tooltip>
+          </div>
+        );
       }
+  
+      return materialType[columnKey];
     },
-    []
+    [user]
   );
+  
 
   return (
     <div>
@@ -142,13 +161,11 @@ const MaterialTypeTable = () => {
         sortDescriptor={list.sortDescriptor}
       >
         <TableHeader>
-          <TableColumn allowsSorting key="id">
-            ID
-          </TableColumn>
-          <TableColumn allowsSorting key="type_name">
-            NAME
-          </TableColumn>
-          <TableColumn key="actions">ACTIONS</TableColumn>
+          {columns.map((column) => (
+            <TableColumn key={column.key} >
+              {column.label}
+            </TableColumn>
+          ))}
         </TableHeader>
         <TableBody
           items={list.items}
@@ -157,7 +174,9 @@ const MaterialTypeTable = () => {
         >
           {(item) => (
             <TableRow key={item.id}>
-              {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+              {columns.map((column) => (
+                <TableCell key={column.key}>{renderCell(item, column.key)}</TableCell> // ✅ Ensures only defined columns are rendered
+              ))}
             </TableRow>
           )}
         </TableBody>

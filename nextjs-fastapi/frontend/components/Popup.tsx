@@ -9,7 +9,6 @@ const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
   const [editableMaterial, setEditableMaterial] = useState(material);
   const [materialTypes, setMaterialTypes] = useState([]);
   const mat = (material?.material_type_id)?.toString();
-  console.log(mat)
 
 
 

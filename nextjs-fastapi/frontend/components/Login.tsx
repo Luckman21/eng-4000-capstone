@@ -9,27 +9,31 @@ import ForgotPassword from "./ForgotPassword";
 const Login = () => {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const login = async (data) => {
-    try {
-      const params= new URLSearchParams();
+    setErrorMessage(""); // Clear previous errors
+
+    const params= new URLSearchParams();
       params.append('username', data.username);
       params.append('password', data.password);
-      const response = await axios.post("http://localhost:8000/login", params,{
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      });
+    const response = await fetch("http://127.0.0.1:8000/login", {
+      method: "POST",
+      body: params,
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      credentials: "include", // Ensures cookies are sent & received
+    });
 
-      const { access_token } = response.data;
-
-      // Store the token in localStorage
-      localStorage.setItem("access_token", access_token);
+    if (response.ok) {
+      router.push("/inventory");
       console.log("Login successful");
-      router.push("/inventory"); // Redirect to dashboard
-      return true;
-    } catch (error) {
-      console.error("Login failed:", error);
-      return false;
+    } else {
+      const errorData = await response.json();
+      console.error("Login failed:", errorData);
+
+      // Extract "detail" if it exists
+      const errorMessage = errorData?.detail || "Login failed. Please try again.";
+      setErrorMessage(errorMessage);
     }
   };
 
@@ -69,11 +73,17 @@ const Login = () => {
           Forgot Password
         </Button>
       </div>
+        {errorMessage && (
+            <p className="text-red-500 bg-red-100 border border-red-400 text-sm mt-2 p-2 rounded">
+        {errorMessage}
+            </p>
+        )}
+
     </Form><ForgotPassword isOpen={isModalOpen} onOpenChange={() => setIsModalOpen(false)}>
 
     </ForgotPassword>
     </>
-    
+
   );
 };
 
