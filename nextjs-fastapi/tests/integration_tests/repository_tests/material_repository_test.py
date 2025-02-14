@@ -11,17 +11,36 @@ from db.model.base import Base
 from db.repositories.MaterialRepository import MaterialRepository
 from db.repositories.MaterialTypeRepository import MaterialTypeRepository
 from backend.controller import constants
+from sqlalchemy import text
 
 # Use an existing database instead of an in-memory one
 @pytest.fixture(scope='module')
 def setup_database(request):
-    engine = create_engine('sqlite:///:memory:', echo=True)
+    DATABASE_URL = "postgresql://postgres:0000@localhost/"
+
+    # Create a unique temporary database for the test
+    test_db_name = "capstone_test_db"
+    engine = create_engine(DATABASE_URL)  # Connect to Postgres
+    connection = engine.connect()
+
+    # Use the connection in autocommit mode for non-transactional commands like CREATE DATABASE
+    connection.execution_options(autocommit=True)
+
+    # Create the database
+    connection.execute(text(f"CREATE DATABASE {test_db_name}"))
+
+    # Close the connection after creating the DB
+    connection.close()
+
+    # Now connect to the new database and create tables
+    test_db_url = f"postgresql://postgres:0000@localhost/{test_db_name}"
+    test_engine = create_engine(test_db_url)
 
     # Bind the Base metadata to the engine
-    Base.metadata.create_all(engine)
+    Base.metadata.create_all(test_engine)
 
     # Create a session factory bound to the engine
-    Session = sessionmaker(bind=engine)
+    Session = sessionmaker(bind=test_engine)
     session = Session()
 
     db_count = session.query(Material).count()
@@ -55,6 +74,12 @@ def setup_database(request):
 
     # Cleanup manually after the test has finished (this could be redundant)
     session.close()
+    test_engine.dispose()  # Disconnect from test DB
+
+    connection = engine.connect()
+    connection.execution_options(autocommit=True)
+    connection.execute(text(f"DROP DATABASE IF EXISTS {test_db_name}"))
+    connection.close()  # Close the connection to finalize the drop
 
 
 def test_get_material_by_id(setup_database):
