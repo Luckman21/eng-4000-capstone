@@ -46,7 +46,7 @@ class UserTypeRepository:
         """
         Retrieve all UserTypes from the database.
         """
-        return self.session.query(UserType).all()
+        return self.session.query(UserType).order_by(UserType.id).all()
 
     def update_user_type(self, user_type: UserType, new_type_name: str) -> UserType:
         """

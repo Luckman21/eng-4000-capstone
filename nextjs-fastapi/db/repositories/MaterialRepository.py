@@ -47,7 +47,7 @@ class MaterialRepository:
         """
         Retrieve all materials from the database.
         """
-        return self.session.query(Material).all()
+        return self.session.query(Material).order_by(Material.id).all()
 
     def update_material(self, material: Material, colour: str = None, supplier_link: str = None, mass: float = None,
                         material_type_id: int = None, shelf_id: int = None ) -> Material:

@@ -57,7 +57,7 @@ class UserRepository:
         """
         Retrieve all Users.
         """
-        return self.session.query(User).all()
+        return self.session.query(User).order_by(User.id).all()
 
     def update_user(self, user: User, username: str = None, password: str = None, email: str = None,
                     user_type_id: int = None) -> User:

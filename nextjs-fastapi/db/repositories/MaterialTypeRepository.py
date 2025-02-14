@@ -43,7 +43,7 @@ class MaterialTypeRepository:
         """
         Retrieve all materials from the database.
         """
-        return self.session.query(MaterialType).all()
+        return self.session.query(MaterialType).order_by(MaterialType.id).all()
 
     def update_material_type(self, material_type: MaterialType, type_name: str ) -> MaterialType:
         """
