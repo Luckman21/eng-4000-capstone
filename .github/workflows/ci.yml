@@ -19,6 +19,12 @@ jobs:
           --shm-size=32g
         ports:
           - 4444:4444
+      postgres:
+        image: postgres:13  # Use a suitable version of PostgreSQL
+        options: >-
+          -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=0000 -e POSTGRES_DB=capstone_db
+        ports:
+          - 5432:5432
 
     steps:
     # Checkout the code
@@ -47,7 +53,18 @@ jobs:
     - name: Set TEST_TYPE for Integration tests
       run: echo "TEST_TYPE=integration" >> $GITHUB_ENV
 
-    # Run unit tests (non-Selenium)
+    - name: Set DATABASE_URL
+      run: echo "DATABASE_URL=postgresql://postgres:0000@localhost:5432/capstone_db" >> $GITHUB_ENV
+
+      # Run scripts to create tables and insert sample data
+    - name: Create tables and insert sample data
+      run: |
+        cd nextjs-fastapi/db/scripts
+        python create_table.py
+        python dummy_data.py
+
+
+      # Run unit tests (non-Selenium)
     - name: Run unit tests
       run: |
         set PYTHONPATH=nextjs-fastapi && pytest nextjs-fastapi/tests/unit_tests
