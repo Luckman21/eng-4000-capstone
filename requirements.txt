@@ -14,3 +14,4 @@ passlib[bcrypt]
 python-multipart
 psycopg
 pytest-postgresql
+psycopg2-binary
