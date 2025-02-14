@@ -12,3 +12,4 @@ sendgrid
 pyjwt
 passlib[bcrypt]
 python-multipart
+psycopg
