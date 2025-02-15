@@ -9,7 +9,11 @@ import ForgotPassword from "./ForgotPassword";
 const Login = () => {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const login = async (data) => {
+    setErrorMessage(""); // Clear previous errors
+
     const params= new URLSearchParams();
       params.append('username', data.username);
       params.append('password', data.password);
@@ -19,12 +23,17 @@ const Login = () => {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       credentials: "include", // Ensures cookies are sent & received
     });
-  
+
     if (response.ok) {
       router.push("/inventory");
       console.log("Login successful");
     } else {
-      console.error("Login failed");
+      const errorData = await response.json();
+      console.error("Login failed:", errorData);
+
+      // Extract "detail" if it exists
+      const errorMessage = errorData?.detail || "Login failed. Please try again.";
+      setErrorMessage(errorMessage);
     }
   };
 
@@ -64,11 +73,17 @@ const Login = () => {
           Forgot Password
         </Button>
       </div>
+        {errorMessage && (
+            <p className="text-red-500 bg-red-100 border border-red-400 text-sm mt-2 p-2 rounded">
+        {errorMessage}
+            </p>
+        )}
+
     </Form><ForgotPassword isOpen={isModalOpen} onOpenChange={() => setIsModalOpen(false)}>
 
     </ForgotPassword>
     </>
-    
+
   );
 };
 

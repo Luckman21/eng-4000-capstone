@@ -67,35 +67,6 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # OAuth2 scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-def authenticate_user(username: str, password: str, db: Session):
-    repo = UserRepository(db)
-    user = repo.get_user_by_username(username)
-
-    if hash.check_password(username, password, db):
-        return user
-    else:
-        raise HTTPException(status_code=401, detail=f"{user.password}")
-
-    return None
-
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, constants.SECRET_KEY, algorithm=ALGORITHM)
-
-def decode_access_token(token: str):
-    try:
-        payload = jwt.decode(token, constants.SECRET_KEY, algorithms=[ALGORITHM])
-        return payload
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token has expired")
-    except jwt.JWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
 @app.post("/login")
 def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(form_data.username, form_data.password, db)
@@ -120,6 +91,26 @@ def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), 
     )
 
     return {"message": "Login successful"}
+
+def authenticate_user(username: str, password: str, db: Session):
+    repo = UserRepository(db)
+    user = repo.get_user_by_username(username)
+
+    if hash.check_password(username, password, db):
+        return user
+    else:
+        return None
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, constants.SECRET_KEY, algorithm=ALGORITHM)
+
+
 @app.post("/logout")
 def logout(response: Response):
     response.set_cookie(
@@ -163,6 +154,15 @@ def protected_route(request: Request, response: Response):
         )
 
         return {"message": "Access granted", "user": payload}
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except jwt.JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+def decode_access_token(token: str):
+    try:
+        payload = jwt.decode(token, constants.SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired")
     except jwt.JWTError:
