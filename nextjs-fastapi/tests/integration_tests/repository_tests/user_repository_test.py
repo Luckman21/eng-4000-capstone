@@ -15,7 +15,7 @@ from backend.service.PasswordHashService import PasswordHashService
 # Use an existing database instead of an in-memory one
 @pytest.fixture(scope='module')
 def setup_database(request):
-    engine = create_engine('sqlite:///:memory:', echo=True)
+    engine = create_engine(constants.DATABASE_URL_TEST, echo=True)
 
     # Bind the Base metadata to the engine
     Base.metadata.create_all(engine)
