@@ -36,6 +36,7 @@ const statusColorMap = {
 
 const TableComponent = () => {
   const APIHEADER = "delete_material"; 
+  const [user, setUser] = useState(null);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editMaterial, setEditMaterial] = useState<Material | null>(null); 
@@ -56,24 +57,19 @@ const TableComponent = () => {
     onOpen: openModalTwo,
     onOpenChange: handleModalTwoChange,
   } = useDisclosure();
-
-  useEffect(() => {
-      const fetchTypes = async () => {
-        const types = await fetchMaterialTypes();
-        setMaterialTypes(types);
-      };
-      fetchTypes();
-    }, []);
   
   const list = useAsyncList({
     async load({ signal }) {
-      let res = await fetch("http://localhost:8000/materials", { signal });
+      let res = await fetch("http://127.0.0.1:8000/materials", { signal });
       let json = await res.json();
 
       const updatedMaterials = json.map((material: { mass: number; }) => ({
         ...material,
-        status: material.mass <= 50 ? "Low Stock" : "In Stock",
+        status: material.mass < 50 ? "Low Stock" : "In Stock",
       }));
+      const types = await fetchMaterialTypes();
+      setMaterialTypes(types);
+       
       setMaterials(updatedMaterials);
       setIsLoading(false);
 
@@ -111,6 +107,16 @@ const TableComponent = () => {
  const handleDeleteMaterial = (deletedId: number) => {
     setMaterials((prevMaterials) => prevMaterials.filter((mat) => mat.id !== deletedId));
   };
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/protected", {
+      method: "GET",
+      credentials: "include", // Ensures cookies are included in the request
+    })
+      .then((res) => res.json())
+      .then((data) => setUser(data.user))
+      .catch((err) => console.error(err));
+      
+  }, []);
 
 
 // Searching Logic
@@ -201,7 +207,7 @@ const filteredItems = React.useMemo(() => {
 
           return materialType ? materialType.label : "Unknown Type";
         case "actions":
-          return (
+          return  (
             <div className="relative flex items-center gap-2">
               <Tooltip content="Edit material">
                 <span
@@ -212,7 +218,7 @@ const filteredItems = React.useMemo(() => {
                 </span>
               </Tooltip>
               <Tooltip color="danger" content="Delete material">
-                  <span
+                <span
                   onClick={() => handleDeleteClick(material)}
                   className="text-lg text-danger cursor-pointer active:opacity-50"
                 >
@@ -221,12 +227,11 @@ const filteredItems = React.useMemo(() => {
               </Tooltip>
             </div>
           );
-         case "supplier_link":
+        case "supplier_link":
         // Check if there is a link and it's valid
         if (cellValue) {
           return (
           <Chip
-              clickable
               color="primary"
               variant="flat"
               size="sm"
@@ -306,7 +311,9 @@ const filteredItems = React.useMemo(() => {
             SHELF
           </TableColumn>
           <TableColumn key="status">STATUS</TableColumn>
-          <TableColumn key="actions">ACTIONS</TableColumn>
+          <TableColumn key="actions">
+             ACTIONS
+          </TableColumn>
         </TableHeader>
         <TableBody
           items={filteredItems}

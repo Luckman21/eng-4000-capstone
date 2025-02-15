@@ -11,32 +11,32 @@ from selenium.webdriver import Remote
 import chromedriver_autoinstaller
 import re
 import os
+from tests.feature_tests.login_helper import log_admin_in, log_super_admin_in
 
 
 
-TEST_URL = "http://localhost:3000/materialType"
+TEST_URL = "http://127.0.0.1:3000/materialType"
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def driver():
     chrome_options = Options()
     chrome_options.add_argument("--headless") # This means you won't see the actual icon
     chrome_options.add_argument("--disable-gpu") # Disable GPU acceleration (required in headless mode)
     chrome_options.add_argument("--no-sandbox")  # Might help in some environments
     # This will change depending on your driver
-    if os.getenv("CI"):  # If in CI environment
-        # Automatically installs the correct ChromeDriver version for your installed Chrome
-        chromedriver_autoinstaller.install()
-        driver = webdriver.Chrome(options=chrome_options)
-
-    else:
-        path = '/Users/l_filippelli/Downloads/chromedriver-mac-x64/chromedriver'
-
-        driver = webdriver.Chrome(service=Service(path), options=chrome_options)
+    chromedriver_autoinstaller.install()
+    driver = webdriver.Chrome(options=chrome_options)
 
     yield driver
     driver.quit()
 
-def test_navbar(driver):
+@pytest.fixture(scope="module")
+def login(driver):
+    log_admin_in(driver)
+    time.sleep(3)
+
+def test_navbar(driver, login):
+
     driver.get(TEST_URL)
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "nav")))
 

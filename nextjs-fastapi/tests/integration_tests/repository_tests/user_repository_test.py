@@ -95,7 +95,7 @@ def test_create_user(setup_database):
     queried_user = repository.get_user_by_id(user.id)
 
     assert queried_user is not None
-    assert PasswordHashService.check_password(queried_user.email, password, session) is True
+    assert PasswordHashService.verify_password(queried_user.password, password) is True
 
 
     # Destroy

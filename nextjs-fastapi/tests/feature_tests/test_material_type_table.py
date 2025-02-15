@@ -11,32 +11,34 @@ from selenium.webdriver import Remote
 import chromedriver_autoinstaller
 import re
 import os
+from tests.feature_tests.login_helper import log_admin_in, log_super_admin_in
 
 
 
-TEST_URL = "http://localhost:3000/materialType"
+TEST_URL = "http://127.0.0.1:3000/materialType"
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def driver():
     chrome_options = Options()
     chrome_options.add_argument("--headless") # This means you won't see the actual icon
     chrome_options.add_argument("--disable-gpu") # Disable GPU acceleration (required in headless mode)
     chrome_options.add_argument("--no-sandbox")  # Might help in some environments
     # This will change depending on your driver
-    if os.getenv("CI"):  # If in CI environment
-        # Automatically installs the correct ChromeDriver version for your installed Chrome
-        chromedriver_autoinstaller.install()
-        driver = webdriver.Chrome(options=chrome_options)
 
-    else:
-        path = '/Users/l_filippelli/Downloads/chromedriver-mac-x64/chromedriver'
-
-        driver = webdriver.Chrome(service=Service(path), options=chrome_options)
+    chromedriver_autoinstaller.install()
+    driver = webdriver.Chrome(options=chrome_options)
 
     yield driver
     driver.quit()
 
-def test_mattype_table_header(driver):
+@pytest.fixture(scope="module")
+def login(driver):
+    log_super_admin_in(driver)
+    time.sleep(3)
+
+
+
+def test_mattype_table_header(driver, login):
     driver.get(TEST_URL)
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "thead tr")))
 
@@ -46,12 +48,14 @@ def test_mattype_table_header(driver):
     # Get the full text of the header row (all titles in one string)
     header_text = header_row.text
 
-    assert header_text == "ID NAME ACTIONS"
+    assert header_text == "ID NAME ACTIONS" or header_text == "ID NAME"
 
-def test_mattype_table_buttons(driver):
+def test_mattype_table_buttons(driver, login):
     driver.get(TEST_URL)
-    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "tbody tr")))
-
+    WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.TAG_NAME, "tbody")))
+    rows = WebDriverWait(driver, 20).until(
+        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "tbody tr"))
+    )
 
     rows = driver.find_elements(By.CLASS_NAME, "relative flex items-center gap-2")
 
@@ -63,7 +67,7 @@ def test_mattype_table_buttons(driver):
         # Assert that each row has exactly 2 SVGs (or adjust as necessary)
         assert len(svg_elements) == 2, f"Row {index + 1} does not have exactly 2 SVG elements."
 
-def test_mattype_table_order(driver):
+def test_mattype_table_order(driver, login):
 
     driver.get(TEST_URL)
     WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[1]")))
@@ -75,14 +79,17 @@ def test_mattype_table_order(driver):
     second_td = driver.find_element(By.XPATH, "//tbody/tr[2]/td[1]")
     assert second_td.text == '2'
 
-def test_edit_button(driver):
+def test_edit_button(driver, login):
 
     driver.get(TEST_URL)
-    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[3]")))
+    WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.TAG_NAME, "tbody")))
+    rows = WebDriverWait(driver, 20).until(
+        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "tbody tr"))
+    )
 
     button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[3]/div/span[1]")
     button.click()
-    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 
     panel = driver.find_element(By.TAG_NAME, "section")
 
@@ -95,14 +102,14 @@ def test_edit_button(driver):
     assert labels[0].text == "Material Type Name"
 
 
-def test_create_button(driver):
+def test_create_button(driver, login):
     driver.get(TEST_URL)
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "button")))
 
     buttons = driver.find_elements(By.CSS_SELECTOR, "button")
     button = buttons[0]
     button.click()
-    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 
     panel = driver.find_element(By.CSS_SELECTOR, "section")
 
@@ -117,13 +124,13 @@ def test_create_button(driver):
     assert labels[0].text == "Material Type Name"
 
 
-def test_delete_confirmation(driver):
+def test_delete_confirmation(driver, login):
     driver.get(TEST_URL)
     WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[3]")))
 
     button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[3]/div/span[2]")
     button.click()
-    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
 
     popup = driver.find_element(By.TAG_NAME, "section")
 

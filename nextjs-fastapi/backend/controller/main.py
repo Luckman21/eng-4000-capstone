@@ -27,7 +27,7 @@ from backend.controller.schemas.MaterialTypeCreateRequest import MaterialTypeCre
 from backend.controller.schemas.MaterialMutationRequest import MaterialMutationRequest
 from backend.controller.data_receiver import MQTTReceiver
 from backend.service.PasswordHashService import PasswordHashService
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Response,Request
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 import jwt
 from datetime import datetime, timedelta
@@ -37,18 +37,22 @@ from backend.service.mailer.TempPasswordMailer import TempPasswordMailer
 from backend.service.mailer.PasswordChangeMailer import PasswordChangeMailer
 from backend.service.TempPasswordRandomizeService import create_temp_password
 from backend.controller.schemas.ForgotPasswordRequest import ForgotPasswordRequest
+from backend.service.PasswordHashService import PasswordHashService
+
+
 
 app = FastAPI()
 origins = [
+    "http://127.0.0.1:3000",
     "http://localhost:3000",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins= origins,  # Allow frontend origin
+    allow_credentials=True,  # REQUIRED to allow cookies
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all headers
 )
 
 
@@ -57,20 +61,22 @@ app.add_middleware(
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+hash = PasswordHashService()
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # OAuth2 scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 def authenticate_user(username: str, password: str, db: Session):
-    repo = UserRepository(db)  # Pass the database session to the repository
-    user = repo.get_user_by_username(username)  # Fetch the user by username
+    repo = UserRepository(db)
+    user = repo.get_user_by_username(username)
 
-    # if not user or not verify_password(password, user.password):  You can use this when we apply hashing
-    #     return None
-    if not user or not PasswordHashService.verify_password(user.password, password):
-        return None
-    return user
+    if hash.check_password(username, password, db):
+        return user
+    else:
+        raise HTTPException(status_code=401, detail=f"{user.password}")
+
+    return None
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
@@ -91,7 +97,7 @@ def decode_access_token(token: str):
         raise HTTPException(status_code=401, detail="Invalid token")
 
 @app.post("/login")
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid username or password")
@@ -101,11 +107,69 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
         data={"username": user.username, "user_type_id": user.user_type_id, "email": user.email, "id": user.id},
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+
+
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,  # Prevent JavaScript access (XSS protection)
+        secure=False,  # Requires HTTPS in production
+        samesite="Lax",  # Prevents CSRF but allows login flow
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,  # Set expiration
+        path="/",  # Apply to all routes
+    )
+
+    return {"message": "Login successful"}
 @app.post("/logout")
-def logout(token: str = Depends(oauth2_scheme)):
+def logout(response: Response):
+    response.set_cookie(
+        key="access_token",
+        value="",
+        httponly=True,
+        secure=False,  # Secure=True only in production
+        samesite="Lax",
+        max_age=0,  # Expire immediately
+        path="/",
+    )
     return {"message": "Logged out successfully"}
 
+
+
+
+@app.get("/protected")
+def protected_route(request: Request, response: Response):
+    token = request.cookies.get("access_token")
+
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    try:
+        payload = decode_access_token(token)
+        # Generate a new token with an updated expiration time
+        new_token = create_access_token(
+            data={"username": payload["username"], "user_type_id": payload["user_type_id"]},
+            expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),  # Reset expiration
+        )
+
+        # Update the cookie with the new token
+        response.set_cookie(
+            key="access_token",
+            value=new_token,
+            httponly=True,
+            secure=False,
+            samesite="Lax",
+            max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+            path="/",
+        )
+
+        return {"message": "Access granted", "user": payload}
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except jwt.JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+
+############################################################################################################
 
 
 # Set up listeners on startup
