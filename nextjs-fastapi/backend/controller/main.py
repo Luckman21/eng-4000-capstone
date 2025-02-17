@@ -484,7 +484,7 @@ async def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(
 
 
 @app.patch("/replenish_mass/{entity_id}")
-def replenish_mass(entity_id: int, request: MaterialMutationRequest, db: Session = Depends(get_db) ):
+async def replenish_mass(entity_id: int, request: MaterialMutationRequest, db: Session = Depends(get_db) ):
     repo = MaterialRepository(db)
     # Check if the entity exists
 
@@ -508,7 +508,7 @@ def replenish_mass(entity_id: int, request: MaterialMutationRequest, db: Session
 
 
 @app.patch("/consume_mass/{entity_id}")
-def consume_mass(entity_id: int, request: MaterialMutationRequest, db: Session = Depends(get_db)):
+async def consume_mass(entity_id: int, request: MaterialMutationRequest, db: Session = Depends(get_db) ):
     repo = MaterialRepository(db)
     # Check if the entity exists
     if not repo.material_exists(entity_id):
