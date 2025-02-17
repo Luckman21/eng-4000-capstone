@@ -68,15 +68,15 @@ const MaterialTypeTable = () => {
     },
   });
 
-  const handleEditClick = (materialType: MaterialType) => {
+  const handleEditClick = React.useCallback((materialType: MaterialType) => {
     setEditMaterialType(materialType);
     openModalOne();
-  };
+  }, [openModalOne]);
 
-  const handleDeleteClick = (materialType: MaterialType) => {
+  const handleDeleteClick = React.useCallback((materialType: MaterialType) => {
     setDeleteMaterialType(materialType);
     onDeleteOpen();
-  };
+  }, [onDeleteOpen]);
 
   // Callback for updating a material
   const handleSaveMaterialType = (updatedMaterialType: MaterialType) => {
@@ -129,7 +129,7 @@ const MaterialTypeTable = () => {
           return cellValue;
       }
     },
-    []
+    [handleEditClick, handleDeleteClick]
   );
 
   return (
