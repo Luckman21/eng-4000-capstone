@@ -45,13 +45,13 @@ def scrape_amazon_page_for_sale(url, driver) -> bool:
     try:
         name = 'a-size-large a-color-price savingPriceOverride aok-align-center reinventPriceSavingsPercentageMargin ' \
                'savingsPercentage '
-        WebDriverWait(driver, 30).until(EC.visibility_of_element_located((By.CLASS_NAME, name)))
+        WebDriverWait(driver, 60).until(EC.visibility_of_element_located((By.CLASS_NAME, name)))
     except TimeoutException:
 
         # check for a coupon instead
         try:
             name = 'offersConsistencyEnabled'
-            WebDriverWait(driver, 30).until(EC.visibility_of_element_located((By.CLASS_NAME, name)))
+            WebDriverWait(driver, 60).until(EC.visibility_of_element_located((By.CLASS_NAME, name)))
 
         except TimeoutException:
 
