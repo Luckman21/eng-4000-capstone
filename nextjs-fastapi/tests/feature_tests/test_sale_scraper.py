@@ -10,6 +10,9 @@ def driver():
     chrome_options.add_argument("--headless") # This means you won't see the actual icon
     chrome_options.add_argument("--disable-gpu") # Disable GPU acceleration (required in headless mode)
     chrome_options.add_argument("--no-sandbox")  # Might help in some environments
+    chrome_options.add_argument(
+        "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/58.0.3029.110 Safari/537.36")
     # This will change depending on your driver
 
     chromedriver_autoinstaller.install()
