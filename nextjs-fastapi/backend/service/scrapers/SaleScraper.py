@@ -15,6 +15,11 @@ from backend.service.mailer.SaleMailer import SaleMailer
 from selenium.webdriver import Remote
 import chromedriver_autoinstaller
 import re
+import scrapy
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
+#from amazon_scraper.amazon_scraper.spiders.amazon_spider import AmazonSaleSpider
+
 
 
 
@@ -48,7 +53,7 @@ def scrape_amazon_page_for_sale(url, driver) -> bool:
     try:
         name = 'a-size-large a-color-price savingPriceOverride aok-align-center reinventPriceSavingsPercentageMargin ' \
                'savingsPercentage '
-        WebDriverWait(driver, 60).until(EC.visibility_of_element_located((By.CLASS_NAME, name)))
+        WebDriverWait(driver, 120).until(EC.visibility_of_element_located((By.CLASS_NAME, name)))
     except TimeoutException:
 
         # check for a coupon instead
@@ -124,8 +129,3 @@ def run():
 
         for super_admin in super_admins:
             mailer.send_notification(super_admin.email, result_as_newline_separated_string)
-
-
-
-
-
