@@ -13,7 +13,9 @@ def driver():
     chrome_options.add_argument(
         "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
         "Chrome/58.0.3029.110 Safari/537.36")
-    # This will change depending on your driver
+    chrome_options.add_argument("--disable-dev-shm-usage")  # Prevent crashes in Docker
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")  # Bypass bot detection
+    chrome_options.add_argument("--window-size=1920x1080")  # Ensure full page is loaded
 
     chromedriver_autoinstaller.install()
     driver = webdriver.Chrome(options=chrome_options)
