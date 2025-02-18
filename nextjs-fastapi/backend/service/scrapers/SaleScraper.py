@@ -12,6 +12,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from backend.controller import constants
 from backend.service.mailer.SaleMailer import SaleMailer
+import time
 from selenium.webdriver import Remote
 import chromedriver_autoinstaller
 import re
@@ -44,22 +45,18 @@ def setup_database():
 
 def scrape_amazon_page_for_sale(url, driver) -> bool:
     driver.get(url)
+    time.sleep(10)
 
     # Let's see if the sale exists. If not return false
-    try:
-        name = 'a-size-large a-color-price savingPriceOverride aok-align-center reinventPriceSavingsPercentageMargin ' \
+    name = 'a-size-large a-color-price savingPriceOverride aok-align-center reinventPriceSavingsPercentageMargin ' \
                'savingsPercentage '
-        WebDriverWait(driver, 60).until(EC.visibility_of_element_located((By.CLASS_NAME, name)))
-    except TimeoutException:
+    sale = driver.find_elements(By.CLASS_NAME, name)
 
-        # check for a coupon instead
-        try:
-            name = 'offersConsistencyEnabled'
-            WebDriverWait(driver, 60).until(EC.visibility_of_element_located((By.CLASS_NAME, name)))
+    name = 'offersConsistencyEnabled'
+    coupon = driver.find_elements(By.CLASS_NAME, name)
 
-        except TimeoutException:
-
-            return False
+    if coupon is None and sale is None:
+        return False
 
     return True
 
