@@ -1,7 +1,9 @@
+import json
 from db.repositories.MaterialRepository import MaterialRepository
 from backend.controller import constants
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.orm import sessionmaker, scoped_session, Session
+from backend.controller.main import active_connections
 
 # Create an engine and local session for connection to the database
 engine = create_engine(constants.DATABASE_URL, echo=True)
@@ -39,7 +41,8 @@ async def job_complete_listener(mapper, connection, target):
     Returns:
         A list of materials that have a mass below the threshold value.
     """    
-    session = SessionLocal()    # Create a new session instance for interacting with the database
+    session = SessionLocal()  # Create a new session to query the database
+    
     
     # Create a MaterialRepository instance to get a list of all materials
     repo = MaterialRepository(session)
@@ -57,4 +60,14 @@ async def job_complete_listener(mapper, connection, target):
     print(f"{material_names}")
 
     print("\n\n\n")
+    if alert_materials:
+        data = [
+            {"id": m.id, "colour": m.colour, "mass": m.mass} for m in alert_materials
+        ]
+
+        json_data = json.dumps(data)  # Convert to JSON string
+        print(json_data)
+        print(len(active_connections))
+        for connection in active_connections:
+            await connection.send_text(json_data)
     return alert_materials  # Return the array of materials with a mass below the threshold

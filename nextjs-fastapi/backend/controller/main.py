@@ -1,3 +1,4 @@
+import json
 import sys
 from pathlib import Path
 sys.path.append(str(Path().resolve().parent.parent))
@@ -14,6 +15,7 @@ from db.repositories.MaterialRepository import MaterialRepository
 from db.repositories.UserRepository import UserRepository
 from db.repositories.UserTypeRepository import UserTypeRepository
 import asyncio
+from fastapi import  WebSocket, WebSocketDisconnect
 from sqlalchemy import event
 from backend.controller import constants
 from backend.controller import listener
@@ -193,12 +195,35 @@ def start_mqtt_receiver():
     receiver = MQTTReceiver(mqtt_broker, mqtt_port, mqtt_temp_topic, mqtt_humid_topic, db_url)
     receiver.start()
 
+
+
+
+
+
+# Store active WebSocket connections
+active_connections = []
 # Create a listener that triggers when the Material table is updated, checks for Materials with a mass below the threshold
 def low_stock_listener():
     def listener_wrapper(mapper, connection, target):
         asyncio.create_task(listener.job_complete_listener(mapper, connection, target))
 
     event.listen(Material, 'after_update', listener_wrapper)
+
+@app.websocket("/ws/alerts")
+async def websocket_endpoint(websocket: WebSocket):
+    """Handles WebSocket connections for real-time material alerts."""
+    await websocket.accept()
+    active_connections.append(websocket)
+    try:
+        while True:
+            
+            await websocket.receive_text()
+            await asyncio.sleep(5)
+    except WebSocketDisconnect:
+        active_connections.remove(websocket)
+
+
+
 
 # Now define your API routes
 @app.get("/materials", response_model=list[MaterialSchema])

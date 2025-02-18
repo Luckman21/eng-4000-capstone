@@ -4,7 +4,7 @@ import React from "react";
 import { useState } from "react";
 import { Form, Input, Button } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import ForgotPassword from "./ForgotPassword";
+import { ForgotPassword } from "@/components";
 
 const Login = () => {
   const router = useRouter();
@@ -79,9 +79,11 @@ const Login = () => {
             </p>
         )}
 
-    </Form><ForgotPassword isOpen={isModalOpen} onOpenChange={() => setIsModalOpen(false)}>
+    </Form>
+    
+    <ForgotPassword isOpen={isModalOpen} onOpenChange={() => setIsModalOpen(false)} user={undefined}/>
 
-    </ForgotPassword>
+   
     </>
 
   );
