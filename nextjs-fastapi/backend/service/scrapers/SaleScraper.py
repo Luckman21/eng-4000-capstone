@@ -15,10 +15,6 @@ from backend.service.mailer.SaleMailer import SaleMailer
 from selenium.webdriver import Remote
 import chromedriver_autoinstaller
 import re
-import scrapy
-from scrapy.crawler import CrawlerProcess
-from scrapy.utils.project import get_project_settings
-#from amazon_scraper.amazon_scraper.spiders.amazon_spider import AmazonSaleSpider
 
 
 
