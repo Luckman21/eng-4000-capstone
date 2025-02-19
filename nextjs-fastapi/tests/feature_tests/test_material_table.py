@@ -69,7 +69,7 @@ def test_material_table_buttons(driver, login):
         svg_elements = row.find_elements(By.TAG_NAME, "svg")
 
         # Assert that each row has exactly 2 SVGs (or adjust as necessary)
-        assert len(svg_elements) == 3, f"Row {index + 1} does not have exactly 3 SVG elements."
+        assert len(svg_elements) == 4, f"Row {index + 1} does not have exactly 4 SVG elements."
 
 def test_material_table_order(driver, login):
 
@@ -96,7 +96,7 @@ def test_edit_button(driver, login):
     driver.get(TEST_URL)
     WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[8]")))
 
-    button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[8]/div/span[1]")
+    button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[8]/div/span[2]")
     button.click()
 
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
@@ -114,6 +114,40 @@ def test_edit_button(driver, login):
     assert labels[2].text == "Weight (g)"
     assert labels[3].text == "Shelf"
     assert labels[4].text == "Material Type"
+
+def test_replenish_button(driver, login):
+
+    driver.get(TEST_URL)
+    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[8]")))
+
+    button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[8]/div/span[1]")
+    button.click()
+
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
+
+    panel = driver.find_element(By.TAG_NAME, "section")
+
+    header = panel.find_element(By.CSS_SELECTOR, "header")
+
+    assert header.text == "Add/Remove Material"
+
+    labels = panel.find_elements(By.CSS_SELECTOR, "label")
+
+    assert labels[0].text == "Colour"
+    assert labels[1].text == "Material Type"
+    assert labels[2].text == "Weight (g)"
+
+    # Get buttons (slider stuff at the top)
+
+    buttons = panel.find_elements(By.CSS_SELECTOR, "button")
+
+    add = buttons[2].find_element(By.CSS_SELECTOR, 'div')
+    assert add.text == "Add Mass"
+
+    remove = buttons[3].find_element(By.CSS_SELECTOR, 'div')
+    assert remove.text == "Remove Mass"
+
+
 
 def test_create_button(driver, login):
     driver.get(TEST_URL)
@@ -156,7 +190,7 @@ def test_delete_confirmation(driver, login):
             driver.get(TEST_URL)
             WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[8]")))
 
-            delete_icon = driver.find_element(By.XPATH, "//tbody/tr[1]/td[8]/div/span[2]")
+            delete_icon = driver.find_element(By.XPATH, "//tbody/tr[1]/td[8]/div/span[3]")
             delete_icon.click()
 
             WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "section")))
