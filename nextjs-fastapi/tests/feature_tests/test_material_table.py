@@ -62,7 +62,7 @@ def test_material_table_buttons(driver, login):
         EC.presence_of_all_elements_located((By.CSS_SELECTOR, "tbody tr"))
     )
 
-    rows = driver.find_elements(By.CSS_SELECTOR, "tbody tr")
+    rows = driver.find_elements(By.CLASS_NAME, "relative flex items-center gap-2")
 
     # Check each row for the presence of two SVG elements
     for index, row in enumerate(rows):
