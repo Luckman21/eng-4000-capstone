@@ -138,7 +138,7 @@ def protected_route(request: Request, response: Response):
         payload = decode_access_token(token)
         # Generate a new token with an updated expiration time
         new_token = create_access_token(
-            data={"username": payload["username"], "user_type_id": payload["user_type_id"]},
+            data={"username": payload["username"], "user_type_id": payload["user_type_id"], "email": payload["email"], "id": payload["id"]},
             expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),  # Reset expiration
         )
 
