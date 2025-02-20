@@ -138,7 +138,7 @@ def protected_route(request: Request, response: Response):
         payload = decode_access_token(token)
         # Generate a new token with an updated expiration time
         new_token = create_access_token(
-            data=payload,
+            data={"username": payload["username"], "user_type_id": payload["user_type_id"], "email": payload["email"], "id": payload["id"]},
             expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),  # Reset expiration
         )
 
@@ -156,7 +156,7 @@ def protected_route(request: Request, response: Response):
         return {"message": "Access granted", "user": payload}
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired")
-    except jwt.PyJWTError:
+    except jwt.JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 def decode_access_token(token: str):
@@ -165,7 +165,7 @@ def decode_access_token(token: str):
         return payload
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired")
-    except jwt.PyJWTError:
+    except jwt.JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
