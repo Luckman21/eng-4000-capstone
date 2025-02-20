@@ -4,9 +4,16 @@ import React from "react";
 import { Form, Input, Button } from "@heroui/react";
 import { useRouter } from "next/navigation";
 
+type LoginData = {
+  username: string;
+  password: string;
+};
+
+
+
 const Login = () => {
   const router = useRouter();
-  const login = async (data) => {
+  const login = async (data: LoginData) => {
     try {
       const params= new URLSearchParams();
       params.append('username', data.username);
@@ -36,7 +43,7 @@ const Login = () => {
       validationBehavior="native"
       onSubmit={async (e) => {
         e.preventDefault();
-        const data = Object.fromEntries(new FormData(e.currentTarget));
+        const data = Object.fromEntries(new FormData(e.currentTarget)) as LoginData;
         login(data); 
         
       }}

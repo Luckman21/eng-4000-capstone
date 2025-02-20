@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Material,MaterialType } from "@/types";
 import axios from "axios";
 import { useAsyncList } from "@react-stately/data";
@@ -83,15 +83,15 @@ const TableComponent = () => {
     },
   });
 
-  const handleEditClick = (material: Material) => {
+  const handleEditClick = useCallback((material: Material) => {
     setEditMaterial(material);
     openModalOne();
-  };
+  }, [openModalOne]);
 
-  const handleDeleteClick = (material: Material) => {
+  const handleDeleteClick = useCallback((material: Material) => {
     setDeleteMaterial(material);
     onDeleteOpen();
-  };
+  }, [onDeleteOpen]);
 
   // Callback for updating a material
   const handleSaveMaterial = (updatedMaterial: Material) => {
@@ -177,7 +177,7 @@ const filteredItems = React.useMemo(() => {
   filteredMaterials.sort((a, b) => a.totalDistance - b.totalDistance);
 
   return filteredMaterials;
-}, [materials, filterValue, statusFilter, materialTypes]); // Add materialTypes as a dependency
+}, [materials, filterValue, statusFilter, materialTypes, hasSearchFilter]); // Add materialTypes as a dependency
 
   const renderCell = React.useCallback(
     (material, columnKey) => {
@@ -245,7 +245,7 @@ const filteredItems = React.useMemo(() => {
           return cellValue;
       }
     },
-    [materialTypes]
+    [materialTypes, handleEditClick, handleDeleteClick]
   );
 
   const onSearchChange = React.useCallback((value) => {

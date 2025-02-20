@@ -1,10 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
-import { MaterialType } from "@/types";
+import { Key, useEffect, useState } from "react";
 import axios from "axios";
 import { useAsyncList } from "@react-stately/data";
 import { fetchMaterialTypes } from "@/constants/data";
-
+import { MaterialType } from "@/types";
 import React from "react";
 import {
   Table,
@@ -24,9 +23,11 @@ import { EditIcon } from "@/constants/EditIcon";
 import { DeleteIcon } from "@/constants/DeleteIcon";
 import { NewMaterialType, EditMaterialType, DeletePopup } from "@/components";
 
+type MaterialTypes = {
+  materialTypes: MaterialType[];
+};
 
-
-const MaterialTypeTable = () => {
+const MaterialTypeTable: React.FC<MaterialTypes> = () => {
   const APIHEADER = "delete_mattype";  
   const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -46,17 +47,8 @@ const MaterialTypeTable = () => {
     onOpenChange: handleModalTwoChange,
   } = useDisclosure();
 
-  //useEffect(() => {
-    //const fetchTypes = async () => {
-      //const types = await fetchMaterialTypes();
-      //setMaterialTypes(types);
-    //};
-    //fetchTypes();
-  //}, []);
 
-  
-
-  const list = useAsyncList({
+  const list = useAsyncList<MaterialType>({
     async load({ signal }) {
       let res = await fetch("http://localhost:8000/material_types", { signal });
       let json = await res.json();
@@ -100,8 +92,8 @@ const MaterialTypeTable = () => {
 
 
   const renderCell = React.useCallback(
-    (materialType, columnKey) => {
-      const cellValue = materialType[columnKey];
+    (materialType: MaterialType, columnKey: Key) => {
+      const cellValue = materialType[columnKey as keyof MaterialType];
       switch (columnKey) {
         
         case "actions":
@@ -155,7 +147,7 @@ const MaterialTypeTable = () => {
           isLoading={isLoading}
           loadingContent={<Spinner label="Loading..." />}
         >
-          {(item) => (
+          {(item: MaterialType) => (
             <TableRow key={item.id}>
               {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
             </TableRow>
@@ -163,7 +155,7 @@ const MaterialTypeTable = () => {
         </TableBody>
       </Table>
       <EditMaterialType
-        materialType={editMaterialType}
+        materialType={editMaterialType  }
         isOpen={isModalOneOpen}
         onOpenChange={handleModalOneChange}
         onSave={handleSaveMaterialType} // Pass callback to Popup

@@ -11,7 +11,15 @@ import {
   Button
 } from "@heroui/react";
 
-const DeletePopup = ({ item, isOpen, onOpenChange, onDelete, itemType}) => {
+type DeletePopupTypes = {
+  item: { id: number};
+  isOpen: boolean;
+  onOpenChange: () => void;
+  onDelete: (id: number) => void;
+  itemType: string;
+};
+
+const DeletePopup: React.FC<DeletePopupTypes> = ({ item, isOpen, onOpenChange, onDelete, itemType}) => {
 
   
 

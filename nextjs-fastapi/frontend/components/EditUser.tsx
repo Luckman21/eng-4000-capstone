@@ -5,9 +5,31 @@ import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDis
 import { Autocomplete, AutocompleteItem } from "@heroui/react";
 import { fetchUserTypes, UserTypeName } from '@/constants/data';
 
-const EditUser = ({ user, isOpen, onOpenChange, onSave }) => {
-  const [editableUser, setEditableUser] = useState(user);
-  const [userTypes, setUserTypes] = useState([]);
+type User = {
+  id: number;
+  username: string;
+  email: string;
+  user_type_id: number;
+};
+
+type UserType = { 
+  key: string | number;
+  label: string;
+}
+
+type EditUserTypes = {
+  user: User;
+  isOpen: boolean;
+  onOpenChange: () => void;
+  onSave: (user: User) => void;
+};
+
+
+
+
+const EditUser: React.FC<EditUserTypes> = ({ user, isOpen, onOpenChange, onSave }) => {
+  const [editableUser, setEditableUser] = useState<User>(user);
+  const [userTypes, setUserTypes] = useState<UserType[]>([]);
   const mat = (user?.user_type_id)?.toString();
   console.log(mat)
 
@@ -28,7 +50,7 @@ const EditUser = ({ user, isOpen, onOpenChange, onSave }) => {
 
   }, []);
 
-  const handleChange = (field, value) => {
+  const handleChange = (field: keyof User, value: string) => {
     setEditableUser((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -91,7 +113,11 @@ const EditUser = ({ user, isOpen, onOpenChange, onSave }) => {
             placeholder="Select user type"
             defaultSelectedKey={mat}
             defaultItems={userTypes}
-            onSelectionChange={(key) => handleChange("user_type_id", parseInt(key, 10))}
+            onSelectionChange={(key) => {
+              if (key != null) {
+                handleChange("user_type_id", key.toString());
+              }
+            }}
           >
              {userTypes.map((item) => (
             <AutocompleteItem key={item.key} value={item.key}>

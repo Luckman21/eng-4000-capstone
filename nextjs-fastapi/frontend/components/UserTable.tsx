@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { User } from "@/types";
 import axios from "axios";
 import { useAsyncList } from "@react-stately/data";
@@ -66,15 +66,15 @@ const UserTable = () => {
     },
   });
 
-  const handleEditClick = (user: User) => {
+  const handleEditClick = useCallback((user: User) => {
     setEditUser(user);
     openModalOne();
-  };
+  }, [openModalOne]);
 
-  const handleDeleteClick = (user: User) => {
+  const handleDeleteClick = useCallback((user: User) => {
     setDeleteUser(user);
     onDeleteOpen();
-  };
+  }, [onDeleteOpen]);
 
   // Callback for updating a material
   const handleSaveMaterial = (updatedMaterial: User) => {
@@ -128,7 +128,7 @@ const UserTable = () => {
           return cellValue;
       }
     },
-    []
+    [handleEditClick, handleDeleteClick]
   );
 
   return (

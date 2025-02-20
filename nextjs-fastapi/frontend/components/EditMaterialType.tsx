@@ -5,7 +5,21 @@ import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDis
 import { Autocomplete, AutocompleteItem } from "@heroui/react";
 import { fetchMaterialTypes, MaterialTypeName} from '@/constants/data';
 
-const EditMaterialType = ({ materialType, isOpen, onOpenChange, onSave}) => {
+type MaterialType = {
+  id: number;
+  type_name: string;
+};
+
+type EditMaterialTypes = {
+  materialType: MaterialType;
+  isOpen: boolean;
+  onOpenChange: () => void;
+  onSave: (updatedMaterialType: MaterialType) => void;
+};
+
+
+
+const EditMaterialType: React.FC<EditMaterialTypes> = ({ materialType, isOpen, onOpenChange, onSave}) => {
     const [editableMaterialType, setEditableMaterialType] = useState(materialType);
     const [MaterialTypes, setMaterialTypes] = useState([]);
     const mat = (materialType?.type_name)?.toString();
@@ -24,7 +38,7 @@ const EditMaterialType = ({ materialType, isOpen, onOpenChange, onSave}) => {
         fetchTypes();
     }, []);
 
-    const handleChange = (field, value) => {
+    const handleChange = (field: keyof MaterialType, value: string) => {
         setEditableMaterialType((prev) => ({ ...prev, [field]: value }));
     };
 
