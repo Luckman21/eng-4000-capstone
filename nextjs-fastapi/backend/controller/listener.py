@@ -5,6 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session, Session
 from backend.controller.main import active_connections
 
+
 # Create an engine and local session for connection to the database
 engine = create_engine(constants.DATABASE_URL, echo=True)
 SessionLocal = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
@@ -67,7 +68,7 @@ async def job_complete_listener(mapper, connection, target):
 
         json_data = json.dumps(data)  # Convert to JSON string
         print(json_data)
-        print(len(active_connections))
+        
         for connection in active_connections:
             await connection.send_text(json_data)
     return alert_materials  # Return the array of materials with a mass below the threshold

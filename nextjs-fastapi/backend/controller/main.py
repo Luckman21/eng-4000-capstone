@@ -202,6 +202,7 @@ def start_mqtt_receiver():
 
 # Store active WebSocket connections
 active_connections = []
+
 # Create a listener that triggers when the Material table is updated, checks for Materials with a mass below the threshold
 def low_stock_listener():
     def listener_wrapper(mapper, connection, target):
@@ -214,11 +215,12 @@ async def websocket_endpoint(websocket: WebSocket):
     """Handles WebSocket connections for real-time material alerts."""
     await websocket.accept()
     active_connections.append(websocket)
+    
     try:
         while True:
-            
+            print("Waiting for alert...")
             await websocket.receive_text()
-            await asyncio.sleep(5)
+            
     except WebSocketDisconnect:
         active_connections.remove(websocket)
 
