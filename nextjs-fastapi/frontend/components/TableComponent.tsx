@@ -25,9 +25,10 @@ import {
 import { EditIcon } from "@/constants/EditIcon";
 import { DeleteIcon } from "@/constants/DeleteIcon";
 
-import { Popup } from "@/components";
+import { Order, Popup } from "@/components";
 import { NewMaterial } from "@/components";
 import { DeletePopup } from "@/components";
+import { PlusIcon } from "@/constants/PlusIcon";
 
 const statusColorMap = {
   "In Stock": "success",
@@ -40,6 +41,7 @@ const TableComponent = () => {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editMaterial, setEditMaterial] = useState<Material | null>(null); 
+  const [order, setOrder] = useState<Material | null>(null);
   const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [filterValue, setFilterValue] = React.useState("");
@@ -48,14 +50,18 @@ const TableComponent = () => {
     onOpen: openModalOne,
     onOpenChange: handleModalOneChange,
   } = useDisclosure();
+  
   const [deleteMaterial, setDeleteMaterial] = useState<Material | null>(null);
   const {isOpen: isDeleteOpen, onOpen: onDeleteOpen, onOpenChange: onDeleteOpenChange} = useDisclosure();
-
-  
   const {
     isOpen: isModalTwoOpen,
     onOpen: openModalTwo,
     onOpenChange: handleModalTwoChange,
+  } = useDisclosure();
+  const {
+    isOpen: isModalThreeOpen,
+    onOpen: openModalThree,
+    onOpenChange: handleModalThreeChange,
   } = useDisclosure();
   
   const list = useAsyncList({
@@ -82,6 +88,10 @@ const TableComponent = () => {
   const handleEditClick = (material: Material) => {
     setEditMaterial(material);
     openModalOne();
+  };
+  const handleOrderClick = (material: Material) => {
+    setOrder(material);
+    openModalThree();
   };
 
   const handleDeleteClick = (material: Material) => {
@@ -209,6 +219,14 @@ const filteredItems = React.useMemo(() => {
         case "actions":
           return  (
             <div className="relative flex items-center gap-2">
+              <Tooltip content="Edit material mass">
+                <span
+                  onClick={() => handleOrderClick(material)}
+                  className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                >
+                  <PlusIcon />
+                </span>
+              </Tooltip>
               <Tooltip content="Edit material">
                 <span
                   onClick={() => handleEditClick(material)}
@@ -341,6 +359,12 @@ const filteredItems = React.useMemo(() => {
         onDelete={handleDeleteMaterial} // Pass callback to DeletePopup
         itemType={APIHEADER}
       />
+      <Order
+        material={order}
+        isOpen={isModalThreeOpen}
+        onOpenChange={handleModalThreeChange}
+        onSave={handleSaveMaterial} // Pass callback to
+        />
     </div>
   );
 };
