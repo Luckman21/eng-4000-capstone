@@ -19,25 +19,15 @@ const UserProfile = ({ onSave }) => {
   const [confirmPassword, setConfirmPassword] = useState(""); // State for confirm password
   const [passwordError, setPasswordError] = useState(""); // State to track password match error
 
-  const loadUserData = () => {
-    const token = localStorage.getItem("access_token");
-    if (token) {
-      try {
-        const decoded = jwtDecode(token); // Decode JWT
-        setUser(decoded); // Store user data
-        setEditableUser({
-          username: decoded.username,
-          email: decoded.email, // Default to empty if not in token
-          id: decoded.id,
-        });
-      } catch (err) {
-        console.error("Failed to decode token:", err);
-      }
-    }
-  };
-
   useEffect(() => {
-    loadUserData();
+    fetch("http://127.0.0.1:8000/protected", {
+      method: "GET",
+      credentials: "include", // Ensures cookies are included in the request
+    })
+      .then((res) => res.json())
+      .then((data) => setUser(data.user))
+      .catch((err) => console.error(err));
+
   }, []);
 
   const handleChange = (field, value) => {
@@ -48,8 +38,8 @@ const UserProfile = ({ onSave }) => {
     try {
       // Send update request to backend
       const response = await axios.put(`http://localhost:8000/update_user/${editableUser.id}`, {
-        username: editableUser.username,
-        email: editableUser.email,
+        username: user.username,
+        email: user.email,
       });
 
       if (response.status === 200) {
@@ -99,7 +89,7 @@ const UserProfile = ({ onSave }) => {
       console.error("Failed to update password:", error);
     }
   };
-
+    console.log(user)
   return (
     <div className="flex items-center justify-center h-screen bg-black">
       <div className="w-full max-w-lg p-8 bg-neutral-900 text-white rounded-xl shadow-lg">
@@ -109,14 +99,14 @@ const UserProfile = ({ onSave }) => {
             label="Username"
             placeholder="Enter username"
             variant="bordered"
-            value={editableUser?.username || ""}
+            value={user?.username || ""}
             onChange={(e) => handleChange("username", e.target.value)}
           />
           <Input
             label="Email"
             placeholder="Enter user email"
             variant="bordered"
-            value={editableUser?.email || ""}
+            value={user?.email || ""}
             onChange={(e) => handleChange("email", e.target.value)}
           />
           <div className="flex justify-between items-center gap-4 mt-6">
