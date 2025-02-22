@@ -114,12 +114,13 @@ def run():
         # If a sale is found, let's add their colour and material type name to the list
         if sale_found:
             mattype = material_type_repo.get_material_type_by_id(material.material_type_id)
-            items_on_sale.append(f'{material.colour} {mattype.type_name}; {material.supplier_link}')
+            items_on_sale.append(f'<li>{material.colour} {mattype.type_name}: <a href="{material.supplier_link}">View Details</a></li>')
+
 
     # If sales were found, send an email
     if len(items_on_sale) > 0:
 
-        result_as_newline_separated_string = "\n\n\n".join(items_on_sale)
+        result_as_newline_separated_string = "<ul>" + "\n".join(items_on_sale) + "</ul>"
 
         mailer = SaleMailer(from_addr=constants.MAILER_EMAIL)
         super_admins = user_repo.get_all_superadmins()
