@@ -27,6 +27,16 @@ type MaterialTypes = {
   materialTypes: MaterialType[];
 };
 
+const defaultMaterialType: MaterialType = {
+  id: 0,
+  type_name: "",
+  shelf_id: null,
+  colour: "",
+  supplier_link: null,
+  mass: 0,
+  material_type_id: 0
+};
+
 const MaterialTypeTable: React.FC<MaterialTypes> = () => {
   const APIHEADER = "delete_mattype";  
   const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
@@ -74,7 +84,7 @@ const MaterialTypeTable: React.FC<MaterialTypes> = () => {
   const handleSaveMaterialType = (updatedMaterialType: MaterialType) => {
     setMaterialTypes((prevMaterialType) =>
         prevMaterialType.map((mat) =>
-        mat.id === updatedMaterialType.id ? updatedMaterialType : mat
+        mat.id === updatedMaterialType.id ? {...mat, ...updatedMaterialType}  : mat
       )
     );
     list.reload();
@@ -93,6 +103,7 @@ const MaterialTypeTable: React.FC<MaterialTypes> = () => {
 
   const renderCell = React.useCallback(
     (materialType: MaterialType, columnKey: Key) => {
+      if (typeof columnKey !== "string") return null;
       const cellValue = materialType[columnKey as keyof MaterialType];
       switch (columnKey) {
         
@@ -155,14 +166,14 @@ const MaterialTypeTable: React.FC<MaterialTypes> = () => {
         </TableBody>
       </Table>
       <EditMaterialType
-        materialType={editMaterialType || {id: 0, type_name: " "} }
+        materialType={editMaterialType ?? defaultMaterialType }
         isOpen={isModalOneOpen}
         onOpenChange={handleModalOneChange}
         onSave={handleSaveMaterialType} // Pass callback to Popup
       />
       <NewMaterialType isOpen={isModalTwoOpen} onOpenChange={handleModalTwoChange} onAddMaterialType={addMaterialType} materialtypes={materialTypes} />
        <DeletePopup
-        item={deleteMaterialType}
+        item={deleteMaterialType ?? {id: 0}}
         isOpen={isDeleteOpen}
         onOpenChange={onDeleteOpenChange}
         itemType={APIHEADER}

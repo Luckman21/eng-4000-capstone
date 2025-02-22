@@ -8,6 +8,11 @@ import { fetchMaterialTypes, MaterialTypeName} from '@/constants/data';
 type MaterialType = {
   id: number;
   type_name: string;
+  shelf_id: number | null;
+  colour: string;
+  supplier_link: string | null;
+  mass: number;
+  material_type_id: number;
 };
 
 type EditMaterialTypes = {
