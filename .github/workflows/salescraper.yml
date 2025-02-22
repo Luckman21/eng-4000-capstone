@@ -11,27 +11,28 @@ jobs:
 
     services:
       postgres:
-        image: postgres:latest
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: 0000
-          POSTGRES_DB: capstone_db
+        image: postgres:13  # Use a suitable version of PostgreSQL
+        options: >-
+          -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=0000 -e POSTGRES_DB=capstone_db
         ports:
           - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U myuser"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+
+      services:
+        selenium:
+          image: selenium/standalone-chrome:latest
+          options: >-
+            --shm-size=32g
+          ports:
+            - 4444:4444
 
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: 🛠 Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v2
         with:
-          python-version: "3.10"
+          python-version: 3.9
 
       - name: 📦 Install Dependencies
         run: |
@@ -45,7 +46,7 @@ jobs:
 
       - name: 🕷 Run Web Scraper
         run: |
-          python backend/service/scraper/scrape.py
+          python backend/service/scrapers/SaleScraper.py
 
       - name: 📤 Save Scraper Results
         run: |
