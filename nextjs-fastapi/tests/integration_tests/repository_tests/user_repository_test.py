@@ -145,3 +145,14 @@ def test_delete_material(setup_database):
 
     assert queried_user is None
 
+def test_get_all_superadmin(setup_database):
+    session = setup_database
+    repository = UserRepository(session)
+
+    users = repository.get_all_superadmins()
+
+    for user in users:
+        assert user.user_type.type_name == "Super_Admin", f"User {user.username} is not a super admin!"
+
+
+
