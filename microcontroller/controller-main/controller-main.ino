@@ -2,6 +2,8 @@
 #define YORKU_PASS "" // move to cred.h
 #define DHTPIN 7
 #define DHTTYPE 11
+#define TEMP_CAL 21 // Adjusts the temperature reading for accuracy
+#define HUMID_CAL 15  // Adjusts the humidity reading for accuracy
 
 //#include "cred.h" // wifi credentials
 #include <ArduinoMqttClient.h>
@@ -79,19 +81,19 @@ void loop() {
     // Log updates to serial monitor
     Serial.print("Send temp to topic_temp: ");
     Serial.println(topic_temp);
-    Serial.println(temp);
+    Serial.println(temp + TEMP_CAL);
 
     Serial.print("Send humid to topic_humid: ");
     Serial.println(topic_humid);
-    Serial.println(humid);
+    Serial.println(humid + HUMID_CAL);
 
     // Send message, using print to send message contents
     mqttClient.beginMessage(topic_temp);
-    mqttClient.print(temp);
+    mqttClient.print(temp + TEMP_CAL);
     mqttClient.endMessage();
 
     mqttClient.beginMessage(topic_humid);
-    mqttClient.print(humid);
+    mqttClient.print(humid + HUMID_CAL);
     mqttClient.endMessage();
 
     Serial.println();
