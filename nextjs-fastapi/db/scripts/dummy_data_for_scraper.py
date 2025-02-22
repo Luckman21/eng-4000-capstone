@@ -38,7 +38,7 @@ def populate_db():
     material = [
         ("Black", amazon_sale, 500.0, 1, 1),
         ("Marble", digitmaker_sale, 17.8, 1, 1),
-        ("White", non_sale_item, 200.0, 1, 2)
+        ("White", non_sale_item, 200.0, 2, 1)
     ]
     cursor.executemany("INSERT INTO materials (colour, supplier_link, mass, material_type_id, shelf_id) VALUES (%s, %s, %s, %s, %s)", material)
 
