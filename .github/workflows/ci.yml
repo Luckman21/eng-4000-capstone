@@ -3,10 +3,10 @@ name: Python CI with Pytest and Selenium
 on:
   push:
     branches:
-      - '*'  # Trigger on any push to any branch
+      - main  # Triggers on pushes to main
   pull_request:
     branches:
-      - main  # Trigger on pull requests targeting the 'main' branch
+      - main  # Triggers on PRs to main
 
 jobs:
   test:
