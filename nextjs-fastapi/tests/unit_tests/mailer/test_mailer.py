@@ -162,7 +162,7 @@ def test_sale_mailer_success(mock_sendgrid):
 
     # Mock sending an email
     recipient = "recipient@example.com"
-    materials = "green eggs: google.ca\nred ham: yahoo.com"
+    materials = '<a href="google.ca"> green eggs on sale;</a>\n<a href="{yahoo.com}"> red ham on sale;</a>'
 
     response = sale_mailer.send_notification(recipient, materials )
 
