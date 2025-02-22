@@ -116,7 +116,7 @@ def run():
             items_on_sale.append(f"{material.colour} {mattype.type_name}; {material.supplier_link}")
 
     # If sales were found, send an email
-    if len(items_on_sale > 0):
+    if len(items_on_sale) > 0:
 
         result_as_newline_separated_string = "\n".join(items_on_sale)
 
