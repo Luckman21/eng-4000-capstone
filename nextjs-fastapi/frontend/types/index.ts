@@ -15,7 +15,12 @@ export interface User {
     }
 
 export interface MaterialType {
+  shelf_id: number | null;
+  colour: string;
+  supplier_link: string | null;
+  mass: number;
+  material_type_id: number;
   id: number;
-  name: string;
+  type_name: string;
 }
 

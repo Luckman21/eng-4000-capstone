@@ -2,18 +2,26 @@
 import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Avatar,Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/react";
 import Link from "next/link";
 import { jwtDecode } from "jwt-decode";
+import { JwtPayload } from "jwt-decode";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+interface customJWTPayload extends JwtPayload {
+  user_type_id: number;
+  username: string;
+}
+
+
+
 
 const Nav= ()=> {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<customJWTPayload | null>(null);
   const router = useRouter();
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (token) {
       try {
-        const decoded = jwtDecode(token) // Extract user info from JWT
+        const decoded = jwtDecode<customJWTPayload>(token) // Extract user info from JWT
         setUser(decoded); 
       } catch (err) {
         console.error("Failed to decode token:", err);

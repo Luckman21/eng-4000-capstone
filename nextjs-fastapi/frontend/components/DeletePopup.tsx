@@ -12,7 +12,7 @@ import {
 } from "@heroui/react";
 
 type DeletePopupTypes = {
-  item: { id: number};
+  item: { id: number} | null;
   isOpen: boolean;
   onOpenChange: () => void;
   onDelete: (id: number) => void;
@@ -24,6 +24,7 @@ const DeletePopup: React.FC<DeletePopupTypes> = ({ item, isOpen, onOpenChange, o
   
 
   const handleDelete = async () => {
+    if (!item) return;
     try {
       // send delete request to backend
       const response = await fetch(`http://localhost:8000/${itemType}/${item.id}` , {

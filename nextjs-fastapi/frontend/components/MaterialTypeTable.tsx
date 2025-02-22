@@ -155,7 +155,7 @@ const MaterialTypeTable: React.FC<MaterialTypes> = () => {
         </TableBody>
       </Table>
       <EditMaterialType
-        materialType={editMaterialType  }
+        materialType={editMaterialType || {id: 0, type_name: " "} }
         isOpen={isModalOneOpen}
         onOpenChange={handleModalOneChange}
         onSave={handleSaveMaterialType} // Pass callback to Popup

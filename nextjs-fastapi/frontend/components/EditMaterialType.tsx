@@ -20,7 +20,7 @@ type EditMaterialTypes = {
 
 
 const EditMaterialType: React.FC<EditMaterialTypes> = ({ materialType, isOpen, onOpenChange, onSave}) => {
-    const [editableMaterialType, setEditableMaterialType] = useState(materialType);
+    const [editableMaterialType, setEditableMaterialType] = useState<MaterialType>(materialType);
     const [MaterialTypes, setMaterialTypes] = useState([]);
     const mat = (materialType?.type_name)?.toString();
     console.log(mat)
@@ -39,10 +39,13 @@ const EditMaterialType: React.FC<EditMaterialTypes> = ({ materialType, isOpen, o
     }, []);
 
     const handleChange = (field: keyof MaterialType, value: string) => {
+      if (editableMaterialType) {
         setEditableMaterialType((prev) => ({ ...prev, [field]: value }));
+      }
     };
 
     const handleSave = async () => {
+      if (!editableMaterialType) return;
 
         try {
 

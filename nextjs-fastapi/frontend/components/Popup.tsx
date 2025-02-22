@@ -4,10 +4,23 @@ import { useEffect, useState } from "react";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Checkbox, Input, Link} from "@heroui/react";
 import { Autocomplete, AutocompleteItem } from "@heroui/react";
 import { fetchMaterialTypes, MaterialTypeName } from '@/constants/data';
+import { MaterialType } from '@/types';
 
-const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
+interface NewMaterials {
+  isOpen: boolean;
+  onOpenChange: () => void;
+  onSave: (material: MaterialType) => void;
+  material: MaterialType;
+}
+
+interface MaterialOption {
+  key: string | number;
+  label: string;
+}
+
+const Popup: React.FC<NewMaterials> = ({ material, isOpen, onOpenChange, onSave }) => {
   const [editableMaterial, setEditableMaterial] = useState(material);
-  const [materialTypes, setMaterialTypes] = useState([]);
+  const [materialTypes, setMaterialTypes] = useState<MaterialOption[]>([]);
   const mat = (material?.material_type_id)?.toString();
   console.log(mat)
 
@@ -28,7 +41,7 @@ const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
 
   }, []);
 
-  const handleChange = (field, value) => {
+  const handleChange = (field: keyof MaterialType, value: string | number) => {
     setEditableMaterial((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -106,9 +119,12 @@ const Popup = ({ material, isOpen, onOpenChange, onSave }) => {
           <Autocomplete
             label="Material Type"
             placeholder="Search material type"
-            defaultSelectedKey={mat}
+            defaultSelectedKey={mat !== undefined ? String(mat) : undefined}
             defaultItems={materialTypes}
-            onSelectionChange={(key) => handleChange("material_type_id", parseInt(key, 10))}
+            onSelectionChange={(key) => {
+              if (key === null) return;
+              handleChange("material_type_id", parseInt(key as string, 10))}
+            }
           >
              {materialTypes.map((item) => (
             <AutocompleteItem key={item.key} value={item.key}>
