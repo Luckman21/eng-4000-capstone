@@ -87,7 +87,7 @@ def run():
     user_repo = UserRepository(session)
 
     # Get materials
-    materials = material_repo.get_all_materials
+    materials = material_repo.get_all_materials()
     items_on_sale = []
 
     # Look for a sale in each material
