@@ -53,7 +53,7 @@ def populate_db():
     ph = PasswordHasher()
     users = [
         ("Luca", ph.hash("0000"), "lucafili@my.yorku.ca", 2),
-        ("hugh_55", ph.hash("pecan7275"), "lucafili@my.yorku.ca", 1),
+        ("Other Luca", ph.hash("pecan7275"), "lfilippelli5@gmail.com", 1),
     ]
 
     cursor.executemany("INSERT INTO users (username, password, email, user_type_id) VALUES (%s, %s, %s, %s) ON CONFLICT (username) DO NOTHING", users)
