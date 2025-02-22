@@ -52,7 +52,7 @@ jobs:
           mv scraper_output.json output/
 
       - name: 📌 Upload Results as Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: scraper-results
           path: output/scraper_output.json
