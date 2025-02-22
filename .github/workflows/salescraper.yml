@@ -44,7 +44,7 @@ jobs:
 
       - name: 🕷 Run Web Scraper
         run: |
-          python nextjs-fastapi/backend/service/scrapers/SaleScraper.py
+          PYTHONPATH=nextjs-fastapi && python nextjs-fastapi/backend/service/scrapers/SaleScraper.py
 
       - name: 📤 Save Scraper Results
         run: |
