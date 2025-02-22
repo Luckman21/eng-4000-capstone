@@ -122,3 +122,6 @@ def run():
 
         for super_admin in super_admins:
             mailer.send_notification(super_admin.email, result_as_newline_separated_string)
+
+if __name__ == "__main__":
+    run()

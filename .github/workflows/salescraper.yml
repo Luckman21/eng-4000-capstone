@@ -44,7 +44,8 @@ jobs:
 
       - name: 🕷 Run Web Scraper
         run: |
-          python -m backend/service/scrapers/SaleScraper.py
+          cd nextjs-fastapi/backend/service/scrapers/
+          python SaleScraper.py
 
       - name: 📤 Save Scraper Results
         run: |
