@@ -23,7 +23,7 @@ def populate_db():
     non_sale_item = 'https://www.digitmakers.ca/collections/esun-filaments/products/esun-etpu-95a-filament-1-75mm-1kg-various-colors?variant=33750608445571'
     # Populate material types
     material_type = [
-        ("PLA",)
+        ("PLA",),
         ("TPU"),
     ]
     cursor.executemany("INSERT INTO material_types (type_name) VALUES (%s) ON CONFLICT (type_name) DO NOTHING", material_type)
