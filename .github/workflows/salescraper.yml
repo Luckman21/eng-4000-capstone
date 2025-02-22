@@ -16,14 +16,12 @@ jobs:
           -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=0000 -e POSTGRES_DB=capstone_db
         ports:
           - 5432:5432
-
-      services:
-        selenium:
-          image: selenium/standalone-chrome:latest
-          options: >-
-            --shm-size=32g
-          ports:
-            - 4444:4444
+      selenium:
+        image: selenium/standalone-chrome:latest
+        options: >-
+          --shm-size=32g
+        ports:
+          - 4444:4444
 
     steps:
       - name: 📥 Checkout Code
@@ -46,7 +44,7 @@ jobs:
 
       - name: 🕷 Run Web Scraper
         run: |
-          python backend/service/scrapers/SaleScraper.py
+          python -m backend/service/scrapers/SaleScraper.py
 
       - name: 📤 Save Scraper Results
         run: |
