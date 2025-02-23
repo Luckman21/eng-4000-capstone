@@ -86,7 +86,7 @@ def scrape_digitkey_page_for_sale(url, driver) -> bool:
 
         try:
             # Locate the table
-            table = driver.find_element(By.CLASS_NAME, 'adp-discount-table')
+            table = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, 'adp-discount-table')))
 
             # Find all rows in the table
             rows = table.find_elements(By.TAG_NAME, 'tr')
