@@ -26,7 +26,7 @@ def populate_db():
     material_type = [
         ("PLA",),
         ("TPU",),
-        ("PETG"),
+        ("PETG",),
     ]
     cursor.executemany("INSERT INTO material_types (type_name) VALUES (%s) ON CONFLICT (type_name) DO NOTHING", material_type)
 
