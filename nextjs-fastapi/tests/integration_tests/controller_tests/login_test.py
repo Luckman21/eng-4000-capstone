@@ -36,11 +36,11 @@ async def test_login_success():
 
     #TODO make dedicated dummy user
 
-    async with AsyncClient(app=get_app(), base_url="http://127.0.0.1:8000") as client:
-        response = await client.post(
-            "/login",
-            data={"username": f"water_123", "password": f"Gucci2001"},
-        )
+    client = TestClient(get_app())
+    response = client.post(
+        "/login",
+        data={"username": f"water_123", "password": f"Gucci2001"},
+    )
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {"message": "Login successful"}
@@ -49,15 +49,16 @@ async def test_login_success():
 
 @pytest.mark.asyncio
 async def test_login_failure():
-    async with AsyncClient(app=get_app(), base_url="http://127.0.0.1:8000") as client:
-        response = await client.post(
-            "/login",
-            data={"username": "invalid_user", "password": "wrong_password"},
-        )
+    client = TestClient(get_app())
+    response = client.post(
+        "/login",
+        data={"username": "invalid_user", "password": "wrong_password"},
+    )
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert response.json()["detail"] == "Invalid username or password"
     assert "access_token" not in response.cookies, "Access token should not be set for invalid login"
+
 
 @pytest.mark.asyncio
 async def test_logout():
