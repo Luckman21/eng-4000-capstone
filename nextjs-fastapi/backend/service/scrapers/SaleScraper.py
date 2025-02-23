@@ -75,15 +75,42 @@ def scrape_digitkey_page_for_sale(url, driver) -> bool:
     try:
         original_price = WebDriverWait(driver, 30).until(EC.visibility_of_element_located((By.ID, "comparePrice")))
         current_price = WebDriverWait(driver, 30).until(EC.visibility_of_element_located((By.ID, "productPrice")))
+
+        current_price_float = float(current_price.text.replace("$", ""))
+        original_price_float = float(original_price.text.replace("$", ""))
+        pct_off = (current_price_float / original_price_float) * 100.00
+
+        return True, f'{str(round(100.00 - pct_off, 2))}% off'
+
     except TimeoutException:
-        return False, None
 
-    current_price_float = float(current_price.text.replace("$", ""))
-    original_price_float = float(original_price.text.replace("$", ""))
-    pct_off = (current_price_float / original_price_float) * 100.00
+        try:
+            # Locate the table
+            table = driver.find_element(By.CLASS_NAME, 'adp-discount-table')
+
+            # Find all rows in the table
+            rows = table.find_elements(By.TAG_NAME, 'tr')
+
+            discounts = []
+
+            # Loop through each row
+            for row in rows:
+                # Find all cells (td) in the row
+                cells = row.find_elements(By.TAG_NAME, 'td')
+                if cells:
+                    offer = cells[0].text
+                    discount = f"{cells[1].text}"
+
+                    discounts.append(f"{offer} for {discount}")
+
+            return True, "; ".join(discounts)
+
+        except TimeoutException:
+            return False, None
+
+    return False, None
 
 
-    return True, f'{str(round(100.00 - pct_off, 2))} % off'
 
 
 def run():

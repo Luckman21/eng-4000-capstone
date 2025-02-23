@@ -7,7 +7,7 @@ from backend.service.scrapers.SaleScraper import scrape_amazon_page_for_sale, sc
 @pytest.fixture
 def driver():
     chrome_options = Options()
-    #chrome_options.add_argument("--headless") # This means you won't see the actual icon
+    chrome_options.add_argument("--headless") # This means you won't see the actual icon
     chrome_options.add_argument("--disable-gpu") # Disable GPU acceleration (required in headless mode)
     chrome_options.add_argument("--no-sandbox")  # Might help in some environments
     chrome_options.add_argument(
@@ -32,5 +32,12 @@ def test_scrape_digitmaker_page_for_sale_found(driver):
     # Test against a real URL (make sure the page you're testing on has a sale)
     url = 'https://www.digitmakers.ca/collections/esun-filaments/products/esun-emarble-pla-filament-1-75mm-1kg'
     bool, text = scrape_digitkey_page_for_sale(url, driver)
-    assert text == '85.71'
+    assert text == '14.29% off'
+    assert bool is True
+
+def test_scrape_digitmaker_page_for_sale_found_2(driver):
+    # Test against a real URL (make sure the page you're testing on has a sale)
+    url = 'https://www.digitmakers.ca/collections/offer-of-the-week-3d-printing-canada-3d-filaments-canada/products/d3d-premium-petg-filament-1-75-mm-1kg-spool?variant=8112650649636'
+    bool, text = scrape_digitkey_page_for_sale(url, driver)
+    assert text == 'Buy 2 for CA$2.00 off each; Buy 5 for CA$5.00 off each'
     assert bool is True
