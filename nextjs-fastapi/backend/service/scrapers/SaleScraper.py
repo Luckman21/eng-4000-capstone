@@ -47,7 +47,7 @@ def setup_database():
 
     return session
 
-def scrape_amazon_page_for_sale(url, driver) -> bool:
+def scrape_amazon_page_for_sale(url, driver):
     driver.get(url)
     time.sleep(10)
 
@@ -60,9 +60,11 @@ def scrape_amazon_page_for_sale(url, driver) -> bool:
     coupon = driver.find_elements(By.CLASS_NAME, name)
 
     if coupon is None and sale is None:
-        return False
+        return False, ''
+    elif sale:
+        return True, ''
 
-    return True
+    return True, ''
 
 
 def scrape_digitkey_page_for_sale(url, driver) -> bool:
@@ -71,11 +73,17 @@ def scrape_digitkey_page_for_sale(url, driver) -> bool:
 
     # Let's see if the sale exists. If not return false
     try:
-        WebDriverWait(driver, 30).until(EC.visibility_of_element_located((By.ID, "comparePrice")))
+        original_price = WebDriverWait(driver, 30).until(EC.visibility_of_element_located((By.ID, "comparePrice")))
+        current_price = WebDriverWait(driver, 30).until(EC.visibility_of_element_located((By.ID, "productPrice")))
     except TimeoutException:
-        return False
+        return False, None
 
-    return True
+    current_price_float = float(current_price.text.replace("$", ""))
+    original_price_float = float(original_price.text.replace("$", ""))
+    pct_off = (current_price_float / original_price_float) * 100.00
+
+
+    return True, str(round(pct_off, 2))
 
 
 def run():
@@ -106,15 +114,15 @@ def run():
 
         # Find regex match
         if amazon_match:
-           sale_found = scrape_amazon_page_for_sale(link, driver)
+           sale_found, text = scrape_amazon_page_for_sale(link, driver)
 
         elif digitmakers_match:
-            sale_found = scrape_digitkey_page_for_sale(link, driver)
+            sale_found, text = scrape_digitkey_page_for_sale(link, driver)
 
         # If a sale is found, let's add their colour and material type name to the list
         if sale_found:
             mattype = material_type_repo.get_material_type_by_id(material.material_type_id)
-            items_on_sale.append(f'<li>{material.colour} {mattype.type_name}: <a href="{material.supplier_link}">View Details</a></li>')
+            items_on_sale.append(f'<li>{material.colour} {mattype.type_name} {text}: <a href="{material.supplier_link}">View Details</a></li>')
 
 
     # If sales were found, send an email
