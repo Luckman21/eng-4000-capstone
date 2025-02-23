@@ -97,8 +97,8 @@ const UserTable = () => {
 
 
   const renderCell = React.useCallback(
-    (user, columnKey) => {
-      const cellValue = user[columnKey];
+    (user: User, columnKey:string) => {
+      const cellValue = user[columnKey as keyof User];
       switch (columnKey) {
         
         case "actions":

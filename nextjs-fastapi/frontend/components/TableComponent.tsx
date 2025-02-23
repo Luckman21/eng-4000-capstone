@@ -29,13 +29,14 @@ import { Popup } from "@/components";
 import { NewMaterial } from "@/components";
 import { DeletePopup } from "@/components";
 
-const statusColorMap = {
+const statusColorMap: Record<"In Stock" | "Low Stock", "success" | "warning"> = {
   "In Stock": "success",
   "Low Stock": "warning",
 }
 
 const TableComponent = () => {
   const APIHEADER = "delete_material"; 
+  const statusOptions = ["available", "unavailable", "in use"];
   const [materials, setMaterials] = useState<Material[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editMaterial, setEditMaterial] = useState<Material | null>(null); 
@@ -102,7 +103,7 @@ const TableComponent = () => {
     );
     list.reload();
   };
-  const addMaterial = (newMaterial) => {
+  const addMaterial = (newMaterial: Material) => {
     setMaterials((prevMaterials) => [...prevMaterials, newMaterial]);
     
       list.reload();
@@ -180,14 +181,14 @@ const filteredItems = React.useMemo(() => {
 }, [materials, filterValue, statusFilter, materialTypes, hasSearchFilter]); // Add materialTypes as a dependency
 
   const renderCell = React.useCallback(
-    (material, columnKey) => {
-      const cellValue = material[columnKey];
+    (material: MaterialType, columnKey: string) => {
+      const cellValue = material[columnKey as keyof MaterialType];
       switch (columnKey) {
         case "status":
           return (
             <Chip
               className="capitalize"
-              color={statusColorMap[material.status]}
+              color={statusColorMap[material.status as "In Stock" | "Low Stock"] || "gray"}
               size="sm"
               variant="flat"
             >
@@ -205,7 +206,10 @@ const filteredItems = React.useMemo(() => {
             <div className="relative flex items-center gap-2">
               <Tooltip content="Edit material">
                 <span
-                  onClick={() => handleEditClick(material)}
+                  onClick={() => handleEditClick({...material,
+                    totalDistance: material.totalDistance ?? 0,
+                    name: material.name ?? "Unknown",
+                    weight: material.weight ?? 0,})}
                   className="text-lg text-default-400 cursor-pointer active:opacity-50"
                 >
                   <EditIcon />
@@ -226,7 +230,6 @@ const filteredItems = React.useMemo(() => {
         if (cellValue) {
           return (
           <Chip
-              clickable
               color="primary"
               variant="flat"
               size="sm"
@@ -248,13 +251,17 @@ const filteredItems = React.useMemo(() => {
     [materialTypes, handleEditClick, handleDeleteClick]
   );
 
-  const onSearchChange = React.useCallback((value) => {
+  const onSearchChange = React.useCallback((value: string) => {
   if (value) {
     setFilterValue(value);
   } else {
     setFilterValue("");
   }
 }, []);
+
+  function onClear(): void {
+    throw new Error("Function not implemented.");
+  }
 
   return (
  <div className="px-4 pt-4"> {/* Padding for spacing from the edges and top */}

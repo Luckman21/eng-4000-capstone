@@ -103,7 +103,7 @@ const Popup: React.FC<NewMaterials> = ({ material, isOpen, onOpenChange, onSave 
             placeholder="Enter material weight"
             type="number"
             variant="bordered"
-            value={editableMaterial?.mass || ""}
+            value={editableMaterial?.mass?.toString() ?? ""}
             onChange={(e) => handleChange("mass", parseFloat(e.target.value))}
           />
             <Input
@@ -111,7 +111,7 @@ const Popup: React.FC<NewMaterials> = ({ material, isOpen, onOpenChange, onSave 
             placeholder="Enter shelf number"
             type="number"
             variant="bordered"
-            value={editableMaterial?.shelf_id || ""}
+            value={editableMaterial?.shelf_id?.toString() ?? ""}
             onChange={(e) => handleChange("shelf_id", parseFloat(e.target.value))}
           />
 

@@ -34,7 +34,13 @@ const defaultMaterialType: MaterialType = {
   colour: "",
   supplier_link: null,
   mass: 0,
-  material_type_id: 0
+  material_type_id: 0,
+  key: 0,
+  label: "",
+  status: "",
+  totalDistance: 0,
+  name: "",
+  weight: 0
 };
 
 const MaterialTypeTable: React.FC<MaterialTypes> = () => {

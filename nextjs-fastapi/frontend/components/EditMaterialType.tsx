@@ -13,6 +13,12 @@ type MaterialType = {
   supplier_link: string | null;
   mass: number;
   material_type_id: number;
+  key: number;
+  label: string;
+  status: string;
+  totalDistance: number;
+  name: string;
+  weight: number;
 };
 
 type EditMaterialTypes = {
