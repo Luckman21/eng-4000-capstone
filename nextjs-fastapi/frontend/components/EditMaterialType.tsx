@@ -28,11 +28,11 @@ type EditMaterialTypes = {
   onSave: (updatedMaterialType: MaterialType) => void;
 };
 
-
+type MaterialTypeOption = { label: string; key: number };
 
 const EditMaterialType: React.FC<EditMaterialTypes> = ({ materialType, isOpen, onOpenChange, onSave}) => {
     const [editableMaterialType, setEditableMaterialType] = useState<MaterialType>(materialType);
-    const [MaterialTypes, setMaterialTypes] = useState([]);
+    const [MaterialTypes, setMaterialTypes] = useState<MaterialTypeOption[]>([]);
     const mat = (materialType?.type_name)?.toString();
     console.log(mat)
 

@@ -12,23 +12,32 @@ type User = {
   user_type_id: number;
 };
 
+type UserWithRole = {
+  id: number;
+  username: string;
+  email: string;
+  role: string;
+  password: string;
+  user_type_id: number;
+};
+
 type UserType = { 
   key: string | number;
   label: string;
 }
 
 type EditUserTypes = {
-  user: User;
+  user: UserWithRole;
   isOpen: boolean;
   onOpenChange: () => void;
-  onSave: (user: User) => void;
+  onSave: (user: UserWithRole) => void;
 };
 
 
 
 
 const EditUser: React.FC<EditUserTypes> = ({ user, isOpen, onOpenChange, onSave }) => {
-  const [editableUser, setEditableUser] = useState<User>(user);
+  const [editableUser, setEditableUser] = useState<UserWithRole>(user);
   const [userTypes, setUserTypes] = useState<UserType[]>([]);
   const mat = (user?.user_type_id)?.toString();
   console.log(mat)

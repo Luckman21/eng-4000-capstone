@@ -20,9 +20,13 @@ interface NewMaterialTypeOption {
   materialtypes: MaterialType[];
 }
 
+interface MaterialTypeOption {
+  label: string;
+  key: number;
+}
 
 export const NewMaterialType: React.FC<NewMaterialTypeOption> = ({ isOpen, onOpenChange, onAddMaterialType, materialtypes}) => {
-    const [MaterialTypes, setMaterialTypes] = useState([]);
+    const [MaterialTypes, setMaterialTypes] = useState<MaterialTypeOption[]>([]);
     const [newMaterialType, setNewMaterialType] = useState({
         name: NaN
     });

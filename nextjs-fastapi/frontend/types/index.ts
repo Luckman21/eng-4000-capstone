@@ -7,7 +7,11 @@ export interface Material {
   name: string;
   weight: number;
   status: string;
-  material_type_id: number
+  material_type_id: number;
+  key: number;
+  label: string;
+  supplier_link: string | null;
+  type_name: string;
 }
 export interface User {
     role: string;

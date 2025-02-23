@@ -1,10 +1,19 @@
+type MaterialType = {
+  id: number;
+  type_name: string;
+};
+
+type UserType = {
+  id: number;
+  type_name: string;
+};
 
 
 
 const fetchMaterialTypes = async () => {
   try {
     const res = await fetch("http://localhost:8000/material_types");
-    const data = await res.json();
+    const data: MaterialType[] = await res.json();
 
     // Transform fetched data to match AutocompleteItem structure
     const types = data.map((type) => ({
@@ -22,7 +31,7 @@ const fetchMaterialTypes = async () => {
 // Function to get material type name by ID
 async function MaterialTypeName(id: number): Promise<string | null> {
   const types = await fetchMaterialTypes(); 
-  const type = types.find((t) => t.id === id); 
+  const type = types.find((t) => t.key === id); 
   return type ? type.label : null; 
 }
 
@@ -32,7 +41,7 @@ async function MaterialTypeName(id: number): Promise<string | null> {
 const fetchUserTypes = async () => {
   try {
     const res = await fetch("http://localhost:8000/user_types");
-    const data = await res.json();
+    const data: UserType[] = await res.json();
 
     // Transform fetched data to match AutocompleteItem structure
     const types = data.map((type) => ({
@@ -49,7 +58,7 @@ const fetchUserTypes = async () => {
 
 async function UserTypeName(id: number): Promise<string | null> {
   const types = await fetchUserTypes(); 
-  const type = types.find((t) => t.id === id); 
+  const type = types.find((t) => t.key === id); 
   return type ? type.label : null; 
 }
 

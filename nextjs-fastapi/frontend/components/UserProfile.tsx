@@ -1,13 +1,31 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Button, useDisclosure, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Text } from "@heroui/react";
+import { Button, useDisclosure, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode, JwtPayload } from "jwt-decode";
 import axios from "axios";
 
-const UserProfile = ({ onSave }) => {
+interface UserProfileProps {
+  onSave: (updatedUser: { username: string; email: string; id: string }) => void;
+}
+
+interface DecodedToken extends JwtPayload {
+  username: string;
+  email: string;
+  id: string;
+}
+
+interface EditableUser {
+  username: string;
+  email: string;
+  password: string;
+  id: string;
+}
+
+
+const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
   const router = useRouter();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<JwtPayload | null>(null);
   const [editableUser, setEditableUser] = useState({
     username: "",
     email: "",
@@ -23,12 +41,13 @@ const UserProfile = ({ onSave }) => {
     const token = localStorage.getItem("access_token");
     if (token) {
       try {
-        const decoded = jwtDecode(token); // Decode JWT
+        const decoded = jwtDecode<DecodedToken>(token); // Decode JWT
         setUser(decoded); // Store user data
         setEditableUser({
-          username: decoded.username,
-          email: decoded.email, // Default to empty if not in token
-          id: decoded.id,
+          username: decoded.username || " ",
+          email: decoded.email || " ", // Default to empty if not in token
+          password: "",
+          id: decoded.id || " ",
         });
       } catch (err) {
         console.error("Failed to decode token:", err);
@@ -40,7 +59,7 @@ const UserProfile = ({ onSave }) => {
     loadUserData();
   }, []);
 
-  const handleChange = (field, value) => {
+  const handleChange = (field: keyof EditableUser, value: string) => {
     setEditableUser((prev) => ({ ...prev, [field]: value }));
   };
 

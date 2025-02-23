@@ -34,6 +34,11 @@ const statusColorMap: Record<"In Stock" | "Low Stock", "success" | "warning"> = 
   "Low Stock": "warning",
 }
 
+type MaterialTypeSimple = {
+  key: number;
+  label: string;
+};
+
 const TableComponent = () => {
   const APIHEADER = "delete_material"; 
   const statusOptions = ["available", "unavailable", "in use"];
@@ -61,7 +66,11 @@ const TableComponent = () => {
   useEffect(() => {
       const fetchTypes = async () => {
         const types = await fetchMaterialTypes();
-        setMaterialTypes(types);
+        const materialTypes: MaterialTypeSimple[] = types.map(type => ({
+          key: type.key,
+          label: type.label,
+        }));
+        setMaterialTypes(materialTypes as unknown as MaterialType[]);
       };
       fetchTypes();
     }, []);
@@ -181,8 +190,8 @@ const filteredItems = React.useMemo(() => {
 }, [materials, filterValue, statusFilter, materialTypes, hasSearchFilter]); // Add materialTypes as a dependency
 
   const renderCell = React.useCallback(
-    (material: MaterialType, columnKey: string) => {
-      const cellValue = material[columnKey as keyof MaterialType];
+    (material: Material, columnKey: keyof Material | "actions" | "supplier_link") => {
+      const cellValue = material[columnKey as keyof Material];
       switch (columnKey) {
         case "status":
           return (
@@ -202,6 +211,7 @@ const filteredItems = React.useMemo(() => {
 
           return materialType ? materialType.label : "Unknown Type";
         case "actions":
+          if (columnKey === "actions") {
           return (
             <div className="relative flex items-center gap-2">
               <Tooltip content="Edit material">
@@ -224,7 +234,8 @@ const filteredItems = React.useMemo(() => {
                 </span>
               </Tooltip>
             </div>
-          );
+          ) as any;
+        }
          case "supplier_link":
         // Check if there is a link and it's valid
         if (cellValue) {
@@ -320,15 +331,15 @@ const filteredItems = React.useMemo(() => {
           isLoading={isLoading}
           loadingContent={<Spinner label="Loading..." />}
         >
-          {(item) => (
+          {filteredItems.map((item) => (
             <TableRow key={item.id}>
-              {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+              {(columnKey) => <TableCell>{renderCell(item, columnKey as "supplier_link" | "actions" | keyof Material)}</TableCell>}
             </TableRow>
-          )}
+          ))}
         </TableBody>
       </Table>
       <Popup
-        material={editMaterial}
+        material={editMaterial ?? {} as Material}
         isOpen={isModalOneOpen}
         onOpenChange={handleModalOneChange}
         onSave={handleSaveMaterial} // Pass callback to Popup
@@ -369,7 +380,7 @@ export const ExternalLinkIcon = ({ size = 18, stroke = "currentColor", ...props 
   );
 };
 
-export const SearchIcon = (props) => {
+export const SearchIcon = (props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>) => {
   return (
     <svg
       aria-hidden="true"
