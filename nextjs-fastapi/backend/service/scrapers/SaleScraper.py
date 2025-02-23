@@ -105,7 +105,7 @@ def scrape_digitkey_page_for_sale(url, driver) -> bool:
 
             return True, "; ".join(discounts)
 
-        except TimeoutException:
+        except Exception:
             return False, None
 
     return False, None
