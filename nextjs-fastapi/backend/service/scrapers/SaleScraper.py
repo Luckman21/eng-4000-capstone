@@ -83,7 +83,7 @@ def scrape_digitkey_page_for_sale(url, driver) -> bool:
     pct_off = (current_price_float / original_price_float) * 100.00
 
 
-    return True, str(round(pct_off, 2))
+    return True, f'{str(round(100.00 - pct_off, 2))} % off'
 
 
 def run():
