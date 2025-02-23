@@ -99,7 +99,7 @@ def scrape_digitkey_page_for_sale(url, driver) -> bool:
                 cells = row.find_elements(By.TAG_NAME, 'td')
                 if cells:
                     offer = cells[0].text
-                    discount = f"{cells[1].text}"
+                    discount = cells[1].text
 
                     discounts.append(f"{offer} for {discount}")
 
