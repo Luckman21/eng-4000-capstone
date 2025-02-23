@@ -60,11 +60,9 @@ def scrape_amazon_page_for_sale(url, driver):
     coupon = driver.find_elements(By.CLASS_NAME, name)
 
     if coupon is None and sale is None:
-        return False, ''
-    elif sale:
-        return True, ''
+        return False
 
-    return True, ''
+    return True
 
 
 def scrape_digitkey_page_for_sale(url, driver) -> bool:
@@ -73,45 +71,19 @@ def scrape_digitkey_page_for_sale(url, driver) -> bool:
 
     # Let's see if the sale exists. If not return false
     try:
-        original_price = WebDriverWait(driver, 30).until(EC.visibility_of_element_located((By.ID, "comparePrice")))
-        current_price = WebDriverWait(driver, 30).until(EC.visibility_of_element_located((By.ID, "productPrice")))
-
-        current_price_float = float(current_price.text.replace("$", ""))
-        original_price_float = float(original_price.text.replace("$", ""))
-        pct_off = (current_price_float / original_price_float) * 100.00
-
-        return True, f'{str(round(100.00 - pct_off, 2))}% off'
+        WebDriverWait(driver, 30).until(EC.visibility_of_element_located((By.ID, "productPrice")))
+        return True
 
     except TimeoutException:
-
         try:
             # Locate the table
-            table = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, 'adp-discount-table')))
-
-            # Find all rows in the table
-            rows = table.find_elements(By.TAG_NAME, 'tr')
-
-            discounts = []
-
-            # Loop through each row
-            for row in rows:
-                # Find all cells (td) in the row
-                cells = row.find_elements(By.TAG_NAME, 'td')
-                if cells:
-                    offer = cells[0].text
-                    discount = cells[1].text
-
-                    discounts.append(f"{offer} for {discount}")
-
-            return True, "; ".join(discounts)
+            WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, 'adp-discount-table')))
+            return True
 
         except Exception:
             return False, None
 
     return False, None
-
-
-
 
 def run():
 
@@ -141,15 +113,15 @@ def run():
 
         # Find regex match
         if amazon_match:
-           sale_found, text = scrape_amazon_page_for_sale(link, driver)
+           sale_found = scrape_amazon_page_for_sale(link, driver)
 
         elif digitmakers_match:
-            sale_found, text = scrape_digitkey_page_for_sale(link, driver)
+            sale_found = scrape_digitkey_page_for_sale(link, driver)
 
         # If a sale is found, let's add their colour and material type name to the list
         if sale_found:
             mattype = material_type_repo.get_material_type_by_id(material.material_type_id)
-            items_on_sale.append(f'<li>{material.colour} {mattype.type_name} {text}: <a href="{material.supplier_link}">View Details</a></li>')
+            items_on_sale.append(f'<li>{material.colour} {mattype.type_name}: <a href="{material.supplier_link}">View Details</a></li>')
 
 
     # If sales were found, send an email
