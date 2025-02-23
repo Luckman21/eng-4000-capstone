@@ -1,8 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="6b3caf0e-acc1-47b0-acc3-7abda3efba86" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/nextjs-fastapi/tests/unit_tests/RepositoryTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,6 +59,219 @@
       <option name="presentableId" value="Default" />
       <updated>1731618482479</updated>
     </task>
+    <task id="LOCAL-00001" summary="Fixed">
+      <created>1740253782312</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1740253782312</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Fix broken service section">
+      <created>1740254244128</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1740254244128</updated>
+    </task>
+    <task id="LOCAL-00003" summary="upload artifact v3 is depricated. Gotta use v4">
+      <created>1740255930109</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1740255930109</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Fix syntax error in dummy data script">
+      <created>1740256257501</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1740256257501</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Fix syntax error in dummy data script II">
+      <created>1740256519910</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1740256519910</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Fix syntax error in dummy data script III">
+      <created>1740256643203</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1740256643203</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Fix syntax error in dummy data script IV">
+      <created>1740256792666</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1740256792666</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Fix issue calling SaleScraper.py">
+      <created>1740257053566</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1740257053566</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Fix issue calling SaleScraper.py II">
+      <created>1740257356919</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1740257356919</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Calling issue might be resolved by mimicking our tests a bit">
+      <created>1740257519554</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1740257519554</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Ln 93 on salescraper did not return a list">
+      <created>1740257689680</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1740257689680</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Ln 116 on salescraper called the wrong attribute">
+      <created>1740257834100</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1740257834100</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Change name">
+      <created>1740257869373</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1740257869373</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Incredibly stupid syntax error">
+      <created>1740258020446</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1740258020446</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Add json and html support">
+      <created>1740258791423</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1740258791423</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Not a fan of how the email came out. Revert to link">
+      <created>1740259054441</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1740259054441</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Support HTML fully">
+      <created>1740259352339</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1740259352339</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Changes according to nick's request. Amazon is preventing me from getting the text so I'm keeping that empty for now">
+      <created>1740269622058</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1740269622058</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Change string format">
+      <created>1740269953180</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1740269953180</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Found out discount tables exist. Threw that in the test.">
+      <created>1740270926783</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1740270926783</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Found out discount tables exist. Threw that in the test.">
+      <created>1740271308798</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1740271308798</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Add dummy shelf for example given to nick">
+      <created>1740271587341</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1740271587341</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Fix syntax error">
+      <created>1740271748142</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1740271748142</updated>
+    </task>
+    <task id="LOCAL-00024" summary="remove redundant format">
+      <created>1740272382759</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1740272382759</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Fixed" />
+    <MESSAGE value="Fix broken service section" />
+    <MESSAGE value="upload artifact v3 is depricated. Gotta use v4" />
+    <MESSAGE value="Fix syntax error in dummy data script" />
+    <MESSAGE value="Fix syntax error in dummy data script II" />
+    <MESSAGE value="Fix syntax error in dummy data script III" />
+    <MESSAGE value="Fix syntax error in dummy data script IV" />
+    <MESSAGE value="Fix issue calling SaleScraper.py" />
+    <MESSAGE value="Fix issue calling SaleScraper.py II" />
+    <MESSAGE value="Calling issue might be resolved by mimicking our tests a bit" />
+    <MESSAGE value="Ln 93 on salescraper did not return a list" />
+    <MESSAGE value="Ln 116 on salescraper called the wrong attribute" />
+    <MESSAGE value="Change name" />
+    <MESSAGE value="Incredibly stupid syntax error" />
+    <MESSAGE value="Add json and html support" />
+    <MESSAGE value="Not a fan of how the email came out. Revert to link" />
+    <MESSAGE value="Support HTML fully" />
+    <MESSAGE value="Changes according to nick's request. Amazon is preventing me from getting the text so I'm keeping that empty for now" />
+    <MESSAGE value="Change string format" />
+    <MESSAGE value="Found out discount tables exist. Threw that in the test." />
+    <MESSAGE value="Add dummy shelf for example given to nick" />
+    <MESSAGE value="Fix syntax error" />
+    <MESSAGE value="remove redundant format" />
+    <option name="LAST_COMMIT_MESSAGE" value="remove redundant format" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="711" y="161" key="Vcs.Push.Dialog.v2" timestamp="1740272383612">
+      <screen x="0" y="25" width="1920" height="1005" />
+    </state>
+    <state x="711" y="161" key="Vcs.Push.Dialog.v2/0.25.1920.1005@0.25.1920.1005" timestamp="1740272383612" />
   </component>
 </project>

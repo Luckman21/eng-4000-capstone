@@ -17,7 +17,7 @@ class _MailerService:
     def send_email(self, to_addr, subject, body, from_addr):
         from_email = Email(from_addr)
         to_email = To(to_addr)
-        content = Content("text/plain", body)
+        content = Content("text/html", body)
         mail = Mail(from_email, to_email, subject, content)
 
         try:

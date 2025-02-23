@@ -19,12 +19,14 @@ def populate_db():
                   '%2BO5021pAnSA%3D%3D&sr=1-1-acb80629-ce74-4cc5-9423-11e8801573fb-spons&sp_csd' \
                   '=d2lkZ2V0TmFtZT1zcF9zZWFyY2hfdGhlbWF0aWM&th=1 '
     digitmaker_sale = 'https://www.digitmakers.ca/collections/esun-filaments/products/esun-emarble-pla-filament-1-75mm-1kg'
+    table_sale = 'https://www.digitmakers.ca/collections/offer-of-the-week-3d-printing-canada-3d-filaments-canada/products/d3d-premium-petg-filament-1-75-mm-1kg-spool?variant=8112650649636'
 
     non_sale_item = 'https://www.digitmakers.ca/collections/esun-filaments/products/esun-etpu-95a-filament-1-75mm-1kg-various-colors?variant=33750608445571'
     # Populate material types
     material_type = [
-        ("PLA",)
-        ("TPU"),
+        ("PLA",),
+        ("TPU",),
+        ("PETG",),
     ]
     cursor.executemany("INSERT INTO material_types (type_name) VALUES (%s) ON CONFLICT (type_name) DO NOTHING", material_type)
 
@@ -38,7 +40,9 @@ def populate_db():
     material = [
         ("Black", amazon_sale, 500.0, 1, 1),
         ("Marble", digitmaker_sale, 17.8, 1, 1),
-        ("White", non_sale_item, 200.0, 1, 2)
+        ("White", non_sale_item, 200.0, 2, 1),
+        ("Black", table_sale, 200.0, 3, 1)
+
     ]
     cursor.executemany("INSERT INTO materials (colour, supplier_link, mass, material_type_id, shelf_id) VALUES (%s, %s, %s, %s, %s)", material)
 
@@ -53,7 +57,7 @@ def populate_db():
     ph = PasswordHasher()
     users = [
         ("Luca", ph.hash("0000"), "lucafili@my.yorku.ca", 2),
-        ("hugh_55", ph.hash("pecan7275"), "lucafili@my.yorku.ca", 1),
+        ("Other Luca", ph.hash("pecan7275"), "lfilippelli5@gmail.com", 1),
     ]
 
     cursor.executemany("INSERT INTO users (username, password, email, user_type_id) VALUES (%s, %s, %s, %s) ON CONFLICT (username) DO NOTHING", users)

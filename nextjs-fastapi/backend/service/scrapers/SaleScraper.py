@@ -1,3 +1,7 @@
+import sys
+from pathlib import Path
+import json
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -43,7 +47,7 @@ def setup_database():
 
     return session
 
-def scrape_amazon_page_for_sale(url, driver) -> bool:
+def scrape_amazon_page_for_sale(url, driver):
     driver.get(url)
     time.sleep(10)
 
@@ -67,12 +71,19 @@ def scrape_digitkey_page_for_sale(url, driver) -> bool:
 
     # Let's see if the sale exists. If not return false
     try:
-        WebDriverWait(driver, 30).until(EC.visibility_of_element_located((By.ID, "comparePrice")))
+        WebDriverWait(driver, 30).until(EC.visibility_of_element_located((By.ID, "productPrice")))
+        return True
+
     except TimeoutException:
-        return False
+        try:
+            # Locate the table
+            WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, 'adp-discount-table')))
+            return True
 
-    return True
+        except Exception:
+            return False, None
 
+    return False, None
 
 def run():
 
@@ -84,7 +95,7 @@ def run():
     user_repo = UserRepository(session)
 
     # Get materials
-    materials = material_repo.get_all_materials
+    materials = material_repo.get_all_materials()
     items_on_sale = []
 
     # Look for a sale in each material
@@ -110,15 +121,23 @@ def run():
         # If a sale is found, let's add their colour and material type name to the list
         if sale_found:
             mattype = material_type_repo.get_material_type_by_id(material.material_type_id)
-            items_on_sale.append(f"{material.colour} {mattype.name}; {material.supplier_link}")
+            items_on_sale.append(f'<li>{material.colour} {mattype.type_name}: <a href="{material.supplier_link}">View Details</a></li>')
+
 
     # If sales were found, send an email
-    if len(items_on_sale > 0):
+    if len(items_on_sale) > 0:
 
-        result_as_newline_separated_string = "\n".join(items_on_sale)
+        result_as_newline_separated_string = "<ul>" + "\n".join(items_on_sale) + "</ul>"
 
         mailer = SaleMailer(from_addr=constants.MAILER_EMAIL)
         super_admins = user_repo.get_all_superadmins()
 
         for super_admin in super_admins:
             mailer.send_notification(super_admin.email, result_as_newline_separated_string)
+
+    output_file = "scraper_output.json"
+    with open(output_file, "w", encoding="utf-8") as f:
+        json.dump(items_on_sale, f, indent=4)
+
+if __name__ == "__main__":
+    run()

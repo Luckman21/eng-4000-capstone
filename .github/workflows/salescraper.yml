@@ -1,4 +1,4 @@
-name: Run Amazon Scraper
+name: Run SaleScraper
 
 on:
   schedule:
@@ -44,7 +44,7 @@ jobs:
 
       - name: 🕷 Run Web Scraper
         run: |
-          python -m backend/service/scrapers/SaleScraper.py
+          PYTHONPATH=nextjs-fastapi && python nextjs-fastapi/backend/service/scrapers/SaleScraper.py
 
       - name: 📤 Save Scraper Results
         run: |
@@ -52,7 +52,7 @@ jobs:
           mv scraper_output.json output/
 
       - name: 📌 Upload Results as Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: scraper-results
           path: output/scraper_output.json
