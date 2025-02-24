@@ -52,7 +52,7 @@ def test_material_table_header(driver, login):
     # Get the full text of the header row (all titles in one string)
     header_text = header_row.text
 
-    assert header_text == "ID COLOUR SUPPLIER LINK MASS (g) MATERIAL TYPE SHELF STATUS ACTIONS" or header_text == "ID COLOUR SUPPLIER LINK MASS (g) MATERIAL TYPE SHELF STATUS"
+    assert header_text == "ID MATERIAL TYPE COLOUR MASS (g) SHELF STATUS SUPPLIER LINK ACTIONS" or header_text == "ID COLOUR SUPPLIER LINK MASS (g) MATERIAL TYPE SHELF STATUS"
 
 
 def test_material_table_buttons(driver, login):
@@ -235,9 +235,9 @@ def test_colour_query(driver, login):
 
     # Colour
     input_element.send_keys("Red")
-    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[2]")))
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[3]")))
 
-    first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[2]")
+    first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[3]")
 
     # Levenstien Distance
     assert re.search("Re.", first_td.text) or re.search(".ed", first_td.text) or re.search("R.d", first_td.text) or re.search("..d", first_td.text) or re.search("R..", first_td.text) or re.search(".e.", first_td.text)
@@ -251,9 +251,9 @@ def test_status_query(driver, login):
 
     # Status
     input_element.send_keys("In Stock")
-    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[7]")))
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[6]")))
 
-    first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[7]")
+    first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[6]")
     assert first_td.text == 'In Stock'
 
 def test_shelf_query(driver, login):
@@ -264,9 +264,9 @@ def test_shelf_query(driver, login):
                                         'input[aria-label="Search by colour, status, shelf, or type..."]')
     # Shelf
     input_element.send_keys("1")
-    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[6]")))
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[5]")))
 
-    first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[6]")
+    first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[5]")
     assert first_td.text == '1'
 
 
@@ -279,9 +279,9 @@ def test_type_query(driver, login):
                                         'input[aria-label="Search by colour, status, shelf, or type..."]')
     # Type
     input_element.send_keys("PLA")
-    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[5]")))
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[2]")))
 
-    first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[5]")
+    first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[2]")
     # Levenstien Distance
     assert re.search("PL.", first_td.text) or re.search(".LA",first_td.text) or re.search("P.A",first_td.text)
 

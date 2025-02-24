@@ -313,22 +313,22 @@ const filteredItems = React.useMemo(() => {
           <TableColumn allowsSorting key="id">
             ID
           </TableColumn>
+          <TableColumn allowsSorting key="material_type_id">
+            MATERIAL TYPE
+          </TableColumn>
           <TableColumn allowsSorting key="colour">
             COLOUR
           </TableColumn>
-          <TableColumn allowsSorting key="supplier_link">
-            SUPPLIER LINK
-          </TableColumn>
           <TableColumn allowsSorting key="mass">
             MASS (g)
-          </TableColumn>
-          <TableColumn allowsSorting key="material_type_id">
-            MATERIAL TYPE
           </TableColumn>
           <TableColumn allowsSorting key="shelf_id">
             SHELF
           </TableColumn>
           <TableColumn key="status">STATUS</TableColumn>
+          <TableColumn allowsSorting key="supplier_link">
+            SUPPLIER LINK
+          </TableColumn>
           <TableColumn key="actions">
              ACTIONS
           </TableColumn>
