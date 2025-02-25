@@ -16,10 +16,15 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"  # Ensure it matches Azure runtime
+          python-version: 3.10 
 
       - name: Install dependencies
-        run: cd nextjs-fastapi/backend/controller && pip install -r requirements.txt
+        run: |
+            cd nextjs-fastapi/backend/controller
+            python -m venv venv
+            source venv/bin/activate
+            pip install -r requirements.txt
+       
 
       - name: Archive deployment package
         run: cd nextjs-fastapi/backend/controller && zip -r fastapi_app.zip .
