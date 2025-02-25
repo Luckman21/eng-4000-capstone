@@ -35,4 +35,8 @@ jobs:
           app-name: "pantheon3dp"
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: nextjs-fastapi/backend/controller/fastapi_app.zip
+
+      - name: Install dependencies in Azure after deployment
+        run: |
+            az webapp ssh --name pantheon3dp --resource-group pantheon --command "pip install -r /home/site/wwwroot/requirements.txt"
           
