@@ -22,7 +22,7 @@ jobs:
         run: cd nextjs-fastapi/backend/controller
 
       - name: Install dependencies
-        run: pip install --no-cache-dir -r requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Archive deployment package
         run: |
