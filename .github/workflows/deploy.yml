@@ -3,27 +3,37 @@ name: Deploy FastAPI to Azure
 on:
   push:
     branches:
-      - SCRUM-101  # Auto-deploy when code is pushed to main branch
+      - main  # Change this if using a different branch
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.9
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"  # Ensure it matches Azure runtime
 
-    - name: Install Dependencies
-      run: |
-        pip install -r requirements.txt
+      - name: Change to FastAPI backend directory
+        run: cd nextjs-fastapi/backend/controller
 
-    - name: Deploy to Azure
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: pantheon3dp  # Your Azure App Service name
-        slot-name: production
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+      - name: Install dependencies
+        run: |
+          cd nextjs-fastapi/backend/controller
+          pip install --no-cache-dir -r requirements.txt
+
+      - name: Archive deployment package
+        run: |
+          cd nextjs-fastapi/backend/controller
+          zip -r fastapi_app.zip .
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: "pantheon3dp"
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: nextjs-fastapi/backend/controller/fastapi_app.zip
