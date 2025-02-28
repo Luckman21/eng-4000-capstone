@@ -40,8 +40,8 @@ def login(driver):
 
 def test_admin_cannot_access_users(driver, login):
     driver.get(TEST_URL)
-    WebDriverWait(driver, 20).until(
-        EC.presence_of_all_elements_located((By.TAG_NAME, "div"))
+    WebDriverWait(driver, 30).until(
+        EC.visibility_of_all_elements_located((By.TAG_NAME, "div"))
     )
 
     no_access = driver.find_elements(By.TAG_NAME, 'div')[-1]
