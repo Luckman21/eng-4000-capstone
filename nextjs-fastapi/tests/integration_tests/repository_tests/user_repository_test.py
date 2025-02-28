@@ -15,7 +15,7 @@ from backend.service.PasswordHashService import PasswordHashService
 # Use an existing database instead of an in-memory one
 @pytest.fixture(scope='module')
 def setup_database(request):
-    engine = create_engine('sqlite:///:memory:', echo=True)
+    engine = create_engine(constants.DATABASE_URL_TEST, echo=True)
 
     # Bind the Base metadata to the engine
     Base.metadata.create_all(engine)
@@ -95,7 +95,7 @@ def test_create_user(setup_database):
     queried_user = repository.get_user_by_id(user.id)
 
     assert queried_user is not None
-    assert PasswordHashService.check_password(queried_user.email, password, session) is True
+    assert PasswordHashService.verify_password(queried_user.password, password) is True
 
 
     # Destroy
@@ -144,4 +144,15 @@ def test_delete_material(setup_database):
     queried_user = repository.get_user_by_id(user.id)
 
     assert queried_user is None
+
+def test_get_all_superadmin(setup_database):
+    session = setup_database
+    repository = UserRepository(session)
+
+    users = repository.get_all_superadmins()
+
+    for user in users:
+        assert user.user_type.type_name == "Super_Admin", f"User {user.username} is not a super admin!"
+
+
 

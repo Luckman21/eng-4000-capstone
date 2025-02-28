@@ -37,6 +37,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
   const [confirmPassword, setConfirmPassword] = useState(""); // State for confirm password
   const [passwordError, setPasswordError] = useState(""); // State to track password match error
 
+<<<<<<< HEAD
   const loadUserData = () => {
     const token = localStorage.getItem("access_token");
     if (token) {
@@ -55,8 +56,17 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
     }
   };
 
+=======
+>>>>>>> main
   useEffect(() => {
-    loadUserData();
+    fetch("http://127.0.0.1:8000/protected", {
+      method: "GET",
+      credentials: "include", // Ensures cookies are included in the request
+    })
+      .then((res) => res.json())
+      .then((data) => setUser(data.user))
+      .catch((err) => console.error(err));
+      
   }, []);
 
   const handleChange = (field: keyof EditableUser, value: string) => {
@@ -75,12 +85,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
         console.log("User updated successfully");
         alert("Profile updated!");
 
-        const { access_token } = response.data;
-        if (access_token) {
-          localStorage.setItem("access_token", access_token);
-        }
-
-        loadUserData();
+        
         router.push("/inventory");
       }
 
@@ -105,7 +110,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
     }
 
     try {
-      const response = await axios.put(`http://localhost:8000/update_user/${editableUser.id}`, {
+      const response = await axios.put(`http://localhost:8000/update_user/${user.id}`, {
         password: newPassword, // Send only the password to the backend
       });
 
@@ -128,14 +133,14 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
             label="Username"
             placeholder="Enter username"
             variant="bordered"
-            value={editableUser?.username || ""}
+            value={user?.username || ""}
             onChange={(e) => handleChange("username", e.target.value)}
           />
           <Input
             label="Email"
             placeholder="Enter user email"
             variant="bordered"
-            value={editableUser?.email || ""}
+            value={user?.email || ""}
             onChange={(e) => handleChange("email", e.target.value)}
           />
           <div className="flex justify-between items-center gap-4 mt-6">
@@ -158,14 +163,14 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
               label="New Password"
               placeholder="Enter new password"
               type="password"
-              value={newPassword}
+              
               onChange={(e) => setNewPassword(e.target.value)}
             />
             <Input
               label="Confirm Password"
               placeholder="Confirm new password"
               type="password"
-              value={confirmPassword}
+              
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
             {passwordError && <div className="text-danger mt-2">{passwordError}</div>}

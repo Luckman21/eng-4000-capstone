@@ -22,7 +22,6 @@ const Popup: React.FC<NewMaterials> = ({ material, isOpen, onOpenChange, onSave 
   const [editableMaterial, setEditableMaterial] = useState(material);
   const [materialTypes, setMaterialTypes] = useState<MaterialOption[]>([]);
   const mat = (material?.material_type_id)?.toString();
-  console.log(mat)
 
 
 

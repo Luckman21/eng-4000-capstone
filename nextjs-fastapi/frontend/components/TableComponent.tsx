@@ -25,9 +25,10 @@ import {
 import { EditIcon } from "@/constants/EditIcon";
 import { DeleteIcon } from "@/constants/DeleteIcon";
 
-import { Popup } from "@/components";
+import { Order, Popup } from "@/components";
 import { NewMaterial } from "@/components";
 import { DeletePopup } from "@/components";
+import { PlusIcon } from "@/constants/PlusIcon";
 
 const statusColorMap: Record<"In Stock" | "Low Stock", "success" | "warning"> = {
   "In Stock": "success",
@@ -41,10 +42,15 @@ type MaterialTypeSimple = {
 
 const TableComponent = () => {
   const APIHEADER = "delete_material"; 
+<<<<<<< HEAD
   const statusOptions = ["available", "unavailable", "in use"];
+=======
+  const [user, setUser] = useState(null);
+>>>>>>> main
   const [materials, setMaterials] = useState<Material[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editMaterial, setEditMaterial] = useState<Material | null>(null); 
+  const [order, setOrder] = useState<Material | null>(null);
   const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [filterValue, setFilterValue] = React.useState("");
@@ -53,15 +59,15 @@ const TableComponent = () => {
     onOpen: openModalOne,
     onOpenChange: handleModalOneChange,
   } = useDisclosure();
+  
   const [deleteMaterial, setDeleteMaterial] = useState<Material | null>(null);
   const {isOpen: isDeleteOpen, onOpen: onDeleteOpen, onOpenChange: onDeleteOpenChange} = useDisclosure();
-
-  
   const {
     isOpen: isModalTwoOpen,
     onOpen: openModalTwo,
     onOpenChange: handleModalTwoChange,
   } = useDisclosure();
+<<<<<<< HEAD
 
   useEffect(() => {
       const fetchTypes = async () => {
@@ -74,16 +80,26 @@ const TableComponent = () => {
       };
       fetchTypes();
     }, []);
+=======
+  const {
+    isOpen: isModalThreeOpen,
+    onOpen: openModalThree,
+    onOpenChange: handleModalThreeChange,
+  } = useDisclosure();
+>>>>>>> main
   
   const list = useAsyncList({
     async load({ signal }) {
-      let res = await fetch("http://localhost:8000/materials", { signal });
+      let res = await fetch("http://127.0.0.1:8000/materials", { signal });
       let json = await res.json();
 
       const updatedMaterials = json.map((material: { mass: number; }) => ({
         ...material,
-        status: material.mass <= 50 ? "Low Stock" : "In Stock",
+        status: material.mass < 50 ? "Low Stock" : "In Stock",
       }));
+      const types = await fetchMaterialTypes();
+      setMaterialTypes(types);
+       
       setMaterials(updatedMaterials);
       setIsLoading(false);
 
@@ -96,7 +112,15 @@ const TableComponent = () => {
   const handleEditClick = useCallback((material: Material) => {
     setEditMaterial(material);
     openModalOne();
+<<<<<<< HEAD
   }, [openModalOne]);
+=======
+  };
+  const handleOrderClick = (material: Material) => {
+    setOrder(material);
+    openModalThree();
+  };
+>>>>>>> main
 
   const handleDeleteClick = useCallback((material: Material) => {
     setDeleteMaterial(material);
@@ -121,6 +145,16 @@ const TableComponent = () => {
  const handleDeleteMaterial = (deletedId: number) => {
     setMaterials((prevMaterials) => prevMaterials.filter((mat) => mat.id !== deletedId));
   };
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/protected", {
+      method: "GET",
+      credentials: "include", // Ensures cookies are included in the request
+    })
+      .then((res) => res.json())
+      .then((data) => setUser(data.user))
+      .catch((err) => console.error(err));
+      
+  }, []);
 
 
 // Searching Logic
@@ -211,9 +245,21 @@ const filteredItems = React.useMemo(() => {
 
           return materialType ? materialType.label : "Unknown Type";
         case "actions":
+<<<<<<< HEAD
           if (columnKey === "actions") {
           return (
+=======
+          return  (
+>>>>>>> main
             <div className="relative flex items-center gap-2">
+              <Tooltip content="Edit material mass">
+                <span
+                  onClick={() => handleOrderClick(material)}
+                  className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                >
+                  <PlusIcon />
+                </span>
+              </Tooltip>
               <Tooltip content="Edit material">
                 <span
                   onClick={() => handleEditClick({...material,
@@ -226,7 +272,7 @@ const filteredItems = React.useMemo(() => {
                 </span>
               </Tooltip>
               <Tooltip color="danger" content="Delete material">
-                  <span
+                <span
                   onClick={() => handleDeleteClick(material)}
                   className="text-lg text-danger cursor-pointer active:opacity-50"
                 >
@@ -234,9 +280,14 @@ const filteredItems = React.useMemo(() => {
                 </span>
               </Tooltip>
             </div>
+<<<<<<< HEAD
           ) as any;
         }
          case "supplier_link":
+=======
+          );
+        case "supplier_link":
+>>>>>>> main
         // Check if there is a link and it's valid
         if (cellValue) {
           return (
@@ -324,7 +375,9 @@ const filteredItems = React.useMemo(() => {
             SHELF
           </TableColumn>
           <TableColumn key="status">STATUS</TableColumn>
-          <TableColumn key="actions">ACTIONS</TableColumn>
+          <TableColumn key="actions">
+             ACTIONS
+          </TableColumn>
         </TableHeader>
         <TableBody
           items={filteredItems}
@@ -352,6 +405,12 @@ const filteredItems = React.useMemo(() => {
         onDelete={handleDeleteMaterial} // Pass callback to DeletePopup
         itemType={APIHEADER}
       />
+      <Order
+        material={order}
+        isOpen={isModalThreeOpen}
+        onOpenChange={handleModalThreeChange}
+        onSave={handleSaveMaterial} // Pass callback to
+        />
     </div>
   );
 };

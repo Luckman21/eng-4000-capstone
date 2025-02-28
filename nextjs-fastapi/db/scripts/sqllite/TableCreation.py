@@ -1,7 +1,7 @@
 import sqlite3
 
 # Connect to the database (it will create the file if it doesn't exist)
-conn = sqlite3.connect('../capstone_db.db')
+conn = sqlite3.connect('../../capstone_db.db')
 cursor = conn.cursor()
 
 

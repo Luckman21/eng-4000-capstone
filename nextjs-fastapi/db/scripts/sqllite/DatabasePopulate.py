@@ -1,9 +1,9 @@
 import sqlite3
-
+from argon2 import PasswordHasher
 
 def populate_db():
     # Connecting to the database
-    conn = sqlite3.connect('../capstone_db.db')
+    conn = sqlite3.connect('../../capstone_db.db')
 
     # Define some links
 
@@ -83,19 +83,19 @@ def populate_db():
     ]
 
     cursor.executemany("INSERT INTO user_types (type_name) VALUES (?)", user_type) # Inserting the two user types into the user_type class
-
+    ph = PasswordHasher()
     # Populating with multiple users
     users = [
-        ("james7", "jones7788", "jj7@gmail.com", 2),
-        ("hugh_55", "pecan7275", "hugh_p55@hotmail.com", 1),
-        ("scream777", "scary4578", "scream33@hotmail.com", 1),
-        ("water_123", "Gucci2001", "water7@gmail.com", 2),
-        ("peter_g7", "griff4508", "peterg@hotmail.com", 2),
-        ("jake_99", "laugh0910", "jake_p@gmail.com", 1),
-        ("josh_z", "sides2525", "josh_23@gmail.com", 2),
-        ("simonM", "bball0710", "simon_M@hotmail.com", 1),
-        ("Tyler23", "Igors1998", "TytheC@gmail.com", 2),
-        ("Drizzy6", "Drake2334", "Drake23@hotmail.com", 1)
+        ("james7", f"{ph.hash('jones7788')}", "jj7@gmail.com", 2),
+        ("hugh_55", f"{ph.hash('pecan7275')}", "hugh_p55@hotmail.com", 1),
+        ("scream777", f"{ph.hash('scary4578')}", "scream33@hotmail.com", 1),
+        ("water_123", f"{ph.hash('Gucci2001')}", "water7@gmail.com", 2),
+        ("peter_g7", f"{ph.hash('griff4508')}", "peterg@hotmail.com", 2),
+        ("jake_99", f"{ph.hash('laugh0910')}", "jake_p@gmail.com", 1),
+        ("josh_z", f"{ph.hash('sides2525')}", "josh_23@gmail.com", 2),
+        ("simonM", f"{ph.hash('bball0710')}", "simon_M@hotmail.com", 1),
+        ("Tyler23", f"{ph.hash('Igors1998')}", "TytheC@gmail.com", 2),
+        ("Drizzy6", f"{ph.hash('Drake2334')}", "Drake23@hotmail.com", 1)
     ]
 
     cursor.executemany("INSERT INTO users (username, password, email, user_type_id) VALUES (?, ?, ?, ?)", users) # inserting the values of the user into the user class

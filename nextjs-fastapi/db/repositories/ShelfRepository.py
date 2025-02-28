@@ -39,7 +39,7 @@ class ShelfRepository:
         """
         Retrieve all Shelves from the database.
         """
-        return self.session.query(Shelf).all()
+        return self.session.query(Shelf).order_by(Shelf.id).all()
 
     def update_shelf(self, shelf: Shelf, new_humidity_pct: float = None, new_temperature_cel: float = None) -> Shelf:
         """

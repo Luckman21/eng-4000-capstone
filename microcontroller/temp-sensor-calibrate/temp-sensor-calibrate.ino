@@ -4,6 +4,8 @@
 
 #define DHTPIN 7
 #define DHTTYPE 11
+#define TEMP_CAL 21 // Adjusts the temperature reading for accuracy
+#define HUMID_CAL 15  // Adjusts the humidity reading for accuracy
 
 DHT_Unified dht(DHTPIN, DHTTYPE);
 
@@ -22,8 +24,10 @@ void loop() {
     Serial.println(F("Error reading temperature!"));
   }
   else {
-    Serial.print(F("Temperature: "));
+    Serial.print(F("Temp Sensor Reading Value: "));
     Serial.print(event.temperature);
+    Serial.print(F("\nAdjusted Temperature Value: "));
+    Serial.print(event.temperature + TEMP_CAL);
     Serial.println(F("°C"));
   }
   // Get humidity event and print its value.
@@ -32,8 +36,10 @@ void loop() {
     Serial.println(F("Error reading humidity!"));
   }
   else {
-    Serial.print(F("Humidity: "));
+    Serial.print(F("Humid Sensor Reading Value: "));
     Serial.print(event.relative_humidity);
+    Serial.print(F("\nAdjusted Humidity Value: "));
+    Serial.print(event.relative_humidity + HUMID_CAL);
     Serial.println(F("%"));
   }
 

@@ -12,7 +12,7 @@ from backend.controller import constants
 # Use an existing database instead of an in-memory one
 @pytest.fixture(scope='module')
 def setup_database(request):
-    engine = create_engine('sqlite:///:memory:', echo=True)
+    engine = create_engine(constants.DATABASE_URL_TEST, echo=True)
 
     # Bind the Base metadata to the engine
     Base.metadata.create_all(engine)
@@ -25,15 +25,15 @@ def setup_database(request):
 
 
     dummy_shelf = Shelf(
-        humidity_pct = 50.0,
-        temperature_cel = 30.0
+        humidity_pct = 50.999999,
+        temperature_cel = 30.999999
     )
     session.add(dummy_shelf)
     session.commit()
 
     # Register a finalizer to clean up the data after the test
     def cleanup():
-        session.query(Shelf).filter_by(humidity_pct=50.0, temperature_cel = 30.0).delete()
+        session.query(Shelf).filter_by(humidity_pct=50.999999, temperature_cel = 30.999999).delete()
         session.commit()
         assert db_count == session.query(Shelf).count()
 
@@ -51,7 +51,7 @@ def test_get_shelf_by_id(setup_database):
     session = setup_database
 
     # Fetch an existing material and update its data
-    shelf = session.query(Shelf).filter_by(humidity_pct=50.0, temperature_cel = 30.0).first()
+    shelf = session.query(Shelf).filter_by(humidity_pct=50.999999, temperature_cel = 30.999999).first()
 
     repository = ShelfRepository(session)
 
@@ -65,14 +65,14 @@ def test_create_shelf(setup_database):
     session = setup_database
     repository = ShelfRepository(session)
 
-    shelf = repository.create_shelf(30.0, 30.0)
+    shelf = repository.create_shelf(30.0, 30.999999)
     queried_shelf = repository.get_shelf_by_id(shelf.id)
 
     assert queried_shelf is not None
     assert queried_shelf.humidity_pct == shelf.humidity_pct
 
     # Destroy
-    session.query(Shelf).filter_by(humidity_pct=30.0, temperature_cel = 30.0).delete()
+    session.query(Shelf).filter_by(humidity_pct=30.0, temperature_cel = 30.999999).delete()
     session.commit()
 
 
@@ -89,15 +89,15 @@ def test_update_shelf(setup_database):
     assert queried_shelf.humidity_pct == 40.0
     assert queried_shelf.temperature_cel == 40.0
 
-    repository.update_shelf(shelf, new_temperature_cel = 50.0)
+    repository.update_shelf(shelf, new_temperature_cel = 50.999999)
 
     new_queried_shelf = repository.get_shelf_by_id(shelf.id)
 
-    assert new_queried_shelf.temperature_cel == 50.0
+    assert new_queried_shelf.temperature_cel == 50.999999
 
 
     # Destroy
-    session.query(Shelf).filter_by(humidity_pct=40.0, temperature_cel=50.0).delete()
+    session.query(Shelf).filter_by(humidity_pct=40.0, temperature_cel=50.999999).delete()
     session.commit()
 
 

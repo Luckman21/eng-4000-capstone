@@ -2,6 +2,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 from db.model.User import User
 from db.model.UserType import UserType
+from sqlalchemy import select
 
 
 class UserRepository:
@@ -57,7 +58,14 @@ class UserRepository:
         """
         Retrieve all Users.
         """
-        return self.session.query(User).all()
+        return self.session.query(User).order_by(User.id).all()
+
+    def get_all_superadmins(self) -> list:
+
+        return self.session.scalars(
+            select(User).join(UserType).where(UserType.type_name == "Super_Admin")
+        ).all()
+
 
     def update_user(self, user: User, username: str = None, password: str = None, email: str = None,
                     user_type_id: int = None) -> User:
@@ -101,5 +109,10 @@ class UserRepository:
 
     def user_exists(self, user_id: int):
         if self.get_user_by_id(user_id) is None:
+            return False
+        return True
+
+    def user_email_exists(self, email: str):
+        if self.get_user_by_email(email) is None:
             return False
         return True

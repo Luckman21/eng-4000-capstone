@@ -6,6 +6,7 @@ from unittest.mock import MagicMock
 from backend.service.mailer.TempPasswordMailer import TempPasswordMailer
 from backend.service.mailer.PasswordChangeMailer import PasswordChangeMailer
 from backend.service.mailer.LowStockMailer import LowStockMailer
+from backend.service.mailer.SaleMailer import SaleMailer
 
 verified_email = 'pantheonprototyping@gmail.com'
 
@@ -150,3 +151,47 @@ def test_send_low_stock_email_failure(mock_sendgrid):
     # Call the method and assert that it prints the error
     with pytest.raises(Exception):  # Expect an exception to be raised
         low_stock_mailer.send_notification(recipient, type, colour, link)
+
+
+
+def test_sale_mailer_success(mock_sendgrid):
+
+    # Initialize TempPasswordMailer with a mock sendgrid service
+    sale_mailer = SaleMailer(from_addr=verified_email)
+    sale_mailer.client = mock_sendgrid  # Use the mocked service
+
+    # Mock sending an email
+    recipient = "recipient@example.com"
+    materials = 'green eggs; google.ca\n\n\nred ham; yahoo.com'
+
+    response = sale_mailer.send_notification(recipient, materials )
+
+    # Assert that the send_email method was called once
+    mock_sendgrid.send_email.assert_called_once_with(
+        recipient,
+        "Pantheon Inventory Management: Inventory Sale Found",
+        f"Well met, the following inventory items have sales or special prices: \n{materials}",
+        verified_email
+    )
+
+    # Assert that the response is successful
+    assert response.status_code == 202
+
+
+def test_send_sale_email_failure(mock_sendgrid):
+
+    # Simulate failure by making send_email raise an exception
+    mock_sendgrid.send_email.side_effect = Exception("SendGrid API error")
+
+    # Initialize SaleMailer with a mock sendgrid service
+    sale_mailer = SaleMailer(from_addr=verified_email)
+    sale_mailer.client = mock_sendgrid  # Use the mocked service
+
+    # Mock sending an email
+    recipient = "recipient@example.com"
+    materials = "green eggs: google.ca\nred ham: yahoo.com"
+
+
+    # Call the method and assert that it prints the error
+    with pytest.raises(Exception):  # Expect an exception to be raised
+        sale_mailer.send_notification(recipient, materials)

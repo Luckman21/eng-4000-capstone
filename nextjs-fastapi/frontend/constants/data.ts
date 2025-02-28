@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 type MaterialType = {
   id: number;
   type_name: string;
@@ -7,6 +8,9 @@ type UserType = {
   id: number;
   type_name: string;
 };
+=======
+import { useState } from "react";
+>>>>>>> main
 
 
 
@@ -61,6 +65,8 @@ async function UserTypeName(id: number): Promise<string | null> {
   const type = types.find((t) => t.key === id); 
   return type ? type.label : null; 
 }
+
+
 
 
 export { fetchMaterialTypes, MaterialTypeName, fetchUserTypes, UserTypeName };

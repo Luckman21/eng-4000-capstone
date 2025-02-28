@@ -14,7 +14,7 @@ from backend.controller import constants
 
 @pytest.fixture(scope='module')
 def setup_database(request):
-    DATABASE_URL = 'sqlite:///nextjs-fastapi/db/capstone_db.db'
+    DATABASE_URL = constants.DATABASE_URL_TEST
     engine = create_engine(constants.DATABASE_URL_TEST, echo=True)
 
     # Bind the Base metadata to the engine

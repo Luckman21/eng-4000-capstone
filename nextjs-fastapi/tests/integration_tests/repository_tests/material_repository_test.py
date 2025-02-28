@@ -11,11 +11,12 @@ from db.model.base import Base
 from db.repositories.MaterialRepository import MaterialRepository
 from db.repositories.MaterialTypeRepository import MaterialTypeRepository
 from backend.controller import constants
+from sqlalchemy import text
 
 # Use an existing database instead of an in-memory one
 @pytest.fixture(scope='module')
 def setup_database(request):
-    engine = create_engine('sqlite:///:memory:', echo=True)
+    engine = create_engine(constants.DATABASE_URL_TEST, echo=True)
 
     # Bind the Base metadata to the engine
     Base.metadata.create_all(engine)
@@ -90,6 +91,7 @@ def test_create_material(setup_database):
 
     # Destroy
     session.query(Material).filter_by(supplier_link="Dummy2").delete()
+    session.query(Shelf).filter_by(id=new_shelf.id).delete()
     session.commit()
 
 
