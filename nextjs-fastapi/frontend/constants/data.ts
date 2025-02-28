@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+import { useState } from "react";
 type MaterialType = {
   id: number;
   type_name: string;
@@ -8,10 +8,6 @@ type UserType = {
   id: number;
   type_name: string;
 };
-=======
-import { useState } from "react";
->>>>>>> main
-
 
 
 const fetchMaterialTypes = async () => {

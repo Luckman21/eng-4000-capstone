@@ -15,19 +15,13 @@ type LoginData = {
 
 const Login = () => {
   const router = useRouter();
-<<<<<<< HEAD
-  const login = async (data: LoginData) => {
-    try {
-      const params= new URLSearchParams();
-=======
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const login = async (data) => {
+  const login = async (data:LoginData) => {
     setErrorMessage(""); // Clear previous errors
 
     const params= new URLSearchParams();
->>>>>>> main
       params.append('username', data.username);
       params.append('password', data.password);
     const response = await fetch("http://127.0.0.1:8000/login", {
@@ -56,17 +50,10 @@ const Login = () => {
       validationBehavior="native"
       onSubmit={async (e) => {
         e.preventDefault();
-<<<<<<< HEAD
         const data = Object.fromEntries(new FormData(e.currentTarget)) as LoginData;
-        login(data); 
-        
-      }}
-=======
-        const data = Object.fromEntries(new FormData(e.currentTarget));
         login(data);
 
       } }
->>>>>>> main
     >
       <Input
         isRequired
@@ -99,7 +86,7 @@ const Login = () => {
             </p>
         )}
 
-    </Form><ForgotPassword isOpen={isModalOpen} onOpenChange={() => setIsModalOpen(false)}>
+    </Form><ForgotPassword isOpen={isModalOpen} onOpenChange={() => setIsModalOpen(false)} user={undefined}>
 
     </ForgotPassword>
     </>

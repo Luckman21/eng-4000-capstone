@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode";
 import { JwtPayload } from "jwt-decode";
 import { useState, useEffect } from "react";
 import { useRouter,usePathname } from "next/navigation";
-import { getUserServer } from "../app/userCreds";
+//import { getUserServer } from "../app/userCreds";
 
 interface customJWTPayload extends JwtPayload {
   user_type_id: number;
@@ -14,28 +14,10 @@ interface customJWTPayload extends JwtPayload {
 
 
 
-
-<<<<<<< HEAD
-const Nav= ()=> {
-  const [user, setUser] = useState<customJWTPayload | null>(null);
-  const router = useRouter();
-  useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (token) {
-      try {
-        const decoded = jwtDecode<customJWTPayload>(token) // Extract user info from JWT
-        setUser(decoded); 
-      } catch (err) {
-        console.error("Failed to decode token:", err);
-      }
-    }
-=======
-
-
 const Nav=  ()=> {
   
   const pathname = usePathname(); // Get the current path
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<customJWTPayload | null>(null);
   const router = useRouter();
   useEffect(() => {
     fetch("http://127.0.0.1:8000/protected", {
@@ -46,7 +28,6 @@ const Nav=  ()=> {
       .then((data) => setUser(data.user))
       .catch((err) => console.error(err));
 
->>>>>>> main
   }, []);
  
   const handleLogout = async () => {

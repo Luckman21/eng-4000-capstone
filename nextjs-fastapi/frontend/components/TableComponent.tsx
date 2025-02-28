@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { Material,MaterialType } from "@/types";
+import { Material, MaterialType } from "@/types";
 import axios from "axios";
 import { useAsyncList } from "@react-stately/data";
 import { fetchMaterialTypes } from "@/constants/data";
@@ -40,13 +40,11 @@ type MaterialTypeSimple = {
   label: string;
 };
 
+
 const TableComponent = () => {
   const APIHEADER = "delete_material"; 
-<<<<<<< HEAD
   const statusOptions = ["available", "unavailable", "in use"];
-=======
   const [user, setUser] = useState(null);
->>>>>>> main
   const [materials, setMaterials] = useState<Material[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editMaterial, setEditMaterial] = useState<Material | null>(null); 
@@ -67,26 +65,22 @@ const TableComponent = () => {
     onOpen: openModalTwo,
     onOpenChange: handleModalTwoChange,
   } = useDisclosure();
-<<<<<<< HEAD
-
   useEffect(() => {
-      const fetchTypes = async () => {
-        const types = await fetchMaterialTypes();
-        const materialTypes: MaterialTypeSimple[] = types.map(type => ({
-          key: type.key,
-          label: type.label,
-        }));
-        setMaterialTypes(materialTypes as unknown as MaterialType[]);
-      };
-      fetchTypes();
-    }, []);
-=======
+    const fetchTypes = async () => {
+      const types = await fetchMaterialTypes();
+      const materialTypes: MaterialTypeSimple[] = types.map(type => ({
+        key: type.key,
+        label: type.label,
+      }));
+      setMaterialTypes(materialTypes as unknown as MaterialType[]);
+    };
+    fetchTypes();
+  }, []);
   const {
     isOpen: isModalThreeOpen,
     onOpen: openModalThree,
     onOpenChange: handleModalThreeChange,
   } = useDisclosure();
->>>>>>> main
   
   const list = useAsyncList({
     async load({ signal }) {
@@ -98,7 +92,7 @@ const TableComponent = () => {
         status: material.mass < 50 ? "Low Stock" : "In Stock",
       }));
       const types = await fetchMaterialTypes();
-      setMaterialTypes(types);
+      setMaterialTypes(types as MaterialType[]);
        
       setMaterials(updatedMaterials);
       setIsLoading(false);
@@ -112,15 +106,11 @@ const TableComponent = () => {
   const handleEditClick = useCallback((material: Material) => {
     setEditMaterial(material);
     openModalOne();
-<<<<<<< HEAD
-  }, [openModalOne]);
-=======
-  };
+  }, [setEditMaterial, openModalOne]);
   const handleOrderClick = (material: Material) => {
     setOrder(material);
     openModalThree();
   };
->>>>>>> main
 
   const handleDeleteClick = useCallback((material: Material) => {
     setDeleteMaterial(material);
@@ -245,12 +235,7 @@ const filteredItems = React.useMemo(() => {
 
           return materialType ? materialType.label : "Unknown Type";
         case "actions":
-<<<<<<< HEAD
-          if (columnKey === "actions") {
-          return (
-=======
           return  (
->>>>>>> main
             <div className="relative flex items-center gap-2">
               <Tooltip content="Edit material mass">
                 <span
@@ -280,14 +265,8 @@ const filteredItems = React.useMemo(() => {
                 </span>
               </Tooltip>
             </div>
-<<<<<<< HEAD
           ) as any;
-        }
-         case "supplier_link":
-=======
-          );
         case "supplier_link":
->>>>>>> main
         // Check if there is a link and it's valid
         if (cellValue) {
           return (

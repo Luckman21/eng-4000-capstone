@@ -5,11 +5,37 @@ import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input,
 
 import { fetchMaterialTypes } from '@/constants/data';
 
-const Order = ({ material, isOpen, onOpenChange, onSave }) => {
-  const [editableMaterial, setEditableMaterial] = useState(material);
-  const [materialTypes, setMaterialTypes] = useState([]);
+
+interface Material {
+  id: number;
+  material_type_id: number;
+  mass: number;
+  colour: string;
+  totalDistance: number;
+  shelf_id: number;
+  name: string;
+  weight: number;
+  status: string;
+  key: number;
+  label: string;
+  supplier_link: string | null;
+  type_name: string;
+}
+
+interface OrderProps {
+  material: Material | null;
+  isOpen: boolean;
+  onOpenChange: () => void;
+  onSave: (updatedMaterial: Material) => void;
+}
+
+
+
+const Order: React.FC<OrderProps> = ({ material, isOpen, onOpenChange, onSave }) => {
+  const [editableMaterial, setEditableMaterial] = useState<Material | null>(material);
+  const [materialTypes, setMaterialTypes] = useState<{label: string}[]>([]);
   const [orderType, setOrderType] = useState("add");
-  const mat = (materialTypes[material?.material_type_id]?.label);
+  const mat = material?.material_type_id !== undefined ? materialTypes[material.material_type_id]?.label : "";
 
 
 
@@ -28,14 +54,14 @@ const Order = ({ material, isOpen, onOpenChange, onSave }) => {
 
   }, []);
 
-  const handleChange = (field, value) => {
-    setEditableMaterial((prev) => ({ ...prev, [field]: value }));
+  const handleChange = (field: keyof Material, value: any) => {
+    setEditableMaterial((prev) => (prev ? { ...prev, [field]: value } : null));
   };
 
 
 
-  const handleSave = async (actionType) => {
-
+  const handleSave = async (actionType: string) => {
+    if (!editableMaterial) return;
     try {
         const endpoint = actionType === "add" ? 
         `http://localhost:8000/replenish_mass/${editableMaterial.id}`
@@ -45,7 +71,7 @@ const Order = ({ material, isOpen, onOpenChange, onSave }) => {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            mass_change: parseFloat(editableMaterial.mass) // Make sure mass_change is passed correctly
+            mass_change: parseFloat(editableMaterial.mass.toString()) // Make sure mass_change is passed correctly
         }),
       });
         if (!response.ok) {

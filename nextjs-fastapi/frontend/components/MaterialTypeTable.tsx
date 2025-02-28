@@ -3,7 +3,7 @@ import { Key, useEffect, useState } from "react";
 import axios from "axios";
 import { useAsyncList } from "@react-stately/data";
 import { fetchMaterialTypes } from "@/constants/data";
-import { MaterialType } from "@/types";
+import { MaterialType, User } from "@/types";
 import React from "react";
 import {
   Table,
@@ -27,6 +27,12 @@ type MaterialTypes = {
   materialTypes: MaterialType[];
 };
 
+type UserInfo = {
+  user_type_id: number;
+  username: string;
+  email: string;
+};
+
 const defaultMaterialType: MaterialType = {
   id: 0,
   type_name: "",
@@ -46,7 +52,7 @@ const defaultMaterialType: MaterialType = {
 const MaterialTypeTable: React.FC<MaterialTypes> = () => {
   const APIHEADER = "delete_mattype";  
   const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<UserInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [editMaterialType, setEditMaterialType] = useState<MaterialType | null>(null); 
   const {
@@ -64,19 +70,16 @@ const MaterialTypeTable: React.FC<MaterialTypes> = () => {
     onOpenChange: handleModalTwoChange,
   } = useDisclosure();
 
-<<<<<<< HEAD
-=======
   useEffect(() => {
       fetch("http://127.0.0.1:8000/protected", {
         method: "GET",
         credentials: "include", // Ensures cookies are included in the request
       })
         .then((res) => res.json())
-        .then((data) => setUser(data.user))
+        .then((data) => setUser(data.user as UserInfo))
         .catch((err) => console.error(err));
         
     }, []);
->>>>>>> main
 
   const list = useAsyncList<MaterialType>({
     async load({ signal }) {
@@ -93,12 +96,12 @@ const MaterialTypeTable: React.FC<MaterialTypes> = () => {
   const handleEditClick = React.useCallback((materialType: MaterialType) => {
     setEditMaterialType(materialType);
     openModalOne();
-  }, [openModalOne]);
+  }, [setEditMaterialType, openModalOne]);
 
   const handleDeleteClick = React.useCallback((materialType: MaterialType) => {
     setDeleteMaterialType(materialType);
     onDeleteOpen();
-  }, [onDeleteOpen]);
+  }, [setDeleteMaterialType, onDeleteOpen]);
 
   // Callback for updating a material
   const handleSaveMaterialType = (updatedMaterialType: MaterialType) => {
@@ -137,37 +140,7 @@ const MaterialTypeTable: React.FC<MaterialTypes> = () => {
 
 
   const renderCell = React.useCallback(
-<<<<<<< HEAD
-    (materialType: MaterialType, columnKey: Key) => {
-      if (typeof columnKey !== "string") return null;
-      const cellValue = materialType[columnKey as keyof MaterialType];
-      switch (columnKey) {
-        
-        case "actions":
-          return (
-            <div className="relative flex items-center gap-2">
-              <Tooltip content="Edit Material Type">
-                <span
-                  onClick={() => handleEditClick(materialType)}
-                  className="text-lg text-default-400 cursor-pointer active:opacity-50"
-                >
-                  <EditIcon />
-                </span>
-              </Tooltip>
-              <Tooltip color="danger" content="Delete Material Type">
-                  <span
-                  onClick={() => handleDeleteClick(materialType)}
-                  className="text-lg text-danger cursor-pointer active:opacity-50"
-                >
-                  <DeleteIcon />
-                </span>
-              </Tooltip>
-            </div>
-          );
-        default:
-          return cellValue;
-=======
-    (materialType, columnKey) => {
+    (materialType: MaterialType, columnKey: string) => {
       if (!columns.find(col => col.key === columnKey)) return null;
   
       if (columnKey === "actions") {
@@ -191,16 +164,9 @@ const MaterialTypeTable: React.FC<MaterialTypes> = () => {
             </Tooltip>
           </div>
         );
->>>>>>> main
-      }
-  
-      return materialType[columnKey];
+      };
     },
-<<<<<<< HEAD
-    [handleEditClick, handleDeleteClick]
-=======
     [user]
->>>>>>> main
   );
   
 

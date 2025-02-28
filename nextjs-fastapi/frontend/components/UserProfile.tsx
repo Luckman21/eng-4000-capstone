@@ -25,7 +25,7 @@ interface EditableUser {
 
 const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
   const router = useRouter();
-  const [user, setUser] = useState<JwtPayload | null>(null);
+  const [user, setUser] = useState<DecodedToken | null>(null);
   const [editableUser, setEditableUser] = useState({
     username: "",
     email: "",
@@ -37,7 +37,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
   const [confirmPassword, setConfirmPassword] = useState(""); // State for confirm password
   const [passwordError, setPasswordError] = useState(""); // State to track password match error
 
-<<<<<<< HEAD
   const loadUserData = () => {
     const token = localStorage.getItem("access_token");
     if (token) {
@@ -56,8 +55,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
     }
   };
 
-=======
->>>>>>> main
   useEffect(() => {
     fetch("http://127.0.0.1:8000/protected", {
       method: "GET",
@@ -110,6 +107,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
     }
 
     try {
+      if (!user) return;
       const response = await axios.put(`http://localhost:8000/update_user/${user.id}`, {
         password: newPassword, // Send only the password to the backend
       });

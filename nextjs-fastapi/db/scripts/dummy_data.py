@@ -1,5 +1,5 @@
 
-import psycopg
+import psycopg # type: ignore
 from argon2 import PasswordHasher
 
 def populate_db():
