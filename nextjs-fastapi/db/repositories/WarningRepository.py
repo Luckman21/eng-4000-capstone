@@ -41,13 +41,15 @@ class WarningRepository:
         """
         return self.session.query(Warning).order_by(Warning.id).all()
 
-    def update_warning(self, warning: Warning, new_title: str, new_description: str) -> Warning:
+    def update_warning(self, warning: Warning, new_title: str = None, new_description: str = None) -> Warning:
         """
         Update an existing Warning's title and description.
         """
         try:
-            warning.setTitle(new_title)
-            warning.setDescription(new_description)
+            if new_title:
+                warning.setTitle(new_title)
+            if new_description:
+                warning.setDescription(new_description)
             self.session.commit()
             return warning
         except ValueError as e:
