@@ -85,6 +85,7 @@ const MaterialTypeTable: React.FC<MaterialTypes> = () => {
     async load({ signal }) {
       let res = await fetch("http://localhost:8000/material_types", { signal });
       let json = await res.json();
+      setMaterialTypes(json);
       setIsLoading(false);
 
       return {
@@ -164,7 +165,7 @@ const MaterialTypeTable: React.FC<MaterialTypes> = () => {
             </Tooltip>
           </div>
         );
-      };
+      } return materialType[columnKey as keyof MaterialType];
     },
     [user]
   );
@@ -187,7 +188,7 @@ const MaterialTypeTable: React.FC<MaterialTypes> = () => {
           ))}
         </TableHeader>
         <TableBody
-          items={list.items}
+          items={materialTypes}
           isLoading={isLoading}
           loadingContent={<Spinner label="Loading..." />}
         >
