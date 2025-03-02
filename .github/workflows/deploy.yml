@@ -27,7 +27,7 @@ jobs:
       - name: Archive deployment package
         run: |
           cd nextjs-fastapi
-          zip -r fastapi_app.zip backend
+          zip -r fastapi_app.zip backend db
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
