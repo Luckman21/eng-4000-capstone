@@ -19,10 +19,12 @@ jobs:
           python-version: 3.9 
 
       - name: Install dependencies
-        run: cd nextjs-fastapi/backend/controller && pip install -r requirements.txt
+        run: |
+            python -m pip install --upgrade pip
+            pip install --target=. -r nextjs-fastapi/backend/controller/requirements.txt
 
       - name: Archive deployment package
-        run: cd nextjs-fastapi/backend/controller && zip -r fastapi_app.zip . -x "venv/*"
+        run: cd nextjs-fastapi/backend/controller && zip -r fastapi_app.zip .
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
