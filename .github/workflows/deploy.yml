@@ -20,8 +20,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-            python -m pip install --upgrade pip
-            pip install --target=. -r nextjs-fastapi/backend/controller/requirements.txt
+          python -m pip install --upgrade pip
+          pip install -r nextjs-fastapi/backend/controller/requirements.txt
+
 
       - name: Archive deployment package
         run: |
