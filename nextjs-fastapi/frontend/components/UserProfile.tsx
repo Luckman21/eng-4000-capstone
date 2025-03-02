@@ -9,27 +9,20 @@ interface UserProfileProps {
   onSave: (updatedUser: { username: string; email: string; id: string }) => void;
 }
 
-interface DecodedToken extends JwtPayload {
-  username: string;
-  email: string;
-  id: string;
-}
 
-interface EditableUser {
+interface UserInfo {
   username: string;
   email: string;
-  password: string;
   id: string;
 }
 
 
 const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
   const router = useRouter();
-  const [user, setUser] = useState<DecodedToken | null>(null);
-  const [editableUser, setEditableUser] = useState({
+  const [user, setUser] = useState<UserInfo | null>(null);
+  const [editableUser, setEditableUser] = useState<UserInfo>({
     username: "",
     email: "",
-    password: "",
     id: "",
   });
   const [isPasswordModalOpen, setPasswordModalOpen] = useState(false); // State to control the password modal
@@ -37,36 +30,27 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
   const [confirmPassword, setConfirmPassword] = useState(""); // State for confirm password
   const [passwordError, setPasswordError] = useState(""); // State to track password match error
 
-  const loadUserData = () => {
-    const token = localStorage.getItem("access_token");
-    if (token) {
-      try {
-        const decoded = jwtDecode<DecodedToken>(token); // Decode JWT
-        setUser(decoded); // Store user data
-        setEditableUser({
-          username: decoded.username || " ",
-          email: decoded.email || " ", // Default to empty if not in token
-          password: "",
-          id: decoded.id || " ",
-        });
-      } catch (err) {
-        console.error("Failed to decode token:", err);
-      }
-    }
-  };
-
   useEffect(() => {
     fetch("http://127.0.0.1:8000/protected", {
       method: "GET",
       credentials: "include", // Ensures cookies are included in the request
     })
       .then((res) => res.json())
-      .then((data) => setUser(data.user))
+      .then((data) => {
+        if (data.user) {
+          setUser(data.user);
+          setEditableUser({
+            username: data.user.username,
+            email: data.user.email,
+            id: data.user.id,
+          });
+        }
+      })
       .catch((err) => console.error(err));
       
   }, []);
 
-  const handleChange = (field: keyof EditableUser, value: string) => {
+  const handleChange = (field: keyof UserInfo, value: string) => {
     setEditableUser((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -86,8 +70,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
         router.push("/inventory");
       }
 
-      const updatedMaterial = { ...editableUser };
-      onSave(updatedMaterial);
+      const updatedUser = { ...editableUser };
+      onSave(updatedUser);
 
     } catch (error) {
       console.error("Failed to update user:", error);
