@@ -19,7 +19,6 @@ def send_email(material):
     #msg['From'] = # create an email account to send from
     #msg['To'] = #set email address to send info to
 """
-
 # A polling function to check the mass of each material in the table
 async def quantity_poll(materials):
     """
