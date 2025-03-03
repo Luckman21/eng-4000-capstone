@@ -1,0 +1,58 @@
+name: Run SaleScraper
+
+on:
+  schedule:
+    - cron: "0 * * * *"  # Runs every 30 minutes
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13  # Use a suitable version of PostgreSQL
+        options: >-
+          -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=0000 -e POSTGRES_DB=capstone_db
+        ports:
+          - 5432:5432
+      selenium:
+        image: selenium/standalone-chrome:latest
+        options: >-
+          --shm-size=32g
+        ports:
+          - 4444:4444
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v2
+
+      - name: 🛠 Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: 📦 Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: 🛠 Set up Database Schema & Load Dummy Data
+        run: |
+          cd nextjs-fastapi/db/scripts
+          python create_table.py
+          python dummy_data_for_scraper.py
+
+      - name: 🕷 Run Web Scraper
+        run: |
+          PYTHONPATH=nextjs-fastapi && python nextjs-fastapi/backend/service/scrapers/SaleScraper.py
+
+      - name: 📤 Save Scraper Results
+        run: |
+          mkdir -p output
+          mv scraper_output.json output/
+
+      - name: 📌 Upload Results as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: scraper-results
+          path: output/scraper_output.json

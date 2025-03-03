@@ -41,7 +41,7 @@ const Nav=  ()=> {
       .then((res) => res.json())
       .then((data) => setUser(data.user))
       .catch((err) => console.error(err));
-      
+
   }, []);
  
   const handleLogout = async () => {
