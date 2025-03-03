@@ -23,6 +23,16 @@ CREATE TABLE shelfs (
 )
 ''')
 
+
+# Warning Table
+cursor.execute('''
+CREATE TABLE warnings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT,
+    description TEXT
+)
+''')
+
 # Material Table Creation
 # autoincrement allows us to consistently increment each ID by 1
 

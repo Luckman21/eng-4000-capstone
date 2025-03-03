@@ -15,6 +15,16 @@ CREATE TABLE IF NOT EXISTS material_types (
 )
 ''')
 
+# Warning
+
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS warnings (
+    id SERIAL PRIMARY KEY,
+    title TEXT,
+    description TEXT
+)
+''')
+
 # Shelf Table
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS shelfs (
