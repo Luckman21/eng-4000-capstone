@@ -237,6 +237,7 @@ const filteredItems = React.useMemo(() => {
               size="sm"
               endContent={<ExternalLinkIcon size={18} stroke="currentColor" />}
               onClick={() => window.open(cellValue, "_blank")}
+              className="cursor-pointer"
             >
               Visit Supplier
             </Chip>
@@ -298,7 +299,7 @@ const filteredItems = React.useMemo(() => {
           <TableColumn allowsSorting key="colour">
             COLOUR
           </TableColumn>
-          <TableColumn allowsSorting key="supplier_link">
+          <TableColumn allowsSorting key="supplier_link" >
             SUPPLIER LINK
           </TableColumn>
           <TableColumn allowsSorting key="mass">

@@ -12,6 +12,7 @@ import Login from "./Login";
 import UserProfile from "./UserProfile";
 import NotificationPanel from "./NotificationPanel";
 import ForgotPassword from "./ForgotPassword";
+import MaterialCard from "./MaterialCard";
 
 
-export { TableComponent, Nav, Popup, NewMaterial, DeletePopup, NewUser, EditUser, MaterialTypeTable, NewMaterialType, EditMaterialType,Login, UserProfile, NotificationPanel,ForgotPassword };
+export { TableComponent, Nav, Popup, NewMaterial, DeletePopup, NewUser, EditUser, MaterialTypeTable, NewMaterialType, EditMaterialType,Login, UserProfile, NotificationPanel,ForgotPassword, MaterialCard };

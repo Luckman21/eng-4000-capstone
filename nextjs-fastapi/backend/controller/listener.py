@@ -1,10 +1,10 @@
+import asyncio
 import json
 from db.repositories.MaterialRepository import MaterialRepository
 from backend.controller import constants
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session, Session
-from backend.controller.main import active_connections
-
+from backend.controller.manager import manager
 
 # Create an engine and local session for connection to the database
 engine = create_engine(constants.DATABASE_URL, echo=True)
@@ -43,7 +43,7 @@ async def job_complete_listener(mapper, connection, target):
         A list of materials that have a mass below the threshold value.
     """    
     session = SessionLocal()  # Create a new session to query the database
-    
+    print(f"🆔 Manager ID (listener): {id(manager)}")  # Ensure it's the same instance
     
     # Create a MaterialRepository instance to get a list of all materials
     repo = MaterialRepository(session)
@@ -58,17 +58,21 @@ async def job_complete_listener(mapper, connection, target):
     # Print the names (colours) of the materials returned
     print("\n\n\nMATERIALS BELOW THRESHOLD VALUE!!!!")
     material_names = [material.colour for material in alert_materials]
-    print(f"{material_names}")
+    print(f"Alert Materials{alert_materials}")
 
     print("\n\n\n")
     if alert_materials:
         data = [
-            {"id": m.id, "colour": m.colour, "mass": m.mass} for m in alert_materials
+            {"id": m.id, "colour": m.colour, "mass": m.mass, "supplier_link": m.supplier_link} for m in alert_materials
         ]
 
         json_data = json.dumps(data)  # Convert to JSON string
         print(json_data)
-        
-        for connection in active_connections:
-            await connection.send_text(json_data)
-    return alert_materials  # Return the array of materials with a mass below the threshold
+    if json_data:
+        # Fix: Ensure it runs inside the correct event loop
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            asyncio.create_task(manager.send_alerts(json_data))  # Safe in async
+        else:
+            asyncio.run(manager.send_alerts(json_data))  # Needed for sync calls
+    return alert_materials 

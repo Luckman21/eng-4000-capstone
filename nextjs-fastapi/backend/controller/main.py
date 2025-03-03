@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 from pathlib import Path
 sys.path.append(str(Path().resolve().parent.parent))
@@ -40,6 +41,7 @@ from backend.service.mailer.PasswordChangeMailer import PasswordChangeMailer
 from backend.service.TempPasswordRandomizeService import create_temp_password
 from backend.controller.schemas.ForgotPasswordRequest import ForgotPasswordRequest
 from backend.service.PasswordHashService import PasswordHashService
+from backend.controller.manager import manager
 
 
 
@@ -197,12 +199,6 @@ def start_mqtt_receiver():
 
 
 
-
-
-
-# Store active WebSocket connections
-active_connections = []
-
 # Create a listener that triggers when the Material table is updated, checks for Materials with a mass below the threshold
 def low_stock_listener():
     def listener_wrapper(mapper, connection, target):
@@ -213,16 +209,13 @@ def low_stock_listener():
 @app.websocket("/ws/alerts")
 async def websocket_endpoint(websocket: WebSocket):
     """Handles WebSocket connections for real-time material alerts."""
-    await websocket.accept()
-    active_connections.append(websocket)
+    await manager.connect(websocket)
     
     try:
         while True:
-            print("Waiting for alert...")
-            await websocket.receive_text()
-            
+            await websocket.receive_text()  # Keep connection alive
     except WebSocketDisconnect:
-        active_connections.remove(websocket)
+        await manager.disconnect(websocket)
 
 
 

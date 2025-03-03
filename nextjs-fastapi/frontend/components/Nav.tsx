@@ -17,6 +17,22 @@ const Nav=  ()=> {
   const pathname = usePathname(); // Get the current path
   const [user, setUser] = useState(null);
   const router = useRouter();
+  const [lowStockMaterials, setLowStockMaterials] = useState([]);
+  useEffect(() => {
+    const ws = new WebSocket("ws://localhost:8000/ws/alerts");  // Ensure correct backend URL
+
+    ws.onmessage = (event) => {
+        try {
+            const data = JSON.parse(event.data);
+            console.log("📩 Parsed WebSocket Data:", data);
+            setLowStockMaterials(data);
+          } catch (error) {
+            console.error("Error parsing WebSocket data:", error);
+          }
+        };
+        return () => ws.close(); // Cleanup on unmount
+      }, []);
+      
   useEffect(() => {
     fetch("http://127.0.0.1:8000/protected", {
       method: "GET",
@@ -97,7 +113,7 @@ const Nav=  ()=> {
           {/* Badge with Notification Icon */}
           <Badge
             color="danger"
-            content={5}
+            content={lowStockMaterials.length}
             isInvisible={isInvisible}
             shape="circle"
           >
@@ -105,7 +121,7 @@ const Nav=  ()=> {
           </Badge>
         </NavbarItem>
       </NavbarContent>
-    </Navbar><NotificationPanel isOpen={isOpen} onOpen={onOpen} onOpenChange={onOpenChange} /></>
+    </Navbar><NotificationPanel lowstock={lowStockMaterials} isOpen={isOpen} onOpen={onOpen} onOpenChange={onOpenChange} /></>
   );
 }
 
