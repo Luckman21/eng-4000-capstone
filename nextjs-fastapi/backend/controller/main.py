@@ -563,7 +563,7 @@ async def auto_consume_mass(entity_id: int, db: Session = Depends(get_db)):
     # Call the update method
     material = repo.get_material_by_id(entity_id)
 
-    mass_on_the_scale = 0.0  # TODO add listener call
+    mass_on_the_scale = get_mass_from_scale()  # TODO add listener call
     material_type_name = material.material_type.type_name
 
     if mass_on_the_scale <= 0.0:
@@ -571,6 +571,10 @@ async def auto_consume_mass(entity_id: int, db: Session = Depends(get_db)):
 
     return {'mass': mass_on_the_scale, 'colour': material.colour, 'material_type_name': material_type_name}
 
+
+def get_mass_from_scale():
+    """Simulates retrieving mass from the embedded system (to be replaced later)."""
+    return 2.0  # Placeholder for now
 
 def get_app():
     return app
