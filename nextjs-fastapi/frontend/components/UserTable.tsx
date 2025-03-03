@@ -52,7 +52,7 @@ const UserTable = () => {
     onOpenChange: handleModalTwoChange,
   } = useDisclosure();
 
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState<UserWithRole | null>(null);
   useEffect(() => {
     fetch("http://127.0.0.1:8000/protected", {
       method: "GET",
@@ -151,7 +151,7 @@ const UserTable = () => {
     [handleEditClick, handleDeleteClick]
   );
 
-      if (user && user.user_type_id === 1) {
+      if (user && user?.user_type_id === 1) {
     return <div className="text-red-500 text-xl font-bold">No Access</div>;
   }
 
