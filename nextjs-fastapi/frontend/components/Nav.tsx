@@ -1,11 +1,13 @@
 "use client";
-import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Avatar,Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/react";
+import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Avatar,Dropdown, DropdownTrigger, DropdownMenu, DropdownItem,useDisclosure,Badge } from "@heroui/react";
 import Link from "next/link";
 import { jwtDecode } from "jwt-decode";
 import { JwtPayload } from "jwt-decode";
 import { useState, useEffect } from "react";
 import { useRouter,usePathname } from "next/navigation";
-//import { getUserServer } from "../app/userCreds";
+import {NotificationPanel} from "@/components";
+import { NotificationIcon } from "@/constants/NotificationIcon";
+import { MaterialCardType } from "@/types";
 
 interface customJWTPayload extends JwtPayload {
   user_type_id: number;
@@ -15,10 +17,26 @@ interface customJWTPayload extends JwtPayload {
 
 
 const Nav=  ()=> {
-  
+  const [isInvisible, setIsInvisible] = useState(false);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const pathname = usePathname(); // Get the current path
   const [user, setUser] = useState<customJWTPayload | null>(null);
   const router = useRouter();
+  const [lowStockMaterials, setLowStockMaterials] = useState<MaterialCardType[]>([]);
+  useEffect(() => {
+    const ws = new WebSocket("ws://localhost:8000/ws/alerts");  // Ensure correct backend URL
+
+    ws.onmessage = (event) => {
+        try {
+            const data = JSON.parse(event.data);
+            console.log("📩 Parsed WebSocket Data:", data);
+            setLowStockMaterials(data);
+          } catch (error) {
+            console.error("Error parsing WebSocket data:", error);
+          }
+        };
+        return () => ws.close(); // Cleanup on unmount
+      }, []);
   useEffect(() => {
     fetch("http://127.0.0.1:8000/protected", {
       method: "GET",
@@ -50,15 +68,15 @@ const Nav=  ()=> {
   };
   
   return (
-    <Navbar>
+    <><Navbar>
       <NavbarBrand>
         <p className="font-bold text-inherit">Pantheon 3D Print</p>
       </NavbarBrand>
       <NavbarContent className=" sm:flex gap-4" justify="center">
-       
-        <NavbarItem isActive={pathname === "/inventory"} >
-          <Link href="/inventory" >
-          Inventory
+
+        <NavbarItem isActive={pathname === "/inventory"}>
+          <Link href="/inventory">
+            Inventory
           </Link>
         </NavbarItem>
         {user?.user_type_id === 2 && ( // Only render this if user_type_id is 2
@@ -66,38 +84,49 @@ const Nav=  ()=> {
             <Link href="/users">Users</Link>
           </NavbarItem>
         )}
-        <NavbarItem  isActive={pathname === "/materialType"}>
+        <NavbarItem isActive={pathname === "/materialType"}>
           <Link href="/materialType">
             Material Type
           </Link>
         </NavbarItem>
       </NavbarContent>
       <NavbarContent justify="end">
-        <NavbarItem className="lg:flex " >
-        <Dropdown>
-              <DropdownTrigger>
-                <Avatar
-                  color="primary"
-                  src="https://img.icons8.com/?size=100&id=23265&format=png&color=FFFFFF"
-                  isBordered
-                  showFallback
-                  
-                  name={user?.username}
-                  className="cursor-pointer"
-                />
-                
-                
-              </DropdownTrigger>
-              <DropdownMenu>
-                <DropdownItem key="profile">
-                  <Link href="/userProfile">Edit Profile</Link>
-                </DropdownItem>
-                <DropdownItem className="text-danger" color="danger" key="logout" onClick={handleLogout}>Logout</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+        <NavbarItem className="lg:flex ">
+          <Dropdown>
+            <DropdownTrigger>
+              <Avatar
+                color="primary"
+                src="https://img.icons8.com/?size=100&id=23265&format=png&color=FFFFFF"
+                isBordered
+                showFallback
+
+                name={user?.username}
+                className="cursor-pointer" />
+
+
+            </DropdownTrigger>
+            <DropdownMenu>
+              <DropdownItem key="profile">
+                <Link href="/userProfile">Edit Profile</Link>
+              </DropdownItem>
+              <DropdownItem className="text-danger" color="danger" key="logout" onClick={handleLogout}>Logout</DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </NavbarItem>
+        <NavbarItem onClick={onOpen} style={{ cursor: "pointer" }}>
+          {/* Badge with Notification Icon */}
+          <Badge
+            color="danger"
+            content={lowStockMaterials.length}
+            isInvisible={isInvisible}
+            shape="circle"
+          >
+            <NotificationIcon className="fill-current" size={30} height={30} width={30} />
+          </Badge>
         </NavbarItem>
       </NavbarContent>
-    </Navbar>
+    </Navbar><NotificationPanel lowstock={lowStockMaterials} isOpen={isOpen} onOpen={onOpen} onOpenChange={onOpenChange} /></>
+    
     
   );
 }

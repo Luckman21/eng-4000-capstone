@@ -37,4 +37,9 @@ export interface MaterialType {
   id: number;
   type_name: string;
 }
-
+export interface MaterialCardType {
+  colour: string;
+  id: string;
+  mass: number;
+  supplier_link: string;
+}
