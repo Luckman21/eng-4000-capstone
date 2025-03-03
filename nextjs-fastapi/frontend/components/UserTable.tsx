@@ -45,19 +45,31 @@ const UserTable = () => {
   const [deleteUser, setDeleteUser] = useState<UserWithRole | null>(null);
   const {isOpen: isDeleteOpen, onOpen: onDeleteOpen, onOpenChange: onDeleteOpenChange} = useDisclosure();
 
-  
+
   const {
     isOpen: isModalTwoOpen,
     onOpen: openModalTwo,
     onOpenChange: handleModalTwoChange,
   } = useDisclosure();
 
-  
+    const [user, setUser] = useState(null);
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/protected", {
+      method: "GET",
+      credentials: "include", // Ensures cookies are included in the request
+    })
+      .then((res) => res.json())
+      .then((data) => setUser(data.user))
+      .catch((err) => console.error(err));
+
+  }, []);
+
 
   const list = useAsyncList({
     async load({ signal }) {
       let res = await fetch("http://localhost:8000/users", { signal });
       let json = await res.json();
+
 
       const UpdatedUsers = json.map((user: User) => ({
         ...user, 
@@ -95,7 +107,7 @@ const UserTable = () => {
   };
   const addUser = (newUser: UserWithRole) => {
     setUsers((prevUsers) => [...prevUsers, newUser]);
-    
+
       list.reload();
     };
 
@@ -108,7 +120,7 @@ const UserTable = () => {
     (user: UserWithRole, columnKey:string) => {
       const cellValue = user[columnKey as keyof UserWithRole];
       switch (columnKey) {
-        
+
         case "actions":
           return (
             <div className="relative flex items-center gap-2">
@@ -138,6 +150,10 @@ const UserTable = () => {
     },
     [handleEditClick, handleDeleteClick]
   );
+
+      if (user && user.user_type_id === 1) {
+    return <div className="text-red-500 text-xl font-bold">No Access</div>;
+  }
 
   return (
     <div>
