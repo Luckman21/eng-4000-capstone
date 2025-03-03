@@ -2,7 +2,6 @@ import sys
 from pathlib import Path
 
 import uvicorn
-
 sys.path.append(str(Path().resolve().parent.parent))
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -569,7 +568,7 @@ async def auto_consume_mass(entity_id: int, db: Session = Depends(get_db)):
     if mass_on_the_scale <= 0.0:
         raise HTTPException(status_code=500, detail="Mass reading on scale is less than or equal to zero")
 
-    return {'mass': mass_on_the_scale, 'colour': material.colour, 'material_type_name': material_type_name}
+    return {'mass': mass_on_the_scale, 'material': material, 'material_type_name': material_type_name}
 
 
 def get_mass_from_scale():

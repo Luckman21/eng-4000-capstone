@@ -46,6 +46,7 @@ def test_qr_display_success(setup_database):
     mass = material.mass
     name = material.material_type.type_name
     colour = material.colour
+    id = material.id
 
     # Send a PUT request with valid entity_id and new mass
     response = client.get("/qr_display/1")
@@ -54,10 +55,13 @@ def test_qr_display_success(setup_database):
     assert response.status_code == 200
 
     response_as_json = response.json()
+    print(response_as_json)
 
     # Assert that the response message and new mass are correct
     assert response_as_json['material_type_name'] == name
-    assert response_as_json['colour'] == colour
+    assert response_as_json['material']['colour'] == colour
+    assert response_as_json['material']['mass'] == mass
+    assert response_as_json['material']['id'] == id
 
 
 # Test invalid material_id (material not found)
