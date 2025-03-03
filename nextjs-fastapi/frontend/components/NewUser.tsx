@@ -11,9 +11,23 @@ import {
 } from "@heroui/react";
 import { Autocomplete, AutocompleteItem } from "@heroui/react";
 import { fetchUserTypes } from "@/constants/data";
+import { User } from "@/types";
 
-export const NewUser = ({ isOpen, onOpenChange, onAddUser, users }) => {
-  const [userTypes, setUserTypes] = useState([]);
+interface NewUserOptions {
+  isOpen: boolean;
+  onOpenChange: () => void;
+  onAddUser: (users: User) => void;
+  users: User[];
+}
+
+interface NewUserTemplate {
+  key: string | number;
+  label: string;
+}
+
+
+export const NewUser: React.FC<NewUserOptions> = ({ isOpen, onOpenChange, onAddUser, users }) => {
+  const [userTypes, setUserTypes] = useState<NewUserTemplate[]>([]);
   const [newUser, setNewUser] = useState({
     username: NaN,         
     password:NaN,    
@@ -31,7 +45,7 @@ export const NewUser = ({ isOpen, onOpenChange, onAddUser, users }) => {
   }, []);
 
   
-  const handleChange = (field, value) => {
+  const handleChange = (field: keyof User, value: string | number) => {
     setNewUser((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -95,7 +109,9 @@ export const NewUser = ({ isOpen, onOpenChange, onAddUser, users }) => {
             placeholder="Select user type"
             defaultItems={userTypes}
             onSelectionChange={(key) => {
+              if (key != null) {
                 handleChange("user_type_id", key);
+              }
               }
             }
           >
