@@ -1,5 +1,7 @@
 import sys
 from pathlib import Path
+
+import uvicorn
 sys.path.append(str(Path().resolve().parent.parent))
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -54,6 +56,12 @@ app.add_middleware(
     allow_methods=["*"],  # Allow all HTTP methods
     allow_headers=["*"],  # Allow all headers
 )
+@app.get("/")
+async def root():
+    return {"message": "Hello Azure"}
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
 
 
 ############################################################################################################ Testing login stuff

@@ -1,0 +1,39 @@
+name: Deploy FastAPI to Azure
+
+on:
+  push:
+    branches:
+      - main  # Change this if using a different branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9 
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install --target=nextjs-fastapi/backend/deps -r nextjs-fastapi/backend/requirements.txt
+
+
+      - name: Archive deployment package
+        run: |
+          cd nextjs-fastapi
+          zip -r fastapi_app.zip backend db
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: "pantheon3dp"
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: nextjs-fastapi/fastapi_app.zip
+
+      

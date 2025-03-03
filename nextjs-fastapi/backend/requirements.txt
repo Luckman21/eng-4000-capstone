@@ -4,7 +4,6 @@ fastapi
 selenium
 chromedriver_autoinstaller
 httpx
-uvicorn
 paho-mqtt
 python-dotenv
 argon2-cffi
@@ -16,3 +15,5 @@ psycopg
 pytest-postgresql
 psycopg2-binary
 pytest-asyncio
+gunicorn
+uvicorn
