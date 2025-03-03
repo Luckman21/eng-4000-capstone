@@ -100,6 +100,13 @@ def populate_db():
 
     cursor.executemany("INSERT INTO users (username, password, email, user_type_id) VALUES (?, ?, ?, ?)", users) # inserting the values of the user into the user class
 
+    warnings = [
+        ("title 1", "some warning"),
+        ("title 2", "some warning 2")
+    ]
+
+    cursor.executemany("INSERT INTO warnings (title, description) VALUES (?, ?)", warnings)
+
     conn.commit()
     conn.close()
 

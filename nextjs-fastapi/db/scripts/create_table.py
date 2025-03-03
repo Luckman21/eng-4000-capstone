@@ -1,4 +1,4 @@
-import psycopg  # If this fails, install it using: pip install psycopg
+import psycopg  # type: ignore # If this fails, install it using: pip install psycopg
 
 # Database connection details
 DATABASE_URL = "postgresql://postgres:0000@localhost/capstone_db"
@@ -12,6 +12,16 @@ cursor.execute('''
 CREATE TABLE IF NOT EXISTS material_types (
     id SERIAL PRIMARY KEY,
     type_name TEXT NOT NULL UNIQUE
+)
+''')
+
+# Warning
+
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS warnings (
+    id SERIAL PRIMARY KEY,
+    title TEXT,
+    description TEXT
 )
 ''')
 

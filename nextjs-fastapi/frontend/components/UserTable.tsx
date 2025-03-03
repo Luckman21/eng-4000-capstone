@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { User } from "@/types";
 import axios from "axios";
 import { useAsyncList } from "@react-stately/data";
@@ -24,19 +24,25 @@ import { EditIcon } from "@/constants/EditIcon";
 import { DeleteIcon } from "@/constants/DeleteIcon";
 import { NewUser, EditUser,DeletePopup } from "@/components";
 
+interface UserWithRole extends User {
+  role: string;
+  id: number;
+  email: string;
+  password: string;
 
+}
 
 const UserTable = () => {
   const APIHEADER = "delete_user";  
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserWithRole[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [editUser, setEditUser] = useState<User | null>(null); 
+  const [editUser, setEditUser] = useState<UserWithRole | null>(null); 
   const {
     isOpen: isModalOneOpen,
     onOpen: openModalOne,
     onOpenChange: handleModalOneChange,
   } = useDisclosure();
-  const [deleteUser, setDeleteUser] = useState<User | null>(null);
+  const [deleteUser, setDeleteUser] = useState<UserWithRole | null>(null);
   const {isOpen: isDeleteOpen, onOpen: onDeleteOpen, onOpenChange: onDeleteOpenChange} = useDisclosure();
 
   
@@ -53,9 +59,11 @@ const UserTable = () => {
       let res = await fetch("http://localhost:8000/users", { signal });
       let json = await res.json();
 
-      const UpdatedUsers = json.map((user) => ({
+      const UpdatedUsers = json.map((user: User) => ({
         ...user, 
         role: user.user_type_id === 1 ? "Admin" : user.user_type_id === 2 ? "Super Admin" : "Not Assigned",
+        user_type_id: user.user_type_id,
+        password: "",
       }));
       setUsers(UpdatedUsers);
       setIsLoading(false);
@@ -66,18 +74,18 @@ const UserTable = () => {
     },
   });
 
-  const handleEditClick = (user: User) => {
+  const handleEditClick = useCallback((user: User) => {
     setEditUser(user);
     openModalOne();
-  };
+  }, [openModalOne]);
 
-  const handleDeleteClick = (user: User) => {
+  const handleDeleteClick = useCallback((user: User) => {
     setDeleteUser(user);
     onDeleteOpen();
-  };
+  }, [onDeleteOpen]);
 
   // Callback for updating a material
-  const handleSaveMaterial = (updatedMaterial: User) => {
+  const handleSaveMaterial = (updatedMaterial: UserWithRole) => {
     setUsers((prevMaterials) =>
       prevMaterials.map((mat) =>
         mat.id === updatedMaterial.id ? updatedMaterial : mat
@@ -85,7 +93,7 @@ const UserTable = () => {
     );
     list.reload();
   };
-  const addUser = (newUser: User) => {
+  const addUser = (newUser: UserWithRole) => {
     setUsers((prevUsers) => [...prevUsers, newUser]);
     
       list.reload();
@@ -97,8 +105,8 @@ const UserTable = () => {
 
 
   const renderCell = React.useCallback(
-    (user, columnKey) => {
-      const cellValue = user[columnKey];
+    (user: UserWithRole, columnKey:string) => {
+      const cellValue = user[columnKey as keyof UserWithRole];
       switch (columnKey) {
         
         case "actions":
@@ -128,7 +136,7 @@ const UserTable = () => {
           return cellValue;
       }
     },
-    []
+    [handleEditClick, handleDeleteClick]
   );
 
   return (
@@ -162,13 +170,13 @@ const UserTable = () => {
         >
           {(item) => (
             <TableRow key={item.id}>
-              {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+              {(columnKey) => <TableCell>{renderCell(item, columnKey as string)}</TableCell>}
             </TableRow>
           )}
         </TableBody>
       </Table>
       <EditUser
-        user={editUser}
+        user={editUser || { id: 0, username: "", email: "", role: "", password: "", user_type_id: 0 } as UserWithRole}
         isOpen={isModalOneOpen}
         onOpenChange={handleModalOneChange}
         onSave={handleSaveMaterial} // Pass callback to Popup

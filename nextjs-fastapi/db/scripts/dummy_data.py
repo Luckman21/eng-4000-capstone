@@ -1,5 +1,5 @@
 
-import psycopg
+import psycopg # type: ignore
 from argon2 import PasswordHasher
 
 def populate_db():
@@ -93,6 +93,14 @@ def populate_db():
     ]
 
     cursor.executemany("INSERT INTO users (username, password, email, user_type_id) VALUES (%s, %s, %s, %s) ON CONFLICT (username) DO NOTHING", users)
+
+
+    warnings = [
+        ("title 1", "some warning"),
+        ("title 2", "some warning 2")
+    ]
+
+    cursor.executemany("INSERT INTO warnings (title, description) VALUES (%s, %s)", warnings)
 
     # Commit and close
     conn.commit()

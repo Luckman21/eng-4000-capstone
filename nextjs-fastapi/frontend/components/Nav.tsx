@@ -2,17 +2,22 @@
 import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Avatar,Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/react";
 import Link from "next/link";
 import { jwtDecode } from "jwt-decode";
+import { JwtPayload } from "jwt-decode";
 import { useState, useEffect } from "react";
 import { useRouter,usePathname } from "next/navigation";
-import { getUserServer } from "../app/userCreds";
+//import { getUserServer } from "../app/userCreds";
 
+interface customJWTPayload extends JwtPayload {
+  user_type_id: number;
+  username: string;
+}
 
 
 
 const Nav=  ()=> {
   
   const pathname = usePathname(); // Get the current path
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<customJWTPayload | null>(null);
   const router = useRouter();
   useEffect(() => {
     fetch("http://127.0.0.1:8000/protected", {

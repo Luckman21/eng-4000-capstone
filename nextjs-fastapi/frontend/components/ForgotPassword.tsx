@@ -11,7 +11,13 @@ import {
 } from "@heroui/react";
 import axios from "axios";
 
-const ForgotPassword = ({ user, isOpen, onOpenChange }) => {
+interface ForgotPasswordProps {
+  user?: {username: string; email: string};
+  isOpen: boolean;
+  onOpenChange: () => void;
+}
+
+const ForgotPassword: React.FC<ForgotPasswordProps> = ({ user, isOpen, onOpenChange }) => {
   const [forgotEmail, setForgotEmail] = useState("");
   const [editableUser, setEditableUser] = useState(user);
 
