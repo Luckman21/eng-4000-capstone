@@ -167,7 +167,7 @@ const MaterialTypeTable: React.FC<MaterialTypes> = () => {
         );
       } return materialType[columnKey as keyof MaterialType];
     },
-    [user]
+    [[columns, handleEditClick, handleDeleteClick]]
   );
   
 

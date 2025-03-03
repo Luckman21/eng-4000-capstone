@@ -4,7 +4,7 @@ import { Material, MaterialType } from "@/types";
 import axios from "axios";
 import { useAsyncList } from "@react-stately/data";
 import { fetchMaterialTypes } from "@/constants/data";
-import { get as levenshtein } from 'fast-levenshtein';
+import Levenshtein from 'fast-levenshtein';
 
 import React from "react";
 import {
@@ -168,10 +168,10 @@ const filteredItems = React.useMemo(() => {
         const materialTypeName = materialTypes.find((type) => type.key === material.material_type_id)?.label || "";
 
         // Calculate Levenshtein distances for each field
-        const colourDistance = levenshtein(filterValue.toLowerCase(), material.colour.toLowerCase());
-        const shelfIdDistance = levenshtein(filterValue.toLowerCase(), material.shelf_id.toString().toLowerCase());
-        const statusDistance = levenshtein(filterValue.toLowerCase(), material.status.toLowerCase());
-        const materialTypeDistance = levenshtein(filterValue.toLowerCase(), materialTypeName.toLowerCase());
+        const colourDistance = Levenshtein.get(filterValue.toLowerCase(), material.colour.toLowerCase());
+        const shelfIdDistance = Levenshtein.get(filterValue.toLowerCase(), material.shelf_id.toString().toLowerCase());
+        const statusDistance = Levenshtein.get(filterValue.toLowerCase(), material.status.toLowerCase());
+        const materialTypeDistance = Levenshtein.get(filterValue.toLowerCase(), materialTypeName.toLowerCase());
         // Sum of all Levenshtein distances
         const totalDistance =
           colourDistance + shelfIdDistance + statusDistance + materialTypeDistance;
