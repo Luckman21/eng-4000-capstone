@@ -1,4 +1,4 @@
-"use client";
+
 import {Nav, MaterialTypeTable } from "@/components";
 import { useEffect, useState } from "react";
 import { MaterialType } from "@/types";
