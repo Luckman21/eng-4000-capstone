@@ -1,4 +1,4 @@
-import psycopg  # If this fails, install it using: pip install psycopg
+import psycopg  # type: ignore # If this fails, install it using: pip install psycopg
 
 # Database connection details
 DATABASE_URL = "postgresql://postgres:0000@localhost/capstone_db"
