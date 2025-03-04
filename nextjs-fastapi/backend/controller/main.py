@@ -199,9 +199,9 @@ def start_mqtt_receiver():
 def start_mqtt_scale():
     mqtt_broker = "test.mosquitto.org"
     mqtt_port = 1883
-    mqtt_topic = "topic_mass"
+    mqtt_topic = "mass_value"
 
-    receiver = MQTTReceiver(mqtt_broker, mqtt_port, mqtt_topic)
+    receiver = MQTTscale(mqtt_broker, mqtt_port, mqtt_topic)
     receiver.start()
 
     # Now the listener is running, and you can retrieve the latest value when needed.
