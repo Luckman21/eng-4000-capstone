@@ -13,6 +13,7 @@ import UserProfile from "./UserProfile";
 import Order from "./Order";
 import MaterialCard from "./MaterialCard";
 import NotificationPanel from "./NotificationPanel";
+import ShelfCard from "./ShelfCard";
 
 
 export { TableComponent, 
@@ -28,5 +29,6 @@ export { TableComponent,
      UserProfile, 
      Order, 
      MaterialCard, 
-     NotificationPanel 
+     NotificationPanel, 
+    ShelfCard
     };

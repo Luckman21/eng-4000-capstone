@@ -43,3 +43,8 @@ export interface MaterialCardType {
   mass: number;
   supplier_link: string;
 }
+export interface ShelftCardType {
+  id: number;
+  temperature: number;
+  humidity: number;
+}

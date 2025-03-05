@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from backend.controller.dependencies import get_db
 from db.schemas import MaterialSchema 
 from db.model.Material import Material
+from db.model.Shelf import Shelf
 from db.model.User import User
 from db.model.MaterialType import MaterialType
 from db.model.UserType import UserType
@@ -32,6 +33,7 @@ from backend.service.PasswordHashService import PasswordHashService
 from fastapi import FastAPI, Depends, HTTPException, Response,Request
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 import jwt
+from fastapi import  WebSocket, WebSocketDisconnect
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from typing import Optional
@@ -40,6 +42,7 @@ from backend.service.mailer.PasswordChangeMailer import PasswordChangeMailer
 from backend.service.TempPasswordRandomizeService import create_temp_password
 from backend.controller.schemas.ForgotPasswordRequest import ForgotPasswordRequest
 from backend.service.PasswordHashService import PasswordHashService
+from backend.controller.manager import manager
 
 
 
@@ -203,10 +206,26 @@ def start_mqtt_receiver():
 
 # Create a listener that triggers when the Material table is updated, checks for Materials with a mass below the threshold
 def low_stock_listener():
+   
     def listener_wrapper(mapper, connection, target):
         asyncio.create_task(listener.job_complete_listener(mapper, connection, target))
+        
+        #asyncio.create_task(listener.shelf_update_listener(mapper, connection, target))
 
     event.listen(Material, 'after_update', listener_wrapper)
+    #event.listen(Shelf, 'after_update', listener_wrapper)
+
+
+@app.websocket("/ws/alerts")
+async def websocket_endpoint(websocket: WebSocket):
+    """Handles WebSocket connections for real-time material alerts."""
+    await manager.connect(websocket)
+    
+    try:
+        while True:
+            await websocket.receive_text() 
+    except WebSocketDisconnect:
+        await manager.disconnect(websocket)
 
 # Now define your API routes
 @app.get("/materials", response_model=list[MaterialSchema])

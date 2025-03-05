@@ -1,24 +1,16 @@
+import asyncio
+import json
 from db.repositories.MaterialRepository import MaterialRepository
-from db import connect
+from db.repositories.ShelfRepository import ShelfRepository
 from backend.controller import constants
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
-import smtplib
-from email.mime.text import MIMEText
-
-THRESHOLD = 50  # 50g threshold
+from sqlalchemy.orm import sessionmaker, scoped_session, Session
+from backend.controller.manager import manager
 
 # Create an engine and local session for connection to the database
 engine = create_engine(constants.DATABASE_URL, echo=True)
 SessionLocal = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
 
-"""
-def send_email(material):
-    msg = MIMEText(f"{material} is running low.  Remaining: {material.mass}g.")
-    msg['Subject'] = 'Low Stock Alert: {material.mass}'
-    #msg['From'] = # create an email account to send from
-    #msg['To'] = #set email address to send info to
-"""
 # A polling function to check the mass of each material in the table
 async def quantity_poll(materials):
     """
@@ -34,9 +26,9 @@ async def quantity_poll(materials):
 
     # Iterate through all materials, append those with a mass below the threshold value
     for material in materials:
-        if material.mass < THRESHOLD:
+        if material.mass < constants.THRESHOLD:
             alert.append(material)
-
+    
     return alert # return an array of materials with mass below 50g
 
 async def job_complete_listener(mapper, connection, target):
@@ -51,7 +43,8 @@ async def job_complete_listener(mapper, connection, target):
     Returns:
         A list of materials that have a mass below the threshold value.
     """    
-    session = SessionLocal()    # Create a new session instance for interacting with the database
+    session = SessionLocal()  # Create a new session to query the database
+    print(f"🆔 Manager ID (listener): {id(manager)}")  # Ensure it's the same instance
     
     # Create a MaterialRepository instance to get a list of all materials
     repo = MaterialRepository(session)
@@ -62,4 +55,58 @@ async def job_complete_listener(mapper, connection, target):
     
     session.close() # Close the session once we are done
 
-    return alert_materials  # Return the array of materials with a mass below the threshold
+   
+    if alert_materials:
+        data = {
+            "type": "material_alert",
+            "data":[
+            {"id": m.id, "colour": m.colour, "mass": m.mass, "supplier_link": m.supplier_link} for m in alert_materials
+        ]}
+
+        json_data = json.dumps(data)  # Convert to JSON string
+        print(json_data)
+    if json_data:
+        # Fix: Ensure it runs inside the correct event loop
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            asyncio.create_task(manager.send_alerts(json_data))  # Safe in async
+        else:
+            asyncio.run(manager.send_alerts(json_data))  # Needed for sync calls
+    return alert_materials 
+
+
+
+
+async def low_shelf_reader(shelfs):
+    alert = []  # create an array for materials with a mass below 50g
+    for shelf in shelfs:
+        if shelf.humidity_pct > 20 or shelf.temperature_cel > 28:
+            alert.append(shelf)
+    return alert
+
+
+
+async def shelf_update_listener(mapper, connection, target):
+    session = SessionLocal()
+    repo = ShelfRepository(session)
+    alert_shelfs = await low_shelf_reader(repo.get_all_shelves())
+    session.close()
+    print(f'{alert_shelfs}')
+
+    if alert_shelfs:
+        data = {
+            "type": "shelf_alert",
+            "data":[
+            {"id": s.id, "humidity": s.humidity_pct, "temperature": s.temperature_cel} for s in alert_shelfs
+        ]}
+        print(f'\n\n\n📤 Sending shelf alert: {data}\n\n\n')
+        json_data = json.dumps(data)
+        print(json_data)
+    # if json_data:
+    #     loop = asyncio.get_event_loop()
+    #     if loop.is_running():
+    #         asyncio.create_task(manager.send_alerts(json_data))
+    #     else:
+    #         asyncio.run(manager.send_alerts(json_data))
+    return alert_shelfs
+
