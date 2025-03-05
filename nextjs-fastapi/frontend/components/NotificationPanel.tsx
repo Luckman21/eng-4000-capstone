@@ -1,5 +1,5 @@
-"use client";
-import React, { useEffect, useState } from "react";
+"use client"
+import React, { useEffect, useState } from 'react'
 import {
   Drawer,
   DrawerContent,
@@ -7,10 +7,10 @@ import {
   DrawerBody,
   DrawerFooter,
   Button,
+  useDisclosure,
 } from "@heroui/react";
-import { MaterialCard ,ShelfCard} from "@/components";
+import {MaterialCard,ShelfCard} from "@/components";
 import { MaterialCardType, ShelftCardType } from "@/types";
-
 interface NotificationPanelProps {
     lowstock: MaterialCardType[];
     shelfStat: ShelftCardType[];
@@ -18,23 +18,9 @@ interface NotificationPanelProps {
     onOpen: () => void;            
     onOpenChange: () => void;      
   }
-  lowstock: MaterialCardType[];
-  shelfStat: ShelftCardType[];
-  isOpen: boolean;
-  onOpen: () => void;
-  onOpenChange: () => void;
-}
 
 const NotificationPanel: React.FC<NotificationPanelProps> = ({ lowstock ,shelfStat, isOpen, onOpen, onOpenChange }) => {
-const NotificationPanel: React.FC<NotificationPanelProps> = ({
-  lowstock,
-  shelfStat,
-  isOpen,
-  onOpen,
-  onOpenChange,
-}) => {
   const [lowStockMaterials, setLowStockMaterials] = useState<MaterialCardType[]>([]);
-
   const [shelfStatus, setShelfStatus] = useState<ShelftCardType[]>([]);
   useEffect(() => {
     setLowStockMaterials(lowstock);
@@ -84,18 +70,12 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
                     </DrawerFooter>
                 </>
                 )}
-              </div>
-            </DrawerBody>
-            <DrawerFooter>
-              <Button color="danger" variant="light" onPress={onClose}>
-                Close
-              </Button>
-            </DrawerFooter>
-          </>
-        )}
-      </DrawerContent>
-    </Drawer>
-  );
-};
+            </DrawerContent>
+        </Drawer>
 
-export default NotificationPanel;
+      </>
+    );
+  }
+  
+
+export default NotificationPanel
