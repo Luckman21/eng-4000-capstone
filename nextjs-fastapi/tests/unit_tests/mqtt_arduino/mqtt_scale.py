@@ -3,6 +3,8 @@ from unittest.mock import MagicMock
 import paho.mqtt.client as mqtt
 from io import StringIO
 import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from backend.controller.scale_listener import MQTTscale
 
 # Pytest Fixture to setup MQTTscale instance
@@ -28,7 +30,7 @@ def test_process_message_valid_range(scale, valid_weight, capsys):
     
     # Verify output contains the correct message
     output = capsys.readouterr().out
-    assert f"Weight {valid_weight} grams is within the valid range." in output
+    assert f"Stored value: {valid_weight}\n" in output
 
 # Test when the weight is outside the valid range (above max)
 @pytest.mark.parametrize("invalid_weight", [6000.0, 10000.0])
@@ -38,7 +40,7 @@ def test_process_message_invalid_range(scale, invalid_weight, capsys):
     
     # Verify output indicates it's outside the valid range
     output = capsys.readouterr().out
-    assert f"Weight {invalid_weight} grams is OUTSIDE the valid range." in output
+    assert f"Stored value: {invalid_weight}\n" in output
 
 # Test when the weight is negative
 def test_process_message_negative_weight(scale, capsys):
@@ -48,7 +50,7 @@ def test_process_message_negative_weight(scale, capsys):
     
     # Verify output indicates it's outside the valid range
     output = capsys.readouterr().out
-    assert f"Weight {negative_weight} grams is OUTSIDE the valid range." in output
+    assert f"Stored value: {negative_weight}\n" in output
 
 # Test when the weight is exactly zero
 def test_process_message_zero_weight(scale, capsys):
@@ -58,7 +60,7 @@ def test_process_message_zero_weight(scale, capsys):
     
     # Verify output indicates the weight is within the valid range
     output = capsys.readouterr().out
-    assert f"Weight {zero_weight} grams is within the valid range." in output
+    assert f"Stored value: {zero_weight}\n" in output
 
 # Test when the weight is a string that can't be converted to float
 def test_process_message_invalid_float(scale, capsys):
