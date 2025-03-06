@@ -11,13 +11,18 @@ const Nav = () => {
   const [isInvisible, setIsInvisible] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const pathname = usePathname();
-  const [user, setUser] = useState(null);
+  interface UserType {
+    user_type_id: number;
+    username: string;
+  }
+
+  const [user, setUser] = useState<UserType | null>(null);
   const router = useRouter();
   const [lowStockMaterials, setLowStockMaterials] = useState<MaterialCardType[]>([]);
   const [shelfStatus, setShelfStatus] = useState([]);
   const [notificationCount, setNotificationCount] = useState(0);
 
-  // ✅ Load data from localStorage only on the client side
+  
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedLowStock = JSON.parse(localStorage.getItem("lowStockMaterials") || "[]");
@@ -30,7 +35,6 @@ const Nav = () => {
     }
   }, []);
 
-  // ✅ WebSocket updates state and local storage
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:8000/ws/alerts");
 
@@ -60,7 +64,7 @@ const Nav = () => {
     return () => ws.close();
   }, []);
 
-  // ✅ Keep notification count updated
+  
   useEffect(() => {
     const newNotificationCount = lowStockMaterials.length + shelfStatus.length;
     setNotificationCount(newNotificationCount);
