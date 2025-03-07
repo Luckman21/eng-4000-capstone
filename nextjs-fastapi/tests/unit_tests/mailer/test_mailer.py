@@ -125,7 +125,7 @@ def test_send_low_stock_email_success(mock_sendgrid):
     mock_sendgrid.send_email.assert_called_once_with(
         recipient,
         "Pantheon Inventory Management: Low Stock Warning",
-        f"Well met,\n\n You have 50g left of {colour} {type}.\n\n Use {link} to purchase more.",
+        f"Well met,\n\n You have less than 50g left of {colour} {type}.\n\n Use {link} to purchase more.",
         verified_email
     )
 
