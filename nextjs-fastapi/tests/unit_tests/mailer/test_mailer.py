@@ -7,6 +7,7 @@ from backend.service.mailer.TempPasswordMailer import TempPasswordMailer
 from backend.service.mailer.PasswordChangeMailer import PasswordChangeMailer
 from backend.service.mailer.LowStockMailer import LowStockMailer
 from backend.service.mailer.SaleMailer import SaleMailer
+from backend.service.mailer.EnviroWarningMailer import EnviroWarningMailer
 
 verified_email = 'pantheonprototyping@gmail.com'
 
@@ -195,3 +196,51 @@ def test_send_sale_email_failure(mock_sendgrid):
     # Call the method and assert that it prints the error
     with pytest.raises(Exception):  # Expect an exception to be raised
         sale_mailer.send_notification(recipient, materials)
+
+
+
+def test_enviro_success(mock_sendgrid):
+
+    # Initialize TempPasswordMailer with a mock sendgrid service
+    enviro_mailer = EnviroWarningMailer(from_addr=verified_email)
+    enviro_mailer.client = mock_sendgrid  # Use the mocked service
+
+    # Mock sending an email
+    recipient = "recipient@example.com"
+    shelf = '1'
+    error = 'humidity'
+
+
+    response = enviro_mailer.send_notification(recipient, error, shelf )
+
+    # Assert that the send_email method was called once
+    mock_sendgrid.send_email.assert_called_once_with(
+        recipient,
+        "Pantheon Inventory Management: Environmental Warning",
+        f"Well met,\n\n Shelf {shelf} has a {error} exception. Make sure to check the unit to " \
+               f"ensure your product does not spoil. ",
+        verified_email
+    )
+
+    # Assert that the response is successful
+    assert response.status_code == 202
+
+
+def test_enviro_email_failure(mock_sendgrid):
+
+    # Simulate failure by making send_email raise an exception
+    mock_sendgrid.send_email.side_effect = Exception("SendGrid API error")
+
+    # Initialize SaleMailer with a mock sendgrid service
+    enviro_mailer = EnviroWarningMailer(from_addr=verified_email)
+    enviro_mailer.client = mock_sendgrid  # Use the mocked service
+
+    # Mock sending an email
+    recipient = "recipient@example.com"
+    shelf = '1'
+    error = 'humidity'
+
+
+    # Call the method and assert that it prints the error
+    with pytest.raises(Exception):  # Expect an exception to be raised
+        enviro_mailer.send_notification(recipient, error, shelf)
