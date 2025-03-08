@@ -1,10 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
-import { MaterialType } from "@/types";
+import { Key, useEffect, useState } from "react";
 import axios from "axios";
 import { useAsyncList } from "@react-stately/data";
 import { fetchMaterialTypes } from "@/constants/data";
-
+import { MaterialType, User } from "@/types";
 import React from "react";
 import {
   Table,
@@ -24,12 +23,36 @@ import { EditIcon } from "@/constants/EditIcon";
 import { DeleteIcon } from "@/constants/DeleteIcon";
 import { NewMaterialType, EditMaterialType, DeletePopup } from "@/components";
 
+type MaterialTypes = {
+  materialTypes: MaterialType[];
+};
 
+type UserInfo = {
+  user_type_id: number;
+  username: string;
+  email: string;
+};
 
-const MaterialTypeTable = () => {
+const defaultMaterialType: MaterialType = {
+  id: 0,
+  type_name: "",
+  shelf_id: null,
+  colour: "",
+  supplier_link: null,
+  mass: 0,
+  material_type_id: 0,
+  key: 0,
+  label: "",
+  status: "",
+  totalDistance: 0,
+  name: "",
+  weight: 0
+};
+
+const MaterialTypeTable: React.FC<MaterialTypes> = () => {
   const APIHEADER = "delete_mattype";  
   const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<UserInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [editMaterialType, setEditMaterialType] = useState<MaterialType | null>(null); 
   const {
@@ -53,17 +76,16 @@ const MaterialTypeTable = () => {
         credentials: "include", // Ensures cookies are included in the request
       })
         .then((res) => res.json())
-        .then((data) => setUser(data.user))
+        .then((data) => setUser(data.user as UserInfo))
         .catch((err) => console.error(err));
         
     }, []);
 
-  
-
-  const list = useAsyncList({
+  const list = useAsyncList<MaterialType>({
     async load({ signal }) {
       let res = await fetch("http://localhost:8000/material_types", { signal });
       let json = await res.json();
+      setMaterialTypes(json);
       setIsLoading(false);
 
       return {
@@ -72,21 +94,21 @@ const MaterialTypeTable = () => {
     },
   });
 
-  const handleEditClick = (materialType: MaterialType) => {
+  const handleEditClick = React.useCallback((materialType: MaterialType) => {
     setEditMaterialType(materialType);
     openModalOne();
-  };
+  }, [setEditMaterialType, openModalOne]);
 
-  const handleDeleteClick = (materialType: MaterialType) => {
+  const handleDeleteClick = React.useCallback((materialType: MaterialType) => {
     setDeleteMaterialType(materialType);
     onDeleteOpen();
-  };
+  }, [setDeleteMaterialType, onDeleteOpen]);
 
   // Callback for updating a material
   const handleSaveMaterialType = (updatedMaterialType: MaterialType) => {
     setMaterialTypes((prevMaterialType) =>
         prevMaterialType.map((mat) =>
-        mat.id === updatedMaterialType.id ? updatedMaterialType : mat
+        mat.id === updatedMaterialType.id ? {...mat, ...updatedMaterialType}  : mat
       )
     );
     list.reload();
@@ -119,7 +141,7 @@ const MaterialTypeTable = () => {
 
 
   const renderCell = React.useCallback(
-    (materialType, columnKey) => {
+    (materialType: MaterialType, columnKey: string) => {
       if (!columns.find(col => col.key === columnKey)) return null;
   
       if (columnKey === "actions") {
@@ -143,11 +165,9 @@ const MaterialTypeTable = () => {
             </Tooltip>
           </div>
         );
-      }
-  
-      return materialType[columnKey];
+      } return materialType[columnKey as keyof MaterialType];
     },
-    [user]
+    [[columns, handleEditClick, handleDeleteClick]]
   );
   
 
@@ -168,11 +188,11 @@ const MaterialTypeTable = () => {
           ))}
         </TableHeader>
         <TableBody
-          items={list.items}
+          items={materialTypes}
           isLoading={isLoading}
           loadingContent={<Spinner label="Loading..." />}
         >
-          {(item) => (
+          {(item: MaterialType) => (
             <TableRow key={item.id}>
               {columns.map((column) => (
                 <TableCell key={column.key}>{renderCell(item, column.key)}</TableCell> // ✅ Ensures only defined columns are rendered
@@ -182,14 +202,14 @@ const MaterialTypeTable = () => {
         </TableBody>
       </Table>
       <EditMaterialType
-        materialType={editMaterialType}
+        materialType={editMaterialType ?? defaultMaterialType }
         isOpen={isModalOneOpen}
         onOpenChange={handleModalOneChange}
         onSave={handleSaveMaterialType} // Pass callback to Popup
       />
       <NewMaterialType isOpen={isModalTwoOpen} onOpenChange={handleModalTwoChange} onAddMaterialType={addMaterialType} materialtypes={materialTypes} />
        <DeletePopup
-        item={deleteMaterialType}
+        item={deleteMaterialType ?? {id: 0}}
         isOpen={isDeleteOpen}
         onOpenChange={onDeleteOpenChange}
         itemType={APIHEADER}

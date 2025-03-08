@@ -11,9 +11,23 @@ import {
 } from "@heroui/react";
 import { Autocomplete, AutocompleteItem } from "@heroui/react";
 import { fetchMaterialTypes } from "@/constants/data";
+import { MaterialType } from "@/types";
 
-export const NewMaterial = ({ isOpen, onOpenChange, onAddMaterial, materials }) => {
-  const [materialTypes, setMaterialTypes] = useState([]);
+
+interface NewMaterialTypes {
+  isOpen: boolean;
+  onOpenChange: () => void;
+  onAddMaterial: (material: MaterialType) => void;
+  materials: MaterialType[];
+}
+
+interface MaterialTypeOption {
+  key: string | number;
+  label: string;
+}
+
+export const NewMaterial: React.FC<NewMaterialTypes> = ({ isOpen, onOpenChange, onAddMaterial, materials }) => {
+  const [materialTypes, setMaterialTypes] = useState<MaterialTypeOption[]>([]);
   const [newMaterial, setNewMaterial] = useState({
     colour: NaN,         
     supplier_link:NaN,
@@ -32,7 +46,8 @@ export const NewMaterial = ({ isOpen, onOpenChange, onAddMaterial, materials }) 
   }, []);
 
   // Update editableMaterial state on input change
-  const handleChange = (field, value) => {
+  const handleChange = (field: string | number | null, value: string | number) => {
+    if (field === null) return;
     setNewMaterial((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -107,7 +122,9 @@ export const NewMaterial = ({ isOpen, onOpenChange, onAddMaterial, materials }) 
             placeholder="Search material type"
             defaultItems={materialTypes}
             onSelectionChange={(key) => {
+              if (key != null) {
                 handleChange("material_type_id", key);
+              }
               }
             }
           >

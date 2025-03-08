@@ -1,17 +1,28 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Button, useDisclosure, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Text } from "@heroui/react";
+import { Button, useDisclosure, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode, JwtPayload } from "jwt-decode";
 import axios from "axios";
 
-const UserProfile = ({ onSave }) => {
+interface UserProfileProps {
+  onSave: (updatedUser: { username: string; email: string; id: string }) => void;
+}
+
+
+interface UserInfo {
+  username: string;
+  email: string;
+  id: string;
+}
+
+
+const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
   const router = useRouter();
-  const [user, setUser] = useState(null);
-  const [editableUser, setEditableUser] = useState({
+  const [user, setUser] = useState<UserInfo | null>(null);
+  const [editableUser, setEditableUser] = useState<UserInfo>({
     username: "",
     email: "",
-    password: "",
     id: "",
   });
   const [isPasswordModalOpen, setPasswordModalOpen] = useState(false); // State to control the password modal
@@ -25,12 +36,21 @@ const UserProfile = ({ onSave }) => {
       credentials: "include", // Ensures cookies are included in the request
     })
       .then((res) => res.json())
-      .then((data) => setUser(data.user))
+      .then((data) => {
+        if (data.user) {
+          setUser(data.user);
+          setEditableUser({
+            username: data.user.username,
+            email: data.user.email,
+            id: data.user.id,
+          });
+        }
+      })
       .catch((err) => console.error(err));
       
   }, []);
 
-  const handleChange = (field, value) => {
+  const handleChange = (field: keyof UserInfo, value: string) => {
     setEditableUser((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -50,8 +70,8 @@ const UserProfile = ({ onSave }) => {
         router.push("/inventory");
       }
 
-      const updatedMaterial = { ...editableUser };
-      onSave(updatedMaterial);
+      const updatedUser = { ...editableUser };
+      onSave(updatedUser);
 
     } catch (error) {
       console.error("Failed to update user:", error);
@@ -71,6 +91,7 @@ const UserProfile = ({ onSave }) => {
     }
 
     try {
+      if (!user) return;
       const response = await axios.put(`http://localhost:8000/update_user/${user.id}`, {
         password: newPassword, // Send only the password to the backend
       });

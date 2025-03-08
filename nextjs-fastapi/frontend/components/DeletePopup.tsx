@@ -11,11 +11,20 @@ import {
   Button
 } from "@heroui/react";
 
-const DeletePopup = ({ item, isOpen, onOpenChange, onDelete, itemType}) => {
+type DeletePopupTypes = {
+  item: { id: number} | null;
+  isOpen: boolean;
+  onOpenChange: () => void;
+  onDelete: (id: number) => void;
+  itemType: string;
+};
+
+const DeletePopup: React.FC<DeletePopupTypes> = ({ item, isOpen, onOpenChange, onDelete, itemType}) => {
 
   
 
   const handleDelete = async () => {
+    if (!item) return;
     try {
       // send delete request to backend
       const response = await fetch(`http://localhost:8000/${itemType}/${item.id}` , {

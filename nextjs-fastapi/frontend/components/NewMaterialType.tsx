@@ -11,9 +11,22 @@ import {
 } from "@heroui/react";
 import { Autocomplete, AutocompleteItem } from "@heroui/react";
 import { fetchMaterialTypes } from "@/constants/data";
+import { MaterialType } from "@/types";
 
-export const NewMaterialType = ({ isOpen, onOpenChange, onAddMaterialType, materialtypes}) => {
-    const [MaterialTypes, setMaterialTypes] = useState([]);
+interface NewMaterialTypeOption {
+  isOpen: boolean;
+  onOpenChange: () => void;
+  onAddMaterialType: (materialtype: MaterialType) => void;
+  materialtypes: MaterialType[];
+}
+
+interface MaterialTypeOption {
+  label: string;
+  key: number;
+}
+
+export const NewMaterialType: React.FC<NewMaterialTypeOption> = ({ isOpen, onOpenChange, onAddMaterialType, materialtypes}) => {
+    const [MaterialTypes, setMaterialTypes] = useState<MaterialTypeOption[]>([]);
     const [newMaterialType, setNewMaterialType] = useState({
         name: NaN
     });
@@ -26,7 +39,7 @@ export const NewMaterialType = ({ isOpen, onOpenChange, onAddMaterialType, mater
         fetchTypes();
     }, []);
 
-    const handleChange = (field, value) => {
+    const handleChange = (field: keyof MaterialType, value: string) => {
         setNewMaterialType((prev) => ({ ...prev, [field]: value }));
     };
 

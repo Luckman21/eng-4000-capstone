@@ -19,6 +19,7 @@ TEST_URL = "http://127.0.0.1:3000/materialType"
 
 @pytest.fixture(scope="module")
 def driver():
+    chromedriver_autoinstaller.install()
     chrome_options = Options()
     chrome_options.add_argument("--headless") # This means you won't see the actual icon
     chrome_options.add_argument("--disable-gpu") # Disable GPU acceleration (required in headless mode)

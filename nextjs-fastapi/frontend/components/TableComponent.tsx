@@ -1,10 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Material,MaterialType } from "@/types";
+import { useCallback, useEffect, useState } from "react";
+import { Material, MaterialType } from "@/types";
 import axios from "axios";
 import { useAsyncList } from "@react-stately/data";
 import { fetchMaterialTypes } from "@/constants/data";
-import { get as levenshtein } from 'fast-levenshtein';
+import Levenshtein from 'fast-levenshtein';
 
 import React from "react";
 import {
@@ -30,13 +30,20 @@ import { NewMaterial } from "@/components";
 import { DeletePopup } from "@/components";
 import { PlusIcon } from "@/constants/PlusIcon";
 
-const statusColorMap = {
+const statusColorMap: Record<"In Stock" | "Low Stock", "success" | "warning"> = {
   "In Stock": "success",
   "Low Stock": "warning",
 }
 
+type MaterialTypeSimple = {
+  key: number;
+  label: string;
+};
+
+
 const TableComponent = () => {
   const APIHEADER = "delete_material"; 
+  const statusOptions = ["available", "unavailable", "in use"];
   const [user, setUser] = useState(null);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -58,6 +65,17 @@ const TableComponent = () => {
     onOpen: openModalTwo,
     onOpenChange: handleModalTwoChange,
   } = useDisclosure();
+  useEffect(() => {
+    const fetchTypes = async () => {
+      const types = await fetchMaterialTypes();
+      const materialTypes: MaterialTypeSimple[] = types.map(type => ({
+        key: type.key,
+        label: type.label,
+      }));
+      setMaterialTypes(materialTypes as unknown as MaterialType[]);
+    };
+    fetchTypes();
+  }, []);
   const {
     isOpen: isModalThreeOpen,
     onOpen: openModalThree,
@@ -74,7 +92,7 @@ const TableComponent = () => {
         status: material.mass < 50 ? "Low Stock" : "In Stock",
       }));
       const types = await fetchMaterialTypes();
-      setMaterialTypes(types);
+      setMaterialTypes(types as MaterialType[]);
        
       setMaterials(updatedMaterials);
       setIsLoading(false);
@@ -85,19 +103,19 @@ const TableComponent = () => {
     },
   });
 
-  const handleEditClick = (material: Material) => {
+  const handleEditClick = useCallback((material: Material) => {
     setEditMaterial(material);
     openModalOne();
-  };
+  }, [setEditMaterial, openModalOne]);
   const handleOrderClick = (material: Material) => {
     setOrder(material);
     openModalThree();
   };
 
-  const handleDeleteClick = (material: Material) => {
+  const handleDeleteClick = useCallback((material: Material) => {
     setDeleteMaterial(material);
     onDeleteOpen();
-  };
+  }, [onDeleteOpen]);
 
   // Callback for updating a material
   const handleSaveMaterial = (updatedMaterial: Material) => {
@@ -108,7 +126,7 @@ const TableComponent = () => {
     );
     list.reload();
   };
-  const addMaterial = (newMaterial) => {
+  const addMaterial = (newMaterial: Material) => {
     setMaterials((prevMaterials) => [...prevMaterials, newMaterial]);
     
       list.reload();
@@ -150,10 +168,10 @@ const filteredItems = React.useMemo(() => {
         const materialTypeName = materialTypes.find((type) => type.key === material.material_type_id)?.label || "";
 
         // Calculate Levenshtein distances for each field
-        const colourDistance = levenshtein(filterValue.toLowerCase(), material.colour.toLowerCase());
-        const shelfIdDistance = levenshtein(filterValue.toLowerCase(), material.shelf_id.toString().toLowerCase());
-        const statusDistance = levenshtein(filterValue.toLowerCase(), material.status.toLowerCase());
-        const materialTypeDistance = levenshtein(filterValue.toLowerCase(), materialTypeName.toLowerCase());
+        const colourDistance = Levenshtein.get(filterValue.toLowerCase(), material.colour.toLowerCase());
+        const shelfIdDistance = Levenshtein.get(filterValue.toLowerCase(), material.shelf_id.toString().toLowerCase());
+        const statusDistance = Levenshtein.get(filterValue.toLowerCase(), material.status.toLowerCase());
+        const materialTypeDistance = Levenshtein.get(filterValue.toLowerCase(), materialTypeName.toLowerCase());
         // Sum of all Levenshtein distances
         const totalDistance =
           colourDistance + shelfIdDistance + statusDistance + materialTypeDistance;
@@ -193,17 +211,17 @@ const filteredItems = React.useMemo(() => {
   filteredMaterials.sort((a, b) => a.totalDistance - b.totalDistance);
 
   return filteredMaterials;
-}, [materials, filterValue, statusFilter, materialTypes]); // Add materialTypes as a dependency
+}, [materials, filterValue, statusFilter, materialTypes, hasSearchFilter]); // Add materialTypes as a dependency
 
   const renderCell = React.useCallback(
-    (material, columnKey) => {
-      const cellValue = material[columnKey];
+    (material: Material, columnKey: keyof Material | "actions" | "supplier_link") => {
+      const cellValue = material[columnKey as keyof Material];
       switch (columnKey) {
         case "status":
           return (
             <Chip
               className="capitalize"
-              color={statusColorMap[material.status]}
+              color={statusColorMap[material.status as "In Stock" | "Low Stock"] || "gray"}
               size="sm"
               variant="flat"
             >
@@ -229,7 +247,10 @@ const filteredItems = React.useMemo(() => {
               </Tooltip>
               <Tooltip content="Edit material">
                 <span
-                  onClick={() => handleEditClick(material)}
+                  onClick={() => handleEditClick({...material,
+                    totalDistance: material.totalDistance ?? 0,
+                    name: material.name ?? "Unknown",
+                    weight: material.weight ?? 0,})}
                   className="text-lg text-default-400 cursor-pointer active:opacity-50"
                 >
                   <EditIcon />
@@ -244,7 +265,7 @@ const filteredItems = React.useMemo(() => {
                 </span>
               </Tooltip>
             </div>
-          );
+          ) as any;
         case "supplier_link":
         // Check if there is a link and it's valid
         if (cellValue) {
@@ -268,16 +289,20 @@ const filteredItems = React.useMemo(() => {
           return cellValue;
       }
     },
-    [materialTypes]
+    [materialTypes, handleEditClick, handleDeleteClick]
   );
 
-  const onSearchChange = React.useCallback((value) => {
+  const onSearchChange = React.useCallback((value: string) => {
   if (value) {
     setFilterValue(value);
   } else {
     setFilterValue("");
   }
 }, []);
+
+  function onClear(): void {
+    throw new Error("Function not implemented.");
+  }
 
   return (
  <div className="px-4 pt-4"> {/* Padding for spacing from the edges and top */}
@@ -313,22 +338,22 @@ const filteredItems = React.useMemo(() => {
           <TableColumn allowsSorting key="id">
             ID
           </TableColumn>
+          <TableColumn allowsSorting key="material_type_id">
+            MATERIAL TYPE
+          </TableColumn>
           <TableColumn allowsSorting key="colour">
             COLOUR
           </TableColumn>
-          <TableColumn allowsSorting key="supplier_link">
-            SUPPLIER LINK
-          </TableColumn>
           <TableColumn allowsSorting key="mass">
             MASS (g)
-          </TableColumn>
-          <TableColumn allowsSorting key="material_type_id">
-            MATERIAL TYPE
           </TableColumn>
           <TableColumn allowsSorting key="shelf_id">
             SHELF
           </TableColumn>
           <TableColumn key="status">STATUS</TableColumn>
+          <TableColumn allowsSorting key="supplier_link">
+            SUPPLIER LINK
+          </TableColumn>
           <TableColumn key="actions">
              ACTIONS
           </TableColumn>
@@ -338,15 +363,15 @@ const filteredItems = React.useMemo(() => {
           isLoading={isLoading}
           loadingContent={<Spinner label="Loading..." />}
         >
-          {(item) => (
+          {filteredItems.map((item) => (
             <TableRow key={item.id}>
-              {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+              {(columnKey) => <TableCell>{renderCell(item, columnKey as "supplier_link" | "actions" | keyof Material)}</TableCell>}
             </TableRow>
-          )}
+          ))}
         </TableBody>
       </Table>
       <Popup
-        material={editMaterial}
+        material={editMaterial ?? {} as Material}
         isOpen={isModalOneOpen}
         onOpenChange={handleModalOneChange}
         onSave={handleSaveMaterial} // Pass callback to Popup
@@ -393,7 +418,7 @@ export const ExternalLinkIcon = ({ size = 18, stroke = "currentColor", ...props 
   );
 };
 
-export const SearchIcon = (props) => {
+export const SearchIcon = (props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>) => {
   return (
     <svg
       aria-hidden="true"
