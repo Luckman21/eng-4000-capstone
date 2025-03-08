@@ -187,6 +187,7 @@ def decode_access_token(token: str):
 @app.on_event("startup")
 def setup_listeners():
     low_stock_listener()
+    shelf_listener()
 
 # Set up listeners on startup
 @app.on_event("startup")
@@ -204,28 +205,40 @@ def start_mqtt_receiver():
     receiver = MQTTReceiver(mqtt_broker, mqtt_port, mqtt_temp_topic, mqtt_humid_topic, db_url)
     receiver.start()
 
-# Create a listener that triggers when the Material table is updated, checks for Materials with a mass below the threshold
+#Create a listener that triggers when the Material table is updated, checks for Materials with a mass below the threshold
 def low_stock_listener():
-   
     def listener_wrapper(mapper, connection, target):
         asyncio.create_task(listener.job_complete_listener(mapper, connection, target))
-        
-        #asyncio.create_task(listener.shelf_update_listener(mapper, connection, target))
-
     event.listen(Material, 'after_update', listener_wrapper)
-    #event.listen(Shelf, 'after_update', listener_wrapper)
+
+def shelf_listener():
+    loop = asyncio.get_event_loop()  # Get the running event loop
+    
+    def shelf_update_listener(mapper, connection, target):
+        """Listener for shelf updates that ensures execution inside an event loop."""
+        try:
+            future = asyncio.run_coroutine_threadsafe(
+                listener.shelf_update_listener(mapper, connection, target), loop
+            )
+            future.result()  # Ensure execution and capture exceptions
+        except Exception as e:
+            print(f"Error in shelf_update_listener: {e}")
+
+    event.listen(Shelf, 'after_update', shelf_update_listener)
 
 
 @app.websocket("/ws/alerts")
 async def websocket_endpoint(websocket: WebSocket):
-    """Handles WebSocket connections for real-time material alerts."""
+    """Handles WebSocket connections for real-time alerts."""
     await manager.connect(websocket)
     
     try:
         while True:
-            await websocket.receive_text() 
+            await websocket.receive_text()  # Keep the connection alive
     except WebSocketDisconnect:
         await manager.disconnect(websocket)
+        
+
 
 # Now define your API routes
 @app.get("/materials", response_model=list[MaterialSchema])

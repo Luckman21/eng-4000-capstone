@@ -62,6 +62,11 @@ async def job_complete_listener(mapper, connection, target):
             "data":[
             {"id": m.id, "colour": m.colour, "mass": m.mass, "supplier_link": m.supplier_link} for m in alert_materials
         ]}
+    elif not alert_materials:
+        data = {
+            "type": "material_alert",
+            "data": {}
+        }
 
         json_data = json.dumps(data)  # Convert to JSON string
         print(json_data)
@@ -78,7 +83,7 @@ async def job_complete_listener(mapper, connection, target):
 
 
 async def low_shelf_reader(shelfs):
-    alert = []  # create an array for materials with a mass below 50g
+    alert = []  
     for shelf in shelfs:
         if shelf.humidity_pct > 20 or shelf.temperature_cel > 28:
             alert.append(shelf)
@@ -87,26 +92,32 @@ async def low_shelf_reader(shelfs):
 
 
 async def shelf_update_listener(mapper, connection, target):
+    """Handles updates to shelf data and sends alerts if necessary."""
     session = SessionLocal()
     repo = ShelfRepository(session)
     alert_shelfs = await low_shelf_reader(repo.get_all_shelves())
     session.close()
-    print(f'{alert_shelfs}')
 
     if alert_shelfs:
         data = {
             "type": "shelf_alert",
-            "data":[
-            {"id": s.id, "humidity": s.humidity_pct, "temperature": s.temperature_cel} for s in alert_shelfs
-        ]}
-        print(f'\n\n\n📤 Sending shelf alert: {data}\n\n\n')
+            "data": [
+                {"id": s.id, "humidity": s.humidity_pct, "temperature": s.temperature_cel}
+                for s in alert_shelfs
+            ]
+        }
         json_data = json.dumps(data)
-        print(json_data)
-    # if json_data:
-    #     loop = asyncio.get_event_loop()
-    #     if loop.is_running():
-    #         asyncio.create_task(manager.send_alerts(json_data))
-    #     else:
-    #         asyncio.run(manager.send_alerts(json_data))
-    return alert_shelfs
+
+        
+
+        if json_data:
+            try:
+                loop = asyncio.get_event_loop()
+                if loop.is_running():
+                    asyncio.create_task(manager.send_alerts(json_data))  # Safe inside running loop
+                    print(f"📤 Sending shelf alert: {json_data}")
+                else:
+                    asyncio.run(manager.send_alerts(json_data))  # Run if no event loop exists
+            except RuntimeError as e:
+                print(f"Error updating shelf: {e}")
 

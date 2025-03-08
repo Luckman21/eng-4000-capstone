@@ -6,6 +6,7 @@ class ConnectionManager:
     """Manages active WebSocket connections."""
     def __init__(self):
         self.active_connections = set()
+        print(f"Connection Manager at {id(self)}")
 
     async def connect(self, websocket: WebSocket):
         """Accept WebSocket connection and store it."""
@@ -17,6 +18,7 @@ class ConnectionManager:
         self.active_connections.remove(websocket)
 
     async def send_alerts(self, alert_materials):
+        await asyncio.sleep(1)
         """Send alerts to all connected clients."""
 
         if not self.active_connections:

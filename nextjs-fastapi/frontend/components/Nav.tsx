@@ -37,7 +37,9 @@ const Nav = () => {
 
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:8000/ws/alerts");
-
+    ws.onopen = () => {
+      console.log("🔌 WebSocket connected")
+    }
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
@@ -54,12 +56,16 @@ const Nav = () => {
             const updatedShelfStatus = data.data;
             localStorage.setItem("shelfStatus", JSON.stringify(updatedShelfStatus));
             return updatedShelfStatus;
+
           });
         }
       } catch (error) {
         console.error("Error parsing WebSocket data:", error);
       }
     };
+    ws.onclose = () => {
+      console.log("🔌 WebSocket disconnected");
+    }
 
     return () => ws.close();
   }, []);
