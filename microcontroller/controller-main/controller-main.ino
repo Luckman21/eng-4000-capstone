@@ -15,8 +15,8 @@
 #define DHTTYPE 11
 
 // Calibration values
-#define TEMP_CAL 21   // Adjusts the temperature reading for accuracy
-#define HUMID_CAL 10  // Adjusts the humidity reading for accuracy
+#define TEMP_CAL 21     // Adjusts the temperature reading for accuracy
+#define HUMID_CAL 10    // Adjusts the humidity reading for accuracy
 #define SCALE_CAL 1000  // Adjusts the scale reading for accuracy
 
 // Define HX711 pins
@@ -95,7 +95,7 @@ void setup() {
   // Initialize HX711
   scale.begin(DOUT, CLK);
 
-  scaleReady(); // Determines if the HX711 module is ready
+  scaleReady();  // Determines if the HX711 module is ready
 
   scale.set_scale(SCALE_CAL);  // Set scale calibration factor
 
@@ -114,12 +114,12 @@ void loop() {
   mqttClient.poll();  // Sends MQTT keep alive, constantly called to keep connection alive
 
   if (digitalRead(BUTTON_PIN) == LOW) {
-    tare(); // Tare the scale if button is pressed (pin is LOW)
+    tare();  // Tare the scale if button is pressed (pin is LOW)
   }
 
   // If the HX711 is ready, read the weight
   if (scale.is_ready()) {
-    scaleMeasure(); // Read weight value from load cell and update value accordingly
+    scaleMeasure();  // Read weight value from load cell and update value accordingly
   } else {
     Serial.println("HX711 not found.");
     lcd.clear();
@@ -149,7 +149,7 @@ void displayInit() {
 
 // Determines if the HX711 module is ready
 void scaleReady() {
-    lcd.clear();
+  lcd.clear();
   // Check if HX711 is ready
   if (scale.is_ready()) {
     Serial.println("HX711 is ready!");
