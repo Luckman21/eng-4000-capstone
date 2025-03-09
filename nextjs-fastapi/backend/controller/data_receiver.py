@@ -41,20 +41,22 @@ class MQTTReceiver:
 
     def process_message(self, topic, payload):
         """Process the received MQTT message."""
+
+        shelf_id = payload[:payload.find("|")]
+        data = payload[payload.find("|") + 1:]
         try:
             if topic == self.mqtt_temp_topic:
                 # Received temperature data
-                self.temperature = float(payload)
+                self.temperature = float(data)
                 print(f"Received temperature: {self.temperature}")
             elif topic == self.mqtt_humid_topic:
                 # Received humidity data
-                self.humidity = float(payload)
+                self.humidity = float(data)
                 print(f"Received humidity: {self.humidity}")
 
             # If both temperature and humidity are received, update the database
-            if self.temperature is not None and self.humidity is not None:
+            if self.temperature is not None or self.humidity is not None:
                 # You would need to send the correct shelf_id based on your system logic
-                shelf_id = 1  # Example: Update shelf with ID 1
                 self.update_shelf(shelf_id, self.temperature, self.humidity)
                 # Reset the values to wait for new data
                 self.temperature = None

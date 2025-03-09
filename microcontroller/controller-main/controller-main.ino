@@ -24,6 +24,7 @@
 #define CLK 3   // Clock pin (SCK)
 
 #define BUTTON_PIN 4  // Button pin to tare the scale
+#define SHELF_ID 1  // Unique to each board, set for each new unit
 
 // For more information, check out https://freenove.com/fnk0079
 // note:If lcd1602 uses PCF8574T, IIC's address is 0x27, or lcd1602 uses PCF8574AT, IIC's address is 0x3F.
@@ -259,7 +260,7 @@ void readDHT11() {
 
     // Send message, using print to send message contents
     mqttClient.beginMessage(topic_temp);
-    mqttClient.print(temp + TEMP_CAL);
+    mqttClient.print(String(SHELF_ID) + "|" + String(temp + TEMP_CAL));
     mqttClient.endMessage();
 
     updateDisplay(weight, temp, humid);
@@ -274,7 +275,7 @@ void readDHT11() {
 
     // Send message, using print to send message contents
     mqttClient.beginMessage(topic_humid);
-    mqttClient.print(humid + HUMID_CAL);
+    mqttClient.print(String(SHELF_ID) + "|" + String(humid + HUMID_CAL));
     mqttClient.endMessage();
 
     updateDisplay(weight, temp, humid);
@@ -316,7 +317,7 @@ void scaleMeasure() {
 
     // Update weight value in application via MQTT
     mqttClient.beginMessage(topic_mass);
-    mqttClient.print(weight);
+    mqttClient.print(String(SHELF_ID) + "|" + String(weight));
     mqttClient.endMessage();
   }
 }

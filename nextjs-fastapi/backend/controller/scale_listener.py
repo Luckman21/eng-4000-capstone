@@ -27,12 +27,16 @@ class MQTTscale:
 
     def process_message(self, payload):
         """Process the received MQTT message."""
+
+        shelf_id = payload[:payload.find("|")]
+        data = payload[payload.find("|") + 1:]
+
         try:
             # Store the latest received value (assuming the payload can be converted to float)
-            self.latest_value = float(payload)
-            print(f"Stored value: {self.latest_value}")
+            self.latest_value = float(data)
+            print(f"Stored value: {data}")
         except ValueError:
-            print(f"Error: Failed to convert message payload to float: {payload}")
+            print(f"Error: Failed to convert message payload to float: {data}")
 
     def get_latest_value(self):
         """Return the latest value received."""
