@@ -18,7 +18,6 @@ class ConnectionManager:
         self.active_connections.remove(websocket)
 
     async def send_alerts(self, alert_materials):
-        await asyncio.sleep(1)
         """Send alerts to all connected clients."""
 
         if not self.active_connections:
