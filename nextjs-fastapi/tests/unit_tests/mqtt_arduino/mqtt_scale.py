@@ -62,14 +62,15 @@ def test_process_message_zero_weight(scale, capsys):
     output = capsys.readouterr().out
     assert f"Stored value: {zero_weight}\n" in output
 
-"""
+
 # Test when the weight is a string that can't be converted to float
 def test_process_message_invalid_float(scale, capsys):
-    Test if the payload is invalid (can't be converted to float).
-    invalid_payload = "not_a_number"
-    scale.process_message(invalid_payload)
+    """An invalid payload is one where we do not have the following format: shelf_ID|data"""
+    invalid_payloads = ["no_ID|23.1", "0|no_data", "1,23.1"]
+    
+    for payload in invalid_payloads:
+        scale.process_message(payload)
     
     # Verify error message is printed
     output = capsys.readouterr().out
     assert f"Error: Failed to convert message payload to float:" in output
-"""
