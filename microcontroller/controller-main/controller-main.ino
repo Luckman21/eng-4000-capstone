@@ -25,10 +25,6 @@
 
 #define BUTTON_PIN 4  // Button pin to tare the scale
 
-// Define display pins for 7SD
-#define DT 8
-#define SCLK 9
-
 // For more information, check out https://freenove.com/fnk0079
 // note:If lcd1602 uses PCF8574T, IIC's address is 0x27, or lcd1602 uses PCF8574AT, IIC's address is 0x3F.
 LiquidCrystal_I2C lcd(0x27, 16, 2);
