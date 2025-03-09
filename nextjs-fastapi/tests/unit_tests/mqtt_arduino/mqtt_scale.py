@@ -66,7 +66,7 @@ def test_process_message_zero_weight(scale, capsys):
 # Test when the weight is a string that can't be converted to float
 def test_process_message_invalid_float(scale, capsys):
     """An invalid payload is one where we do not have the following format: shelf_ID|data"""
-    invalid_payloads = ["no_ID|23.1", "0|no_data", "1,23.1"]
+    invalid_payloads = ["no_ID|23.1", "0|no_data", "0,23.1"]
     
     for payload in invalid_payloads:
         scale.process_message(payload)
