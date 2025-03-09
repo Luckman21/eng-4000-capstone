@@ -28,6 +28,7 @@ from backend.controller.schemas.MaterialTypeUpdateRequest import MaterialTypeUpd
 from backend.controller.schemas.MaterialTypeCreateRequest import MaterialTypeCreateRequest
 from backend.controller.schemas.MaterialMutationRequest import MaterialMutationRequest
 from backend.controller.data_receiver import MQTTReceiver
+from backend.controller.scale_listener import MQTTscale
 from backend.service.PasswordHashService import PasswordHashService
 from fastapi import FastAPI, Depends, HTTPException, Response, Request
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
@@ -192,6 +193,7 @@ def setup_listeners():
 @app.on_event("startup")
 def setup_mqtt():
     start_mqtt_receiver()
+    start_mqtt_scale()
 
 
 # Define the MQTT receiver start function
@@ -205,6 +207,17 @@ def start_mqtt_receiver():
     receiver = MQTTReceiver(mqtt_broker, mqtt_port, mqtt_temp_topic, mqtt_humid_topic, db_url)
     receiver.start()
 
+# Define the MQTT scale start function
+def start_mqtt_scale():
+    mqtt_broker = "test.mosquitto.org"
+    mqtt_port = 1883
+    mqtt_topic = "mass_value"
+
+    receiver = MQTTscale(mqtt_broker, mqtt_port, mqtt_topic)
+    receiver.start()
+
+    # Now the listener is running, and you can retrieve the latest value when needed.
+    print(f"Latest value: {receiver.get_latest_value()}")
 
 # Create a listener that triggers when the Material table is updated, checks for Materials with a mass below the threshold
 def low_stock_listener():
