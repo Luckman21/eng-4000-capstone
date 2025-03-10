@@ -49,20 +49,20 @@ class MQTTReceiver:
                 # Received temperature data
                 self.temperature = float(data)
                 print(f"Received temperature: {self.temperature}")
-                self.update_shelf(shelf_id, None, self.temperature)
+                self.update_shelf(shelf_id, self.temperature, None)
             elif topic == self.mqtt_humid_topic:
                 # Received humidity data
                 self.humidity = float(data)
+                self.update_shelf(shelf_id, None, self.humidity)
                 print(f"Received humidity: {self.humidity}")
 
             # If both temperature and humidity are received, update the database
             if self.temperature is not None and self.humidity is not None:
                 # You would need to send the correct shelf_id based on your system logic
-                self.update_shelf(shelf_id, self.humidity, self.temperature)
+                self.update_shelf(shelf_id, self.temperature, self.humidity)
                 # Reset the values to wait for new data
                 self.temperature = None
                 self.humidity = None
-                self.update_shelf(shelf_id, self.humidity, None)
 
         except Exception as e:
             print(f"Error processing message: {e}")
