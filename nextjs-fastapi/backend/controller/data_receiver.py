@@ -41,14 +41,18 @@ class MQTTReceiver:
 
     def process_message(self, topic, payload):
         """Process the received MQTT message."""
+
+        shelf_id = payload[:payload.find("|")]
+        data = payload[payload.find("|") + 1:]
         try:
             if topic == self.mqtt_temp_topic:
                 # Received temperature data
-                self.temperature = float(payload)
+                self.temperature = float(data)
                 print(f"Received temperature: {self.temperature}")
+                self.update_shelf(shelf_id, self.temperature, None)
             elif topic == self.mqtt_humid_topic:
                 # Received humidity data
-                self.humidity = float(payload)
+                self.humidity = float(data)
                 print(f"Received humidity: {self.humidity}")
 
             # If both temperature and humidity are received, update the database
@@ -59,6 +63,7 @@ class MQTTReceiver:
                 # Reset the values to wait for new data
                 self.temperature = None
                 self.humidity = None
+                self.update_shelf(shelf_id, None, self.humidity)
 
         except Exception as e:
             print(f"Error processing message: {e}")
@@ -71,12 +76,16 @@ class MQTTReceiver:
 
             if shelf:
                 # Use ShelfRepository to update the shelf
-                updated_shelf = self.shelf_repository.update_shelf(shelf, humidity, temperature)  # Use the instance here
+                self.shelf_repository.update_shelf(shelf, humidity, temperature)
                 print(f"Shelf {shelf_id} updated with temperature: {temperature}, humidity: {humidity}")
             else:
                 print(f"Shelf with ID {shelf_id} not found.")
         except Exception as e:
             print(f"Error updating shelf: {e}")
+
+        # Debug Print Statements
+        #print(f"shelf temp: {self.shelf_repository.get_shelf_by_id(shelf_id).temperature_cel}")
+        #print(f"shelf humid: {self.shelf_repository.get_shelf_by_id(shelf_id).humidity_pct}")
 
     def start(self):
         """Start the MQTT client loop to receive messages."""
@@ -86,3 +95,11 @@ class MQTTReceiver:
     def stop(self):
         """Stop the MQTT client loop."""
         self.client.loop_stop()
+
+    def get_temp(self):
+        """Returns the last stored value for the temperature."""
+        return self.temperature
+
+    def get_humid(self):
+        """Returns the last stored value for the humidity."""
+        return self.humidity
