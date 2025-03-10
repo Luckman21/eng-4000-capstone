@@ -190,7 +190,7 @@ def decode_access_token(token: str):
 @app.on_event("startup")
 async def setup_listeners():
     low_stock_listener()
-    #shelf_listener()
+    shelf_listener()
 
 #Set up listeners on startup
 
@@ -231,19 +231,19 @@ def low_stock_listener():
         asyncio.create_task(listener.job_complete_listener(mapper, connection, target))
     event.listen(Material, 'after_update', listener_wrapper)
 
-# def shelf_listener():
-#     loop = asyncio.get_event_loop()  # Get the running event loop
+def shelf_listener():
+     loop = asyncio.get_event_loop()  # Get the running event loop
 
-#     def shelf_update_listener(mapper, connection, target):
-#         print(f"🆔 Manager ID (shelf_listener): {id(manager)}")  # Ensure it's the same instance
-#         if manager.active_connections:
-#             """Listener for shelf updates that ensures execution inside an event loop."""
-#             try:
-#                 asyncio.run_coroutine_threadsafe(listener.shelf_update_listener(mapper, connection, target))
-#             except Exception as e:
-#                 print(f"Error in shelf_update_listener: {e}")
+     def shelf_update_listener(mapper, connection, target):
+         print(f"🆔 Manager ID (shelf_listener): {id(manager)}")  # Ensure it's the same instance
+         if manager.active_connections:
+             """Listener for shelf updates that ensures execution inside an event loop."""
+             try:
+                 asyncio.run_coroutine_threadsafe(listener.shelf_update_listener(mapper, connection, target))
+             except Exception as e:
+                 print(f"Error in shelf_update_listener: {e}")
 
-#     event.listen(Shelf, 'after_update', shelf_update_listener)
+     event.listen(Shelf, 'after_update', shelf_update_listener)
 
 
 @app.websocket("/ws/alerts")
