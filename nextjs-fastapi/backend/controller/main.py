@@ -64,6 +64,7 @@ app.add_middleware(
 async def root():
     return {"message": "Hello Azure"}
 
+LOOP = None
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
@@ -189,6 +190,8 @@ def decode_access_token(token: str):
 # Set up listeners on startup
 @app.on_event("startup")
 async def setup_listeners():
+    global LOOP
+    LOOP = asyncio.get_running_loop()
     low_stock_listener()
     shelf_listener()
 
@@ -232,18 +235,18 @@ def low_stock_listener():
     event.listen(Material, 'after_update', listener_wrapper)
 
 def shelf_listener():
-     loop = asyncio.get_event_loop()  # Get the running event loop
 
-     def shelf_update_listener(mapper, connection, target):
-         print(f"🆔 Manager ID (shelf_listener): {id(manager)}")  # Ensure it's the same instance
-         if manager.active_connections:
-             """Listener for shelf updates that ensures execution inside an event loop."""
-             try:
-                 asyncio.run_coroutine_threadsafe(listener.shelf_update_listener(mapper, connection, target))
-             except Exception as e:
-                 print(f"Error in shelf_update_listener: {e}")
-
-     event.listen(Shelf, 'after_update', shelf_update_listener)
+    def shelf_update_listener(mapper, connection, target):
+        print(f"🆔 Manager ID (shelf_listener): {id(manager)}")  # Ensure it's the same instance
+        try:
+            future = asyncio.run_coroutine_threadsafe(listener.shelf_update_listener(mapper, connection, target), LOOP)
+            future.result()  # Ensure exceptions are caught
+            print("✅ Successfully ran shelf listener")
+        except RuntimeError as e:
+            print(f"❌ RuntimeError: {e} - Possibly no running event loop?")
+        except Exception as e:
+            print(f"❌ Error in shelf_update_listener: {e}")
+    event.listen(Shelf, 'after_update', shelf_update_listener)
 
 
 @app.websocket("/ws/alerts")

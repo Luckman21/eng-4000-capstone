@@ -1,6 +1,8 @@
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 from db.model.Shelf import Shelf
+from sqlalchemy.future import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 class ShelfRepository:
     def __init__(self, session: Session):
@@ -72,3 +74,8 @@ class ShelfRepository:
         except Exception as e:
             self.session.rollback()
             raise ValueError(f"Unexpected error: {e}")
+
+    async def get_all_shelves_async(self):
+        # Use select to fetch all shelves asynchronously
+        result = await self.session.execute(select(Shelf))
+        return result.scalars().all()  # Extract Shelf objects from the result

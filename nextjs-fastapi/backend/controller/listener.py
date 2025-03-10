@@ -6,10 +6,19 @@ from backend.controller import constants
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session, Session
 from backend.controller.manager import manager
+from asyncio import get_running_loop
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
-# Create an engine and local session for connection to the database
-engine = create_engine(constants.DATABASE_URL, echo=True)
+DATABASE_URL = constants.DATABASE_URL_ASYNC  # Example: "postgresql+asyncpg://user:password@localhost/dbname"
+
+# Create an async engine
+engine = create_async_engine(DATABASE_URL, echo=True)
+
+# Create an async session factory
+AsyncSessionLocal = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 SessionLocal = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
+
+
 
 # A polling function to check the mass of each material in the table
 async def quantity_poll(materials):
@@ -87,12 +96,14 @@ async def low_shelf_reader(shelfs):
 
 
 async def shelf_update_listener(mapper, connection, target):
-    session = SessionLocal()
-    repo = ShelfRepository(session)
-    alert_shelfs = await low_shelf_reader(repo.get_all_shelves())
-    session.close()
+    try:
+        async with AsyncSessionLocal() as session:  # Correctly manage session
+            repo = ShelfRepository(session)
+            alert_shelfs = await repo.get_all_shelves_async()  # Ensure this is an async method
+    except Exception as e:
+        print(f"Error while fetching shelves: {e}")
+        return []
 
-   
     print(f"🛑 Active WebSockets BEFORE sending shelf alert: {len(manager.active_connections)}")
 
     if alert_shelfs:
@@ -107,6 +118,16 @@ async def shelf_update_listener(mapper, connection, target):
 
         print(f"📤 Sending shelf alert: {json_data}")
 
-        # Wait until WebSocket is ready before sending
-        
-        await manager.send_alerts(json_data)
+        # Ensure we're scheduling the async task correctly depending on whether the loop is running
+        try:
+
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                # If the event loop is running, safely schedule the task
+                asyncio.create_task(manager.send_alerts(json_data))
+            else:
+                # If no event loop is running, run the task directly using asyncio.run
+                print("No event loop running, using run_coroutine_threadsafe.")
+                asyncio.run_coroutine_threadsafe(manager.send_alerts(json_data), LOOP)
+        except Exception as e:
+            print(f"❌ Error while scheduling alert: {e}")
