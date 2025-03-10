@@ -49,7 +49,7 @@ class MQTTReceiver:
                 # Received temperature data
                 self.temperature = float(data)
                 print(f"Received temperature: {self.temperature}")
-                self.update_shelf(shelf_id, self.temperature, None)
+                self.update_shelf(shelf_id, None, self.temperature)
             elif topic == self.mqtt_humid_topic:
                 # Received humidity data
                 self.humidity = float(data)
@@ -63,7 +63,7 @@ class MQTTReceiver:
                 # Reset the values to wait for new data
                 self.temperature = None
                 self.humidity = None
-                self.update_shelf(shelf_id, None, self.humidity)
+                self.update_shelf(shelf_id, self.humidity, None)
 
         except Exception as e:
             print(f"Error processing message: {e}")
