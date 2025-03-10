@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS materials (
     colour TEXT NOT NULL,
     supplier_link TEXT NOT NULL, 
     mass DOUBLE PRECISION NOT NULL,
-    material_type_id INTEGER REFERENCES material_types(id) ON DELETE CASCADE,
+    material_type_id INTEGER NOT NULL REFERENCES material_types(id) ON DELETE CASCADE,
     shelf_id INTEGER REFERENCES shelfs(id) ON DELETE CASCADE
 )
 ''')
