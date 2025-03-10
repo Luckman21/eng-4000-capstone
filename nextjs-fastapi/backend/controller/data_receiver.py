@@ -58,7 +58,6 @@ class MQTTReceiver:
             # If both temperature and humidity are received, update the database
             if self.temperature is not None and self.humidity is not None:
                 # You would need to send the correct shelf_id based on your system logic
-                shelf_id = 1  # Example: Update shelf with ID 1
                 self.update_shelf(shelf_id, self.humidity, self.temperature)
                 # Reset the values to wait for new data
                 self.temperature = None
