@@ -12,6 +12,7 @@ from backend.controller.schemas.UserCreateRequest import UserCreateRequest
 from fastapi import FastAPI, Depends, HTTPException, Response, Request, APIRouter
 from backend.service.mailer.PasswordChangeMailer import PasswordChangeMailer
 from backend.service.PasswordHashService import PasswordHashService
+from backend.service import access_service
 
 router = APIRouter(
     prefix="/users",
@@ -106,7 +107,7 @@ async def update_user(entity_id: int, request: UserUpdateRequest, db: Session = 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    new_token = create_access_token(data={
+    new_token = access_service.create_access_token(data={
         "id": user.id,
         "username": user.username,
         "email": user.email,

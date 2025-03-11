@@ -38,7 +38,7 @@ async def test_login_success():
 
     client = TestClient(get_app())
     response = client.post(
-        "/login",
+        "access_management/login",
         data={"username": f"water_123", "password": f"Gucci2001"},
     )
 
@@ -51,7 +51,7 @@ async def test_login_success():
 async def test_login_failure():
     client = TestClient(get_app())
     response = client.post(
-        "/login",
+        "access_management/login",
         data={"username": "invalid_user", "password": "wrong_password"},
     )
 
@@ -65,14 +65,14 @@ async def test_logout():
     client = TestClient(get_app())
     # First, simulate a login to set the cookie
     login_response = client.post(
-        "/login",
+        "access_management/login",
         data={"username": "water_123", "password": "Gucci2001"},
     )
     assert login_response.status_code == status.HTTP_200_OK
     assert "access_token" in login_response.headers.get("set-cookie", "")
 
     # Now, log out
-    logout_response = client.post("/logout")
+    logout_response = client.post("access_management/logout")
 
     assert logout_response.status_code == status.HTTP_200_OK
     assert logout_response.json() == {"message": "Logged out successfully"}
@@ -87,7 +87,7 @@ async def test_logout():
 async def test_logout_without_cookie():
     client = TestClient(get_app())
     # Log out without logging in first
-    logout_response = client.post("/logout")
+    logout_response = client.post("access_management/logout")
 
     assert logout_response.status_code == status.HTTP_200_OK
     assert logout_response.json() == {"message": "Logged out successfully"}
