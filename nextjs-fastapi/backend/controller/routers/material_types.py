@@ -15,7 +15,7 @@ router = APIRouter(
     tags=["Material Types"],
 )
 
-@router.get("/material_types")
+@router.get("/")
 async def get_all_material_types(db: Session = Depends(get_db)):
     repo = MaterialTypeRepository(db)
     return repo.get_all_material_types()

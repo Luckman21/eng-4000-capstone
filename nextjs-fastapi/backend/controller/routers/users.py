@@ -20,7 +20,7 @@ router = APIRouter(
 )
 
 
-@router.get("/users")
+@router.get("/")
 async def get_all_users(db: Session = Depends(get_db)):
     repo = UserRepository(db)
     return repo.get_all_users()

@@ -70,7 +70,7 @@ const EditUser: React.FC<EditUserTypes> = ({ user, isOpen, onOpenChange, onSave 
     try {
 
       // Send update request to backend
-      const response = await fetch(`http://localhost:8000/update_user/${editableUser.id}`, {
+      const response = await fetch(`http://localhost:8000/users/update_user/${editableUser.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
