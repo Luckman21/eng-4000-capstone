@@ -35,7 +35,7 @@ const QR_Trigger = () => {
                 mass_change: customMass,
             });
             if (response.status === 200) {
-                alert("Material updated successfully!");
+                alert(`${customMass} grams has been replenished successfully!`);
                 router.push("/inventory");
             }
         } catch (err) {
@@ -50,7 +50,7 @@ const QR_Trigger = () => {
                 mass_change: customMass,
             });
             if (response.status === 200) {
-                alert("Mass consumed successfully!");
+                alert(`${customMass} gram has been consumed successfully!`);
                 router.push("/inventory");
             }
         } catch (err) {
