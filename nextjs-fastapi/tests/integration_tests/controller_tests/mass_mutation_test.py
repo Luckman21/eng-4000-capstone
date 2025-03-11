@@ -48,7 +48,7 @@ def test_material_consume_success(setup_database):
     shelf = material.shelf_id
 
     # Send a PUT request with valid entity_id and new mass
-    response = client.patch("/consume_mass/1", json={"mass_change": 5.0})
+    response = client.patch("materials/consume_mass/1", json={"mass_change": 5.0})
 
     print(f"Response: {response.json()}")
 
@@ -74,7 +74,7 @@ def test_material_consume_out_of_bounds_error(setup_database):
     shelf = material.shelf_id
 
     # Send a PUT request with valid entity_id and new mass
-    response = client.patch("/consume_mass/1", json={"mass_change": 50000})
+    response = client.patch("materials/consume_mass/1", json={"mass_change": 50000})
 
     print(f"Response: {response.json()}")
 
@@ -91,7 +91,7 @@ def test_material_consume_out_of_bounds_error(setup_database):
 def test_material_consume_not_found():
 
     # Send a PUT request with valid entity_id and new mass
-    response = client.patch("/consume_mass/-1", json={"mass_change": 5.0})
+    response = client.patch("materials/consume_mass/-1", json={"mass_change": 5.0})
 
     # Assert that the response status code is 404
     assert response.status_code == 404
@@ -114,7 +114,7 @@ def test_material_replenish_success(setup_database):
 
 
     # Send a PUT request with valid entity_id and new mass
-    response = client.patch("/replenish_mass/1", json={"mass_change": 5.0})
+    response = client.patch("materials/replenish_mass/1", json={"mass_change": 5.0})
 
     # Assert that the response status code is 200
     assert response.status_code == 200
@@ -129,7 +129,7 @@ def test_material_replenish_success(setup_database):
 def test_material_replenish_not_found():
 
     # Send a PUT request with valid entity_id and new mass
-    response = client.patch("/replenish_mass/-1", json={"mass_change": 5.0})
+    response = client.patch("materials/replenish_mass/-1", json={"mass_change": 5.0})
 
     # Assert that the response status code is 404
     assert response.status_code == 404

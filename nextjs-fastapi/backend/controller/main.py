@@ -6,7 +6,6 @@ sys.path.append(str(Path().resolve().parent.parent))
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from backend.controller.dependencies import get_db
-from db.schemas import MaterialSchema
 from db.model.Material import Material
 from db.model.User import User
 from db.model.MaterialType import MaterialType
@@ -19,17 +18,13 @@ import asyncio
 from sqlalchemy import event
 from backend.controller import constants
 from backend.controller import listener
-from backend.controller.schemas.MaterialUpdateRequest import MaterialUpdateRequest
-from backend.controller.schemas.MaterialCreateRequest import MaterialCreateRequest
 from db.repositories.MaterialTypeRepository import MaterialTypeRepository
 from backend.controller.schemas.UserUpdateRequest import UserUpdateRequest
 from backend.controller.schemas.UserCreateRequest import UserCreateRequest
 from backend.controller.schemas.MaterialTypeUpdateRequest import MaterialTypeUpdateRequest
 from backend.controller.schemas.MaterialTypeCreateRequest import MaterialTypeCreateRequest
-from backend.controller.schemas.MaterialMutationRequest import MaterialMutationRequest
 from backend.controller.data_receiver import MQTTReceiver
 from backend.controller.scale_listener import MQTTscale
-from backend.service.PasswordHashService import PasswordHashService
 from fastapi import FastAPI, Depends, HTTPException, Response, Request
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 import jwt
@@ -41,8 +36,11 @@ from backend.service.mailer.PasswordChangeMailer import PasswordChangeMailer
 from backend.service.TempPasswordRandomizeService import create_temp_password
 from backend.controller.schemas.ForgotPasswordRequest import ForgotPasswordRequest
 from backend.service.PasswordHashService import PasswordHashService
+from backend.controller.routers import material_table
 
 app = FastAPI()
+app.include_router(material_table.router)
+
 origins = [
     "http://127.0.0.1:3000",
     "http://localhost:3000",
@@ -227,13 +225,6 @@ def low_stock_listener():
     event.listen(Material, 'after_update', listener_wrapper)
 
 
-# Now define your API routes
-@app.get("/materials", response_model=list[MaterialSchema])
-async def get_Allmaterials(db: Session = Depends(get_db)):
-    repo = MaterialRepository(db)
-    return repo.get_all_materials()
-
-
 @app.get("/material_types")
 async def get_all_material_types(db: Session = Depends(get_db)):
     repo = MaterialTypeRepository(db)
@@ -251,80 +242,6 @@ async def get_all_users(db: Session = Depends(get_db)):
     repo = UserRepository(db)
     return repo.get_all_users()
 
-
-@app.post("/create_material")
-async def create_material(request: MaterialCreateRequest, db: Session = Depends(get_db)):
-    repo = MaterialRepository(db)
-
-    material = db.query(Material).filter_by(supplier_link=request.supplier_link, colour=request.colour,
-                                            material_type_id=request.material_type_id).first()
-
-    # Check if the entity exists
-    if material is not None and repo.material_exists(material.id):
-        raise HTTPException(status_code=404, detail="Material already exists")
-
-    # Call the update method
-
-    try:
-        # Call the setter method to update the material
-        repo.create_material(
-            colour=request.colour,
-            supplier_link=request.supplier_link,
-            mass=request.mass,
-            material_type_id=request.material_type_id,
-            shelf_id=request.shelf_id
-        )
-
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    return {'message': "Material successfully created"}
-
-
-@app.delete("/delete_material/{entity_id}")
-async def delete_material(entity_id: int, db: Session = Depends(get_db)):
-    repo = MaterialRepository(db)
-
-    # Check if the entity exists
-    if not repo.material_exists(entity_id):
-        raise HTTPException(status_code=404, detail="Material not found")
-
-    # Call the update method
-    material = repo.get_material_by_id(entity_id)
-
-    try:
-        # Call the setter method to update the material
-        repo.delete_material(material)
-
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    material = repo.get_material_by_id(entity_id)
-
-    return {'message': "Material deleted successfully"}
-
-
-@app.put("/update_material/{entity_id}")
-async def update_material(entity_id: int, request: MaterialUpdateRequest, db: Session = Depends(get_db)):
-    repo = MaterialRepository(db)
-    # Check if the entity exists
-    if not repo.material_exists(entity_id):
-        raise HTTPException(status_code=404, detail="Material not found")
-
-    # Call the update method
-    material = repo.get_material_by_id(entity_id)
-    try:
-        # Call the setter method to update the material
-        repo.update_material(material,
-                             mass=request.mass,
-                             colour=request.colour,
-                             material_type_id=request.material_type_id,
-                             supplier_link=request.supplier_link,
-                             shelf_id=request.shelf_id)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    return {'message': "Material updated successfully"}
 
 
 @app.post("/create_user")
@@ -510,59 +427,6 @@ async def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(
         raise HTTPException(status_code=500, detail=str(e))
 
     return {'message': "Password successfully sent"}
-
-
-@app.patch("/replenish_mass/{entity_id}")
-async def replenish_mass(entity_id: int, request: MaterialMutationRequest, db: Session = Depends(get_db)):
-    repo = MaterialRepository(db)
-    # Check if the entity exists
-
-    if not repo.material_exists(entity_id):
-        raise HTTPException(status_code=404, detail="Material not found")
-
-    # Call the update method
-    material = repo.get_material_by_id(entity_id)
-    try:
-        # Call the setter method to update the material
-        repo.update_material(material,
-                             mass=(material.mass + request.mass_change),
-                             colour=None,
-                             material_type_id=None,
-                             supplier_link=None,
-                             shelf_id=None)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    return {'message': f"{request.mass_change} grams replenished"}
-
-
-@app.patch("/consume_mass/{entity_id}")
-async def consume_mass(entity_id: int, request: MaterialMutationRequest, db: Session = Depends(get_db)):
-    repo = MaterialRepository(db)
-    # Check if the entity exists
-    if not repo.material_exists(entity_id):
-        raise HTTPException(status_code=404, detail="Material not found")
-
-    # Call the update method
-    material = repo.get_material_by_id(entity_id)
-
-    # Check mass diference
-
-    if request.mass_change > material.mass:
-        raise HTTPException(status_code=400, detail="Consumed mass greater than material's mass")
-    try:
-        # Call the setter method to update the material
-        repo.update_material(material,
-                             mass=(material.mass - request.mass_change),
-                             colour=None,
-                             material_type_id=None,
-                             supplier_link=None,
-                             shelf_id=None)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    return {'message': f"{request.mass_change} grams consumed"}
-
 
 @app.get("/qr_display/{entity_id}")
 async def auto_consume_mass(entity_id: int, db: Session = Depends(get_db)):

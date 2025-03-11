@@ -47,7 +47,7 @@ def test_update_material_success(setup_database):
     shelf = material.shelf_id
 
     # Send a PUT request with valid entity_id and new mass
-    response = client.put("/update_material/1", json={"mass": 200.0, "supplier_link": "Mickey Mouse", "colour": None, "material_type_id": 6, "shelf_id" : 1})
+    response = client.put("materials/update_material/1", json={"mass": 200.0, "supplier_link": "Mickey Mouse", "colour": None, "material_type_id": 6, "shelf_id" : 1})
 
     # Assert that the response status code is 200
     assert response.status_code == 200
@@ -61,7 +61,7 @@ def test_update_material_success(setup_database):
 # Test invalid material_id (material not found)
 def test_update_material_not_found():
     # Send a PUT request with an invalid entity_id
-    response = client.put("/update_material/999", json={"mass": 200.0, "supplier_link": "Mickey Mouse", "colour": None, "material_type_id": None, "shelf_id" : 1})
+    response = client.put("materials/update_material/999", json={"mass": 200.0, "supplier_link": "Mickey Mouse", "colour": None, "material_type_id": None, "shelf_id" : 1})
 
     # Assert that the response status code is 404
     assert response.status_code == 404
