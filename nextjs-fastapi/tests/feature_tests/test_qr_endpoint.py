@@ -35,7 +35,8 @@ def test_material_description(driver):
     subtitles = driver.find_elements(By.CSS_SELECTOR, "p")
 
     assert subtitles[0].text == "Shelf: 1"
-    assert subtitles[1].text == "Enter mass change (grams):"
+    print(subtitles[1].text)
+    assert subtitles[1].text == """Enter Mass Change (Grams):\nMass Change (Grams)"""
 
 
 def test_buttons(driver):
