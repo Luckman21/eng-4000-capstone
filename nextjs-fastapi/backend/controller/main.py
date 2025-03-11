@@ -36,10 +36,12 @@ from backend.service.mailer.PasswordChangeMailer import PasswordChangeMailer
 from backend.service.TempPasswordRandomizeService import create_temp_password
 from backend.controller.schemas.ForgotPasswordRequest import ForgotPasswordRequest
 from backend.service.PasswordHashService import PasswordHashService
-from backend.controller.routers import material_table
+from backend.controller.routers import materials
+from backend.controller.routers import material_types
 
 app = FastAPI()
-app.include_router(material_table.router)
+app.include_router(materials.router)
+app.include_router(material_types.router)
 
 origins = [
     "http://127.0.0.1:3000",
@@ -224,13 +226,6 @@ def low_stock_listener():
 
     event.listen(Material, 'after_update', listener_wrapper)
 
-
-@app.get("/material_types")
-async def get_all_material_types(db: Session = Depends(get_db)):
-    repo = MaterialTypeRepository(db)
-    return repo.get_all_material_types()
-
-
 @app.get("/user_types")
 async def get_all_user_types(db: Session = Depends(get_db)):
     repo = UserTypeRepository(db)
@@ -332,71 +327,6 @@ async def update_user(entity_id: int, request: UserUpdateRequest, db: Session = 
     })
 
     return {'message': "User updated successfully", "access_token": new_token}
-
-
-@app.post("/create_mattype")
-async def create_material_type(request: MaterialTypeCreateRequest, db: Session = Depends(get_db)):
-    repo = MaterialTypeRepository(db)
-
-    type = db.query(MaterialType).filter_by(type_name=request.type_name).first()
-
-    # Check if the entity exists
-    if type is not None and repo.type_exists(type.id):
-        raise HTTPException(status_code=404, detail="Material Type already exists")
-
-    # Call the create method
-
-    try:
-        # Call the setter method to update the type
-        repo.create_material_type(
-            type_name=request.type_name
-        )
-
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    return {'message': "Material Type successfully created"}
-
-
-@app.delete("/delete_mattype/{entity_id}")
-async def delete_material_type(entity_id: int, db: Session = Depends(get_db)):
-    repo = MaterialTypeRepository(db)
-
-    # Check if the entity exists
-    if not repo.type_exists(entity_id):
-        raise HTTPException(status_code=404, detail="Material Type not found")
-
-    # Call the update method
-    type = repo.get_material_type_by_id(entity_id)
-
-    try:
-        # Call the setter method to update the type
-        repo.delete_material_type(type)
-
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    return {'message': "Material Type deleted successfully"}
-
-
-@app.put("/update_mattype/{entity_id}")
-async def update_material_type(entity_id: int, request: MaterialTypeUpdateRequest, db: Session = Depends(get_db)):
-    repo = MaterialTypeRepository(db)
-    # Check if the entity exists
-    if not repo.type_exists(entity_id):
-        raise HTTPException(status_code=404, detail="Material Type not found")
-
-    # Call the update method
-    type = repo.get_material_type_by_id(entity_id)
-    try:
-        # Call the setter method to update the user
-        repo.update_material_type(type,
-                                  type_name=request.type_name)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    return {'message': "Material Type updated successfully"}
-
 
 @app.post("/forgot_password/")
 async def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
