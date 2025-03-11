@@ -52,7 +52,7 @@ def test_update_user_success(setup_database):
         mock_send.return_value = None  # The mocked method doesn't need to return anything
 
         # Send a PUT request with valid entity_id and new mass
-        response = client.put("/update_user/1", json={"username": "hi", "email": None, "password": "None", "user_type_id": 1})
+        response = client.put("users/update_user/1", json={"username": "hi", "email": None, "password": "None", "user_type_id": 1})
 
         # Assert that the response status code is 200
         assert response.status_code == 200
@@ -62,7 +62,7 @@ def test_update_user_success(setup_database):
 
         mock_send.assert_called_once_with(user.email)  # Check if the method was called with correct args
 
-    response = client.put("/update_user/1",
+    response = client.put("users/update_user/1",
                           json={"username": username, "email": None, "password": "jones7788", "user_type_id": 1})
     user = repository.get_user_by_id(1)
     assert user.username == username
@@ -70,7 +70,7 @@ def test_update_user_success(setup_database):
 # Test invalid material_id (material not found)
 def test_update_user_not_found():
     # Send a PUT request with an invalid entity_id
-    response = client.put("/update_user/9999", json={"username": "hi", "email": "cookies@gmail.com", "password": None, "user_type_id": 2})
+    response = client.put("users/update_user/9999", json={"username": "hi", "email": "cookies@gmail.com", "password": None, "user_type_id": 2})
     # Assert that the response status code is 404
     assert response.status_code == 404
 

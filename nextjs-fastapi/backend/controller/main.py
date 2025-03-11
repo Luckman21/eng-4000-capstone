@@ -7,9 +7,6 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from backend.controller.dependencies import get_db
 from db.model.Material import Material
-from db.model.User import User
-from db.model.MaterialType import MaterialType
-from db.model.UserType import UserType
 from fastapi.middleware.cors import CORSMiddleware
 from db.repositories.MaterialRepository import MaterialRepository
 from db.repositories.UserRepository import UserRepository
@@ -18,11 +15,6 @@ import asyncio
 from sqlalchemy import event
 from backend.controller import constants
 from backend.controller import listener
-from db.repositories.MaterialTypeRepository import MaterialTypeRepository
-from backend.controller.schemas.UserUpdateRequest import UserUpdateRequest
-from backend.controller.schemas.UserCreateRequest import UserCreateRequest
-from backend.controller.schemas.MaterialTypeUpdateRequest import MaterialTypeUpdateRequest
-from backend.controller.schemas.MaterialTypeCreateRequest import MaterialTypeCreateRequest
 from backend.controller.data_receiver import MQTTReceiver
 from backend.controller.scale_listener import MQTTscale
 from fastapi import FastAPI, Depends, HTTPException, Response, Request
@@ -32,16 +24,15 @@ from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from typing import Optional
 from backend.service.mailer.TempPasswordMailer import TempPasswordMailer
-from backend.service.mailer.PasswordChangeMailer import PasswordChangeMailer
 from backend.service.TempPasswordRandomizeService import create_temp_password
 from backend.controller.schemas.ForgotPasswordRequest import ForgotPasswordRequest
 from backend.service.PasswordHashService import PasswordHashService
-from backend.controller.routers import materials
-from backend.controller.routers import material_types
+from backend.controller.routers import materials, material_types, users
 
 app = FastAPI()
 app.include_router(materials.router)
 app.include_router(material_types.router)
+app.include_router(users.router)
 
 origins = [
     "http://127.0.0.1:3000",
@@ -232,101 +223,6 @@ async def get_all_user_types(db: Session = Depends(get_db)):
     return repo.get_all_user_types()
 
 
-@app.get("/users")
-async def get_all_users(db: Session = Depends(get_db)):
-    repo = UserRepository(db)
-    return repo.get_all_users()
-
-
-
-@app.post("/create_user")
-async def create_user(request: UserCreateRequest, db: Session = Depends(get_db)):
-    repo = UserRepository(db)
-
-    user = db.query(User).filter_by(email=request.email, username=request.username,
-                                    user_type_id=request.user_type_id).first()
-
-    # Check if the entity exists
-    if user is not None and repo.user_exists(user.id):
-        raise HTTPException(status_code=404, detail="User already exists")
-
-    # Call the update method
-
-    try:
-        # Call the setter method to update the material
-        repo.create_user(
-            username=request.username,
-            user_type_id=request.user_type_id,
-            password=PasswordHashService.hash_password(request.password),
-            email=request.email
-        )
-
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    return {'message': "User successfully created"}
-
-
-@app.delete("/delete_user/{entity_id}")
-async def delete_user(entity_id: int, db: Session = Depends(get_db)):
-    repo = UserRepository(db)
-
-    # Check if the entity exists
-    if not repo.user_exists(entity_id):
-        raise HTTPException(status_code=404, detail="User not found")
-
-    # Call the update method
-    user = repo.get_user_by_id(entity_id)
-
-    try:
-        # Call the setter method to update the material
-        repo.delete_user(user)
-
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    return {'message': "User deleted successfully"}
-
-
-@app.put("/update_user/{entity_id}")
-async def update_user(entity_id: int, request: UserUpdateRequest, db: Session = Depends(get_db)):
-    repo = UserRepository(db)
-    # Check if the entity exists
-    if not repo.user_exists(entity_id):
-        raise HTTPException(status_code=404, detail="User not found")
-
-    # Call the update method
-    user = repo.get_user_by_id(entity_id)
-    try:
-        # Call the setter method to update the user
-        password = None
-        if request.password is not None:
-            password = PasswordHashService.hash_password(request.password)
-
-        repo.update_user(user,
-                         username=request.username,
-                         password=password,
-                         email=request.email,
-                         user_type_id=request.user_type_id
-                         )
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    try:
-        if request.password is not None:
-            mailer = PasswordChangeMailer(from_addr=constants.MAILER_EMAIL)
-            mailer.send_notification(user.email)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-    new_token = create_access_token(data={
-        "id": user.id,
-        "username": user.username,
-        "email": user.email,
-        "user_type_id": user.user_type_id,
-    })
-
-    return {'message': "User updated successfully", "access_token": new_token}
 
 @app.post("/forgot_password/")
 async def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db)):

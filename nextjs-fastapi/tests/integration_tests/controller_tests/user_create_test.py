@@ -42,7 +42,7 @@ def test_create_user_success(setup_database):
     repository = UserRepository(session)
 
     # Send a PUT request with valid entity_id and new mass
-    response = client.post("/create_user", json={"password": "123", "username": "Mickey Mouse", "email": "red3@email.com", "user_type_id": 1})
+    response = client.post("users/create_user", json={"password": "123", "username": "Mickey Mouse", "email": "red3@email.com", "user_type_id": 1})
 
     # Assert that the response status code is 200
     assert response.status_code == 200
@@ -69,7 +69,7 @@ def test_create_user_not_found(setup_database):
     )
 
     # Send a PUT request with an invalid entity_id
-    response = client.post("/create_user", json={"password": "123", "username": "Dummy Material", "email": "red@email.com","user_type_id": 1})
+    response = client.post("users/create_user", json={"password": "123", "username": "Dummy Material", "email": "red@email.com","user_type_id": 1})
 
     # Assert that the response status code is 404
     assert response.status_code == 404
