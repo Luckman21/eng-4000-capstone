@@ -1,4 +1,4 @@
-import QR_Trigger from "@/components/QR_Trigger";
+import {QR_Trigger} from "@/components";
 
 export default function Home() {
     return (

@@ -1,12 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter, useParams } from "next/navigation";
 import { Button, Spinner, Card, CardBody} from "@heroui/react";
 import axios from "axios";
 
 const QR_Trigger = () => {
     const router = useRouter();
-    const { id } = router.query;
+    const { id } = useParams();
     const [material, setMaterial] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -52,6 +52,7 @@ const QR_Trigger = () => {
             <h2 className="text-2xl font-bold">{material?.material_type_name} - {material?.material.colour}</h2>
             <p className="text-lg mt-2">Mass left: {material?.mass} grams</p>
             <p className="text-sm text-gray-400">Shelf: {material?.material.shelf_id || "N/A"}</p>
+            <p className="text-sm text-gray-400"> Would you like to update it? </p>
             <div className="flex justify-center gap-4 mt-6">
                 <Button color="primary" onPress={handleUpdate}>
                     Yes

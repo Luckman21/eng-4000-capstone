@@ -11,6 +11,7 @@ import EditMaterialType from "./EditMaterialType";
 import Login from "./Login";
 import UserProfile from "./UserProfile";
 import Order from "./Order";
+import QR_Trigger from "./QR_Trigger";
 
 
-export { TableComponent, Nav, Popup, NewMaterial, DeletePopup, NewUser, EditUser, MaterialTypeTable, NewMaterialType, EditMaterialType,Login, UserProfile, Order};
+export { TableComponent, Nav, Popup, NewMaterial, DeletePopup, NewUser, EditUser, MaterialTypeTable, NewMaterialType, EditMaterialType,Login, UserProfile, Order, QR_Trigger};
