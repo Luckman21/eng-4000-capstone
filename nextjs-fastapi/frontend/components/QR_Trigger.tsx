@@ -70,10 +70,7 @@ const QR_Trigger = () => {
             <p className="text-sm text-gray-400">Shelf: {material?.material.shelf_id || "N/A"}</p>
             <p className="text-sm text-gray-400 mt-4"> Enter mass change (grams):
                 <Input
-                    label="Mass change (g)"
                     type="number"
-                    inputMode="numeric"
-                    placeholder="Enter mass change in grams"
                     value={customMass.toString()}
                     onChange={(e) => setCustomMass(parseFloat(e.target.value))}
                     className="mb-4"
