@@ -80,7 +80,7 @@ def test_material_consume_not_found():
 @pytest.mark.parametrize("mock_mass", [0.0, -5.0])
 def test_auto_consume_mass_throws_500(mock_mass):
     """Test that the endpoint returns 500 when mass_on_the_scale is ≤ 0.0"""
-    with patch("backend.controller.main.get_mass_from_scale", return_value=mock_mass):
+    with patch("backend.controller.routers.qr.get_mass_from_scale", return_value=mock_mass):
         response = client.get("/qr_display/1")
         assert response.status_code == 500
         assert response.json() == {"detail": "Mass reading on scale is less than or equal to zero"}

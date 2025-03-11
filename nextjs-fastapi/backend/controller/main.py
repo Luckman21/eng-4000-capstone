@@ -24,13 +24,14 @@ from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from typing import Optional
 from backend.service.PasswordHashService import PasswordHashService
-from backend.controller.routers import materials, material_types, users, access_management
+from backend.controller.routers import materials, material_types, users, access_management, qr
 
 app = FastAPI()
 app.include_router(materials.router)
 app.include_router(material_types.router)
 app.include_router(users.router)
 app.include_router(access_management.router)
+app.include_router(qr.router)
 
 origins = [
     "http://127.0.0.1:3000",
@@ -101,31 +102,6 @@ def low_stock_listener():
 async def get_all_user_types(db: Session = Depends(get_db)):
     repo = UserTypeRepository(db)
     return repo.get_all_user_types()
-
-
-@app.get("/qr_display/{entity_id}")
-async def auto_consume_mass(entity_id: int, db: Session = Depends(get_db)):
-    repo = MaterialRepository(db)
-
-    # Check if the entity exists
-    if not repo.material_exists(entity_id):
-        raise HTTPException(status_code=404, detail="Material not found")
-
-    # Call the update method
-    material = repo.get_material_by_id(entity_id)
-
-    mass_on_the_scale = get_mass_from_scale()  # TODO add listener call
-    material_type_name = material.material_type.type_name
-
-    if mass_on_the_scale <= 0.0:
-        raise HTTPException(status_code=500, detail="Mass reading on scale is less than or equal to zero")
-
-    return {'mass': mass_on_the_scale, 'material': material, 'material_type_name': material_type_name}
-
-
-def get_mass_from_scale():
-    """Simulates retrieving mass from the embedded system (to be replaced later)."""
-    return 2.0  # Placeholder for now
 
 def get_app():
     return app
