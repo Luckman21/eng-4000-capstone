@@ -11,6 +11,7 @@ from backend.controller.schemas.MaterialUpdateRequest import MaterialUpdateReque
 from backend.controller.schemas.MaterialCreateRequest import MaterialCreateRequest
 from backend.controller.schemas.MaterialMutationRequest import MaterialMutationRequest
 from fastapi import FastAPI, Depends, HTTPException, Response, Request, APIRouter
+from backend.service.controller_service import material_service
 
 
 router = APIRouter(
@@ -22,26 +23,27 @@ router = APIRouter(
 # Now define your API routes
 @router.get("/", response_model=list[MaterialSchema])
 async def get_Allmaterials(db: Session = Depends(get_db)):
-    repo = MaterialRepository(db)
-    return repo.get_all_materials()
+    materials = material_service.get_all_materials(db)
+
+    return materials
 
 
 @router.post("/create_material")
 async def create_material(request: MaterialCreateRequest, db: Session = Depends(get_db)):
-    repo = MaterialRepository(db)
 
-    material = db.query(Material).filter_by(supplier_link=request.supplier_link, colour=request.colour,
-                                            material_type_id=request.material_type_id).first()
+    exists = material_service.check_material_existance(db, supplier_link=request.supplier_link, colour=request.colour,
+                                            material_type_id=request.material_type_id)
 
     # Check if the entity exists
-    if material is not None and repo.material_exists(material.id):
+    if exists:
         raise HTTPException(status_code=404, detail="Material already exists")
 
     # Call the update method
 
     try:
         # Call the setter method to update the material
-        repo.create_material(
+        material_service.create_material(
+            db,
             colour=request.colour,
             supplier_link=request.supplier_link,
             mass=request.mass,
@@ -57,45 +59,34 @@ async def create_material(request: MaterialCreateRequest, db: Session = Depends(
 
 @router.delete("/delete_material/{entity_id}")
 async def delete_material(entity_id: int, db: Session = Depends(get_db)):
-    repo = MaterialRepository(db)
+    exists = material_service.check_material_existance(db, entity_id=entity_id)
 
     # Check if the entity exists
-    if not repo.material_exists(entity_id):
+    if not exists:
         raise HTTPException(status_code=404, detail="Material not found")
 
     # Call the update method
-    material = repo.get_material_by_id(entity_id)
-
     try:
-        # Call the setter method to update the material
-        repo.delete_material(material)
+        material_service.delete_material(db, entity_id)
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    material = repo.get_material_by_id(entity_id)
 
     return {'message': "Material deleted successfully"}
 
 
 @router.patch("/replenish_mass/{entity_id}")
 async def replenish_mass(entity_id: int, request: MaterialMutationRequest, db: Session = Depends(get_db)):
-    repo = MaterialRepository(db)
-    # Check if the entity exists
+    exists = material_service.check_material_existance(db, entity_id=entity_id)
 
-    if not repo.material_exists(entity_id):
+    # Check if the entity exists
+    if not exists:
         raise HTTPException(status_code=404, detail="Material not found")
 
-    # Call the update method
-    material = repo.get_material_by_id(entity_id)
     try:
         # Call the setter method to update the material
-        repo.update_material(material,
-                             mass=(material.mass + request.mass_change),
-                             colour=None,
-                             material_type_id=None,
-                             supplier_link=None,
-                             shelf_id=None)
+        material_service.replenish_mass(db, entity_id, request.mass_change)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -104,26 +95,15 @@ async def replenish_mass(entity_id: int, request: MaterialMutationRequest, db: S
 
 @router.patch("/consume_mass/{entity_id}")
 async def consume_mass(entity_id: int, request: MaterialMutationRequest, db: Session = Depends(get_db)):
-    repo = MaterialRepository(db)
+    exists = material_service.check_material_existance(db, entity_id=entity_id)
+
     # Check if the entity exists
-    if not repo.material_exists(entity_id):
+    if not exists:
         raise HTTPException(status_code=404, detail="Material not found")
 
-    # Call the update method
-    material = repo.get_material_by_id(entity_id)
-
-    # Check mass diference
-
-    if request.mass_change > material.mass:
-        raise HTTPException(status_code=400, detail="Consumed mass greater than material's mass")
     try:
         # Call the setter method to update the material
-        repo.update_material(material,
-                             mass=(material.mass - request.mass_change),
-                             colour=None,
-                             material_type_id=None,
-                             supplier_link=None,
-                             shelf_id=None)
+        material_service.consume_mass(db, entity_id, request.mass_change)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -132,16 +112,17 @@ async def consume_mass(entity_id: int, request: MaterialMutationRequest, db: Ses
 
 @router.put("/update_material/{entity_id}")
 async def update_material(entity_id: int, request: MaterialUpdateRequest, db: Session = Depends(get_db)):
-    repo = MaterialRepository(db)
+    exists = material_service.check_material_existance(db, entity_id=entity_id)
+
     # Check if the entity exists
-    if not repo.material_exists(entity_id):
+    if not exists:
         raise HTTPException(status_code=404, detail="Material not found")
 
-    # Call the update method
-    material = repo.get_material_by_id(entity_id)
     try:
         # Call the setter method to update the material
-        repo.update_material(material,
+        material_service.update_material(
+                             db,
+                             entity_id=entity_id,
                              mass=request.mass,
                              colour=request.colour,
                              material_type_id=request.material_type_id,
