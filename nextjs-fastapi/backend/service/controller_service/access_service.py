@@ -17,15 +17,9 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 hash = PasswordHashService()
 
 
-
 def decode_access_token(token: str):
-    try:
-        payload = jwt.decode(token, constants.SECRET_KEY, algorithms=[ALGORITHM])
-        return payload
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token has expired")
-    except jwt.JWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+    payload = jwt.decode(token, constants.SECRET_KEY, algorithms=[ALGORITHM])
+    return payload
 
 
 def authenticate_user(username: str, password: str, db: Session):

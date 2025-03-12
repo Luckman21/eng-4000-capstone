@@ -16,7 +16,7 @@ from typing import Optional
 from backend.service.mailer.TempPasswordMailer import TempPasswordMailer
 from backend.service.TempPasswordRandomizeService import create_temp_password
 from backend.controller.schemas.ForgotPasswordRequest import ForgotPasswordRequest
-from backend.service import access_service
+from backend.service.controller_service import access_service
 
 router = APIRouter(
     prefix="/access_management",

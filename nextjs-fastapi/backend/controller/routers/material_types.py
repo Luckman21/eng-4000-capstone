@@ -3,11 +3,10 @@ from pathlib import Path
 sys.path.append(str(Path().resolve().parent.parent))
 from sqlalchemy.orm import Session
 from backend.controller.dependencies import get_db
-from db.model.MaterialType import MaterialType
-from db.repositories.MaterialTypeRepository import MaterialTypeRepository
 from backend.controller.schemas.MaterialTypeUpdateRequest import MaterialTypeUpdateRequest
 from backend.controller.schemas.MaterialTypeCreateRequest import MaterialTypeCreateRequest
 from fastapi import FastAPI, Depends, HTTPException, Response, Request, APIRouter
+from backend.service.controller_service import material_type_service
 
 
 router = APIRouter(
@@ -17,27 +16,24 @@ router = APIRouter(
 
 @router.get("/")
 async def get_all_material_types(db: Session = Depends(get_db)):
-    repo = MaterialTypeRepository(db)
-    return repo.get_all_material_types()
+    material_types = material_type_service.get_all_material_types(db)
+
+    return material_types
 
 
 @router.post("/create_mattype")
 async def create_material_type(request: MaterialTypeCreateRequest, db: Session = Depends(get_db)):
-    repo = MaterialTypeRepository(db)
 
-    type = db.query(MaterialType).filter_by(type_name=request.type_name).first()
+    exists = material_type_service.check_material_type_existance(db, type_name=request.type_name)
 
     # Check if the entity exists
-    if type is not None and repo.type_exists(type.id):
+    if exists:
         raise HTTPException(status_code=404, detail="Material Type already exists")
 
     # Call the create method
 
     try:
-        # Call the setter method to update the type
-        repo.create_material_type(
-            type_name=request.type_name
-        )
+        material_type_service.create_material_type(db, request.type_name)
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -47,18 +43,16 @@ async def create_material_type(request: MaterialTypeCreateRequest, db: Session =
 
 @router.delete("/delete_mattype/{entity_id}")
 async def delete_material_type(entity_id: int, db: Session = Depends(get_db)):
-    repo = MaterialTypeRepository(db)
+
+    exists = material_type_service.check_material_type_existance(db, entity_id=entity_id)
 
     # Check if the entity exists
-    if not repo.type_exists(entity_id):
+    if not exists:
         raise HTTPException(status_code=404, detail="Material Type not found")
-
-    # Call the update method
-    type = repo.get_material_type_by_id(entity_id)
 
     try:
         # Call the setter method to update the type
-        repo.delete_material_type(type)
+        material_type_service.delete_material_type(db, entity_id)
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -68,17 +62,16 @@ async def delete_material_type(entity_id: int, db: Session = Depends(get_db)):
 
 @router.put("/update_mattype/{entity_id}")
 async def update_material_type(entity_id: int, request: MaterialTypeUpdateRequest, db: Session = Depends(get_db)):
-    repo = MaterialTypeRepository(db)
+    exists = material_type_service.check_material_type_existance(db, entity_id=entity_id)
+
     # Check if the entity exists
-    if not repo.type_exists(entity_id):
+    if not exists:
         raise HTTPException(status_code=404, detail="Material Type not found")
 
-    # Call the update method
-    type = repo.get_material_type_by_id(entity_id)
     try:
         # Call the setter method to update the user
-        repo.update_material_type(type,
-                                  type_name=request.type_name)
+        material_type_service.update_material_type(db, entity_id, request.type_name)
+
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

@@ -12,7 +12,7 @@ from backend.controller.schemas.UserCreateRequest import UserCreateRequest
 from fastapi import FastAPI, Depends, HTTPException, Response, Request, APIRouter
 from backend.service.mailer.PasswordChangeMailer import PasswordChangeMailer
 from backend.service.PasswordHashService import PasswordHashService
-from backend.service import access_service
+from backend.service.controller_service import access_service
 
 router = APIRouter(
     prefix="/users",

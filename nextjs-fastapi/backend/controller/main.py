@@ -3,13 +3,10 @@ from pathlib import Path
 
 import uvicorn
 sys.path.append(str(Path().resolve().parent.parent))
-from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from backend.controller.dependencies import get_db
 from db.model.Material import Material
 from fastapi.middleware.cors import CORSMiddleware
-from db.repositories.MaterialRepository import MaterialRepository
-from db.repositories.UserRepository import UserRepository
 from db.repositories.UserTypeRepository import UserTypeRepository
 import asyncio
 from sqlalchemy import event
@@ -18,12 +15,6 @@ from backend.controller import listener
 from backend.controller.data_receiver import MQTTReceiver
 from backend.controller.scale_listener import MQTTscale
 from fastapi import FastAPI, Depends, HTTPException, Response, Request
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-import jwt
-from datetime import datetime, timedelta
-from passlib.context import CryptContext
-from typing import Optional
-from backend.service.PasswordHashService import PasswordHashService
 from backend.controller.routers import materials, material_types, users, access_management, qr
 
 app = FastAPI()
