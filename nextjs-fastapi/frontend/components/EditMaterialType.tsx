@@ -61,7 +61,7 @@ const EditMaterialType: React.FC<EditMaterialTypes> = ({ materialType, isOpen, o
         try {
 
         // Send update request to backend
-      const response = await fetch(`http://localhost:8000/update_mattype/${editableMaterialType.id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/update_mattype/${editableMaterialType.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

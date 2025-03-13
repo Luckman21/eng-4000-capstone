@@ -20,7 +20,7 @@ const Nav=  ()=> {
   const [user, setUser] = useState<customJWTPayload | null>(null);
   const router = useRouter();
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/protected", {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/protected`, {
       method: "GET",
       credentials: "include", // Ensures cookies are included in the request
     })
@@ -32,7 +32,7 @@ const Nav=  ()=> {
  
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/logout", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logout`, {
         method: "POST",
         credentials: "include", // REQUIRED to send cookies
         headers: {
