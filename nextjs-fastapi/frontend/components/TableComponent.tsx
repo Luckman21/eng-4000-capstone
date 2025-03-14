@@ -29,7 +29,6 @@ import { Order, Popup } from "@/components";
 import { NewMaterial } from "@/components";
 import { DeletePopup } from "@/components";
 import { PlusIcon } from "@/constants/PlusIcon";
-import ExportModal from "@/components/ExportModal"
 
 const statusColorMap: Record<"In Stock" | "Low Stock", "success" | "warning"> = {
   "In Stock": "success",
@@ -53,7 +52,6 @@ const TableComponent = () => {
   const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [filterValue, setFilterValue] = React.useState("");
-  const [isExportModalOpen, setExportModalOpen] = useState(false);
   const {
     isOpen: isModalOneOpen,
     onOpen: openModalOne,
@@ -84,7 +82,7 @@ const TableComponent = () => {
     onOpenChange: handleModalThreeChange,
   } = useDisclosure();
 
-  const exportToCSV = (data: any[], filename: string) => {
+  const exportCSV = (data: any[], filename: string) => {
     if (data.length === 0) {
       alert("No data to export");
       return;
@@ -96,7 +94,8 @@ const TableComponent = () => {
       const values = headers.map((header) => {
         let val = item[header as keyof typeof item];
         if (typeof val === "string") {
-          val = val.replace(/"/g, "");
+          // Escape quotes by doubling them
+          val = val.replace(/"/g, '""');
           return `"${val}"`;
         }
         return val;
@@ -104,7 +103,7 @@ const TableComponent = () => {
       csvRows.push(values.join(","));
     }
     const csvString = csvRows.join("\n");
-    const blob = new Blob([csvString], {type: "text/csv"});
+    const blob = new Blob([csvString], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -144,13 +143,6 @@ const TableComponent = () => {
     openModalThree();
   };
 
-  const handleExport = (choice: "materials" | "materialTypes") => {
-    if (choice === "materials") {
-      exportToCSV(materials, "materials.csv");
-    } else if (choice === "materialTypes") {
-      exportToCSV(materialTypes, "materialTypes.csv");
-    }
-  };
 
   const handleDeleteClick = useCallback((material: Material) => {
     setDeleteMaterial(material);
@@ -357,10 +349,6 @@ const filteredItems = React.useMemo(() => {
         Add Material
       </Button>
 
-      <Button color="primary" onPress={() => setExportModalOpen(true)}>
-        Export Data
-      </Button>
-
       {/* Search Bar */}
       <Input
         isClearable
@@ -371,7 +359,13 @@ const filteredItems = React.useMemo(() => {
         onClear={() => onClear()}
         onValueChange={onSearchChange}
       />
+
+      <Button color="primary" onPress={() => exportCSV(materials, "materials.csv")}>
+          Export CSV
+      </Button>
     </div>
+
+      
       <Table
         aria-label="Visualize information through table"
         isStriped
@@ -433,11 +427,6 @@ const filteredItems = React.useMemo(() => {
         isOpen={isModalThreeOpen}
         onOpenChange={handleModalThreeChange}
         onSave={handleSaveMaterial} // Pass callback to
-        />
-        <ExportModal
-          isOpen={isExportModalOpen}
-          onClose={() => setExportModalOpen(false)}
-          onExport={handleExport}
         />
     </div>
   );
