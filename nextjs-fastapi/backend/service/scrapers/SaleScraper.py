@@ -39,7 +39,7 @@ def init_driver():
     return driver
 
 def setup_database():
-    engine = create_engine(constants.DATABASE_URL_TEST, echo=True)
+    engine = create_engine(constants.DATABASE_URL, echo=True)
 
     # Create a session factory bound to the engine
     Session = sessionmaker(bind=engine)
