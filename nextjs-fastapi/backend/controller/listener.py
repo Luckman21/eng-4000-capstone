@@ -24,31 +24,38 @@ SessionLocal = scoped_session(sessionmaker(autocommit=False, autoflush=False, bi
 
 async def quantity_poll(materials):
     alerts = []
-    superadmins = UserRepository(SessionLocal).get_all_superadmins()
+    async with AsyncSessionLocal() as session:
+        user_repo = UserRepository(session)
+        superadmins = await user_repo.get_all_superadmins_async()
+
 
     for material in materials:
         if material.mass < constants.THRESHOLD:
             alerts.append(material)
 
     for alert in alerts:
-        for superadmin in superadmins:
-            LowStockMailer(constants.MAILER_EMAIL).send_notification(superadmin.email, alert.product_type, alert.colour, alert.supplier_link)
+        previous_mass = app_state.get_previous_material_state(alert.id)
+
+        if previous_mass is not None and previous_mass >= constants.THRESHOLD:
+            for superadmin in superadmins:
+                LowStockMailer(constants.MAILER_EMAIL).send_notification(superadmin.email, alert.material_type.type_name, alert.colour, alert.supplier_link)
+
     return alerts
 
 async def job_complete_listener(mapper, connection, target):
-    session = SessionLocal()
+    session = AsyncSessionLocal()
     print(f"🆔 Manager ID (listener): {id(manager)}")
 
     # Create MaterialRepository instance
     repo = MaterialRepository(session)
-    materials = repo.get_all_materials()
+    materials = await repo.get_all_materials_async()
 
     alert_materials = await quantity_poll(materials)
 
     session.close()
 
     # Track previous states
-    for material in alert_materials:
+    for material in materials:
         app_state.set_previous_material_state(material.id, material.mass)
 
     data = {
@@ -83,11 +90,9 @@ async def shelf_update_listener(mapper, connection, target):
             for shelf in high_humidity_shelves + high_temp_shelves:
                 # Check if shelf state has changed (from acceptable to unacceptable)
                 previous_state = app_state.get_previous_shelf_state(shelf.id)
-                print(f"previous state: {previous_state}")
                 if previous_state is None:
                     app_state.set_previous_shelf_state(shelf.id, shelf.humidity_pct, shelf.temperature_cel)
                 else:
-                    print("hi")
                     # Check if the humidity or temperature crossed the threshold
                     if shelf.humidity_pct > constants.HUMIDITY_TOLERANCE >= previous_state['humidity']:
                         for superadmin in superadmins:

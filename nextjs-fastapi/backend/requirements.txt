@@ -20,3 +20,4 @@ pytest-asyncio
 gunicorn
 uvicorn
 asyncpg
+greenlet
