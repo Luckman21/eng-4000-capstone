@@ -75,7 +75,20 @@ class ShelfRepository:
             self.session.rollback()
             raise ValueError(f"Unexpected error: {e}")
 
-    async def get_all_shelves_async(self):
-        # Use select to fetch all shelves asynchronously
-        result = await self.session.execute(select(Shelf))
-        return result.scalars().all()  # Extract Shelf objects from the result
+    async def get_high_humidity_shelves_async(self):
+        """
+        Return shelves with humidity above threshold.
+        """
+        result = await self.session.execute(
+            select(Shelf).where(Shelf.humidity_pct > 20)
+        )
+        return result.scalars().all()
+
+    async def get_high_temperature_shelves_async(self):
+        """
+        Return shelves with temperature above threshold.
+        """
+        result = await self.session.execute(
+            select(Shelf).where(Shelf.temperature_cel > 30)
+        )
+        return result.scalars().all()

@@ -8,13 +8,13 @@ const ShelfCard = ({ shelf }: { shelf: ShelftCardType }) => {
       <CardHeader className="flex gap-3">
       
         <div className="flex flex-col">
-          <p className="text-md font-semibold">Shelf ID:{shelf.id}</p>
+          <p className="text-md font-semibold">Shelf ID: {shelf.id}</p>
         </div>
       </CardHeader>
       <Divider />
       <CardBody>
-        <p>Humidity: <span className="font-bold">{shelf.humidity}g</span></p>
-        <p>Temperature: <span className="font-bold">{shelf.temperature}g</span></p>
+        <p>Humidity: <span className="font-bold">{shelf.humidity}%</span></p>
+        <p>Temperature: <span className="font-bold">{shelf.temperature}&deg;C</span></p>
 
       </CardBody>
       <Divider />

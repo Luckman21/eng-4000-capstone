@@ -26,8 +26,11 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ lowstock ,shelfSt
     setLowStockMaterials(lowstock);
     setShelfStatus(shelfStat);
   }, [lowstock]);
-
-
+  useEffect(() => {
+    const sortedShelves = [...shelfStat].sort((a, b) => a.id - b.id);
+    setShelfStatus(sortedShelves);
+  }, [lowstock, shelfStat]);
+  
   
   
     return (

@@ -8,6 +8,9 @@ from sqlalchemy.orm import sessionmaker, scoped_session, Session
 from backend.controller.manager import manager
 from asyncio import get_running_loop
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from backend.service.mailer.LowStockMailer import LowStockMailer
+from backend.service.mailer.EnviroWarningMailer import EnviroWarningMailer
+from db.repositories.UserRepository import UserRepository
 
 DATABASE_URL = constants.DATABASE_URL_ASYNC  # Example: "postgresql+asyncpg://user:password@localhost/dbname"
 
@@ -31,14 +34,18 @@ async def quantity_poll(materials):
     Returns:
         List[Material]: A list of materials with a mass below the threshold value.
     """
-    alert = []  # create an array for materials with a mass below 50g
+    alerts = []  # create an array for materials with a mass below 50g
+    superadmins = UserRepository(SessionLocal).get_superadmins()
 
     # Iterate through all materials, append those with a mass below the threshold value
     for material in materials:
         if material.mass < constants.THRESHOLD:
-            alert.append(material)
-    
-    return alert # return an array of materials with mass below 50g
+            alerts.append(material)
+            
+    for alert in alerts:
+        for superadmin in superadmins:
+            LowStockMailer(constants.MAILER_EMAIL).send_notification(superadmin.email, alert.product_type, alert.colour, alert.supplier_link)
+    return alerts # return an array of materials with mass below 50g
 
 async def job_complete_listener(mapper, connection, target):
     """
@@ -86,12 +93,6 @@ async def job_complete_listener(mapper, connection, target):
 
 
 
-async def low_shelf_reader(shelfs):
-    alert = []  
-    for shelf in shelfs:
-        if shelf.humidity_pct > 20 or shelf.temperature_cel > 30:
-            alert.append(shelf)
-    return alert
 
 
 
@@ -99,7 +100,24 @@ async def shelf_update_listener(mapper, connection, target):
     try:
         async with AsyncSessionLocal() as session:  # Correctly manage session
             repo = ShelfRepository(session)
-            alert_shelfs = await repo.get_all_shelves_async()  # Ensure this is an async method
+            superadmins = UserRepository(SessionLocal).get_superadmins()
+            high_humidity_shelves = await repo.get_high_humidity_shelves_async()
+            high_temp_shelves = await repo.get_high_temperature_shelves_async()
+            for shelf in high_humidity_shelves:
+                for superadmin in superadmins:
+                    EnviroWarningMailer(constants.MAILER_EMAIL).send_notification(superadmin.email,"humidity" ,shelf.id)
+            for shelf in high_temp_shelves:
+                for superadmin in superadmins:
+                    EnviroWarningMailer(constants.MAILER_EMAIL).send_notification(superadmin.email,"temperature" ,shelf.id)
+            combined_shelves_dict = {}
+
+            for shelf in high_humidity_shelves + high_temp_shelves:
+                # Only keep one entry per shelf.id
+                if shelf.id not in combined_shelves_dict:
+                    combined_shelves_dict[shelf.id] = shelf
+
+            # Final deduplicated list
+            alert_shelfs = list(combined_shelves_dict.values())
     except Exception as e:
         print(f"Error while fetching shelves: {e}")
         return []
@@ -114,6 +132,7 @@ async def shelf_update_listener(mapper, connection, target):
                 for s in alert_shelfs
             ]
         }
+
         json_data = json.dumps(data)
 
         print(f"📤 Sending shelf alert: {json_data}")

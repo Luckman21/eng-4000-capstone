@@ -43,7 +43,6 @@ const Nav = () => {
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        console.log("📩 WebSocket Data:", data);
 
         if (data.type === "material_alert") {
           setLowStockMaterials((prev) => {
@@ -51,7 +50,7 @@ const Nav = () => {
             localStorage.setItem("lowStockMaterials", JSON.stringify(updatedMaterials));
             return updatedMaterials;
           });
-        } else if (data.type === "shelf_temp") {
+        }if (data.type === "shelf_alert") {
           setShelfStatus((prev) => {
             const updatedShelfStatus = data.data;
             localStorage.setItem("shelfStatus", JSON.stringify(updatedShelfStatus));
