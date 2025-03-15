@@ -35,7 +35,7 @@ async def quantity_poll(materials):
         List[Material]: A list of materials with a mass below the threshold value.
     """
     alerts = []  # create an array for materials with a mass below 50g
-    superadmins = UserRepository(SessionLocal).get_superadmins()
+    superadmins = UserRepository(SessionLocal).get_all_superadmins()
 
     # Iterate through all materials, append those with a mass below the threshold value
     for material in materials:
@@ -100,7 +100,8 @@ async def shelf_update_listener(mapper, connection, target):
     try:
         async with AsyncSessionLocal() as session:  # Correctly manage session
             repo = ShelfRepository(session)
-            superadmins = UserRepository(SessionLocal).get_superadmins()
+            user_repo = UserRepository(session)
+            superadmins = await user_repo.get_all_superadmins_async()
             high_humidity_shelves = await repo.get_high_humidity_shelves_async()
             high_temp_shelves = await repo.get_high_temperature_shelves_async()
             for shelf in high_humidity_shelves:
@@ -147,6 +148,6 @@ async def shelf_update_listener(mapper, connection, target):
             else:
                 # If no event loop is running, run the task directly using asyncio.run
                 print("No event loop running, using run_coroutine_threadsafe.")
-                asyncio.run_coroutine_threadsafe(manager.send_alerts(json_data), LOOP)
+                asyncio.run_coroutine_threadsafe(manager.send_alerts(json_data), loop)
         except Exception as e:
             print(f"❌ Error while scheduling alert: {e}")
