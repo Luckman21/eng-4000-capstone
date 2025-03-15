@@ -80,7 +80,7 @@ class ShelfRepository:
         Return shelves with humidity above threshold.
         """
         result = await self.session.execute(
-            select(Shelf).where(Shelf.humidity_pct > 20)
+            select(Shelf).where(Shelf.humidity_pct > 20.0)
         )
         return result.scalars().all()
 
@@ -89,6 +89,6 @@ class ShelfRepository:
         Return shelves with temperature above threshold.
         """
         result = await self.session.execute(
-            select(Shelf).where(Shelf.temperature_cel > 30)
+            select(Shelf).where(Shelf.temperature_cel > 30.0)
         )
         return result.scalars().all()
