@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from db.model.Shelf import Shelf
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from backend.controller import constants
 
 class ShelfRepository:
     def __init__(self, session: Session):
@@ -80,7 +81,7 @@ class ShelfRepository:
         Return shelves with humidity above threshold.
         """
         result = await self.session.execute(
-            select(Shelf).where(Shelf.humidity_pct > 20.0)
+            select(Shelf).where(Shelf.humidity_pct > constants.HUMIDITY_TOLERANCE)
         )
         return result.scalars().all()
 
@@ -89,6 +90,6 @@ class ShelfRepository:
         Return shelves with temperature above threshold.
         """
         result = await self.session.execute(
-            select(Shelf).where(Shelf.temperature_cel > 30.0)
+            select(Shelf).where(Shelf.temperature_cel > constants.TEMPERATURE_TOLERANCE)
         )
         return result.scalars().all()

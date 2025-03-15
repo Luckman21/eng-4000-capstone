@@ -14,6 +14,9 @@ DOCKER_TEST = "http://frontend:3000"
 
 THRESHOLD = 50  # 50g mass threshold for materials
 
+HUMIDITY_TOLERANCE = 20.0
+TEMPERATURE_TOLERANCE = 30.0
+
 SECRET_KEY = "your-secret-key"
 
 MAILER_EMAIL = 'pantheonprototyping@gmail.com'
