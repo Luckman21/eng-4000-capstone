@@ -47,6 +47,7 @@ async def quantity_poll(materials):
             LowStockMailer(constants.MAILER_EMAIL).send_notification(superadmin.email, alert.product_type, alert.colour, alert.supplier_link)
     return alerts # return an array of materials with mass below 50g
 
+
 async def job_complete_listener(mapper, connection, target):
     """
     A function triggered by the listener when the Material table is updated.  It checks for materials below the threshold value.
@@ -89,11 +90,6 @@ async def job_complete_listener(mapper, connection, target):
         else:
             asyncio.run(manager.send_alerts(json_data))  # Needed for sync calls
     return alert_materials 
-
-
-
-
-
 
 
 async def shelf_update_listener(mapper, connection, target):
