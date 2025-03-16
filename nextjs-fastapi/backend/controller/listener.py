@@ -43,6 +43,16 @@ async def quantity_poll(materials):
     return alerts
 
 async def job_complete_listener(mapper, connection, target):
+
+    """  A function triggered by the listener when the Material table is updated.  It checks for materials below the threshold value.
+    Args:
+        mapper (object): SQLAlchemy mapper associated with the Material class.
+        connection (object): the database connection object.
+        target (Material): the target Material instance that was updated in the database.
+    Returns:
+        A list of materials that have a mass below the threshold value.
+    """
+
     session = AsyncSessionLocal()
     print(f"🆔 Manager ID (listener): {id(manager)}")
 
