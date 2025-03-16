@@ -65,13 +65,14 @@ def test_notif_panel(driver, login):
     field = panel.find_elements(By.CSS_SELECTOR, 'input')
     field[2].send_keys("490.0")
 
-    update_button = driver.find_element(By.XPATH, "//button[text()='Update Material']")
+    WebDriverWait(panel, 10).until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Update Material']")))
+    update_button = panel.find_element(By.XPATH, "//button[text()='Update Material']")
     update_button.click()
     time.sleep(5)
 
-    WebDriverWait(nav, 40).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'svg')))
-    notif_button = nav.find_element(By.TAG_NAME, 'svg')
-    driver.execute_script("arguments[0].scrollIntoView(true);", notif_button)
+    WebDriverWait(nav, 40).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'li')))
+    notif_button = nav.find_elements(By.CSS_SELECTOR, 'li')[4]
+
     notif_button.click()
     time.sleep(3)
 
