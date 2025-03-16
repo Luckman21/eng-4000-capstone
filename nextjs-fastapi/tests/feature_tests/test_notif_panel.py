@@ -69,9 +69,11 @@ def test_notif_panel(driver, login):
     update_button.click()
     time.sleep(5)
 
+    WebDriverWait(nav, 40).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'svg')))
     notif_button = nav.find_element(By.TAG_NAME, 'svg')
     notif_button.click()
     time.sleep(3)
+
     panel = WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.TAG_NAME, "section")))
     header = panel.find_element(By.TAG_NAME, "header")
     assert header.text == 'Alerts'
