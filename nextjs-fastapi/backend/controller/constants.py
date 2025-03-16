@@ -1,9 +1,24 @@
 # A class of constants for the backend.  Classes should refer to this class when using globally defined constants to ensure parity.
+import os
 
+# Get the environment variable to determine which DB URL to use
+password = 'JanusIsThe_ROMAN_GodOfTransitions44'
+address = 'db.lzulfwvbuuoaipbbdzmi.supabase.co'
+
+# Use different database URLs based on the environment
+print(f"env var: {os.getenv('ENV')}")
+if os.getenv('ENV') == 'production':
+    DATABASE_URL = f"postgresql://postgres:{password}@{address}:5432/postgres"
+    print("prod")
+else:
+    DATABASE_URL = "postgresql://postgres:0000@localhost/capstone_db"
+    print("dev")
+    
 # The URL for our database
 DATABASE_URL = "postgresql://postgres:0000@localhost/capstone_db"
 DATABASE_URL_TEST = "postgresql://postgres:0000@localhost/capstone_db"
 DATABASE_URL_ASYNC = "postgresql+asyncpg://postgres:0000@localhost/capstone_db"
+
 
 DATABASE_URL_SQLLITE = 'sqlite:///../../db/capstone_db.db' # PRODUCTION
 DATABASE_URL_TEST_SQLLITE = 'sqlite:///nextjs-fastapi/db/capstone_db.db' # TESTING
