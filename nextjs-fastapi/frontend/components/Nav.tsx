@@ -1,5 +1,5 @@
 "use client";
-import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Avatar,Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/react";
+import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Avatar,Dropdown, DropdownTrigger, DropdownMenu, DropdownItem,Image } from "@heroui/react";
 import Link from "next/link";
 import { jwtDecode } from "jwt-decode";
 import { JwtPayload } from "jwt-decode";
@@ -50,23 +50,24 @@ const Nav=  ()=> {
   };
   
   return (
-    <Navbar>
+    <Navbar >
       <NavbarBrand>
-        <p className="font-bold text-inherit">Pantheon 3D Print</p>
+        <img src="/logo.svg" alt="Logo" className="h-12 w-auto"/>
+     
       </NavbarBrand>
       <NavbarContent className=" sm:flex gap-4" justify="center">
        
-        <NavbarItem isActive={pathname === "/inventory"} >
+        <NavbarItem isActive={pathname === "/inventory"}  className={pathname === "/inventory" ? "text-primary font-semibold" : "text-white"}>
           <Link href="/inventory" >
           Inventory
           </Link>
         </NavbarItem>
         {user?.user_type_id === 2 && ( // Only render this if user_type_id is 2
-          <NavbarItem isActive={pathname === "/users"}>
+          <NavbarItem isActive={pathname === "/users"} className={pathname === "/users" ? "text-primary font-semibold" : "text-white"}>
             <Link href="/users">Users</Link>
           </NavbarItem>
         )}
-        <NavbarItem  isActive={pathname === "/materialType"}>
+        <NavbarItem  isActive={pathname === "/materialType"} className={pathname === "/materialType" ? "text-primary font-semibold" : "text-white"}>
           <Link href="/materialType">
             Material Type
           </Link>

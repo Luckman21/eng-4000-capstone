@@ -115,6 +115,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
             label="Username"
             placeholder="Enter username"
             variant="bordered"
+            className="py-2"
             value={user?.username || ""}
             onChange={(e) => handleChange("username", e.target.value)}
           />
@@ -125,7 +126,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
             value={user?.email || ""}
             onChange={(e) => handleChange("email", e.target.value)}
           />
-          <div className="flex justify-between items-center gap-4 mt-6">
+          <div className="flex justify-between items-center gap-4 mt-6 py-2">
             <Button color="primary" onPress={() => setPasswordModalOpen(true)}>
               Update Password
             </Button>
