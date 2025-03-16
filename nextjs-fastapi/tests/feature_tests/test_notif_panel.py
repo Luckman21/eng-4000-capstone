@@ -32,6 +32,9 @@ def driver():
 
     chromedriver_autoinstaller.install()
     driver = webdriver.Chrome(options=chrome_options)
+    response = client.put("/update_material/1",
+                          json={"mass": 500.0, "supplier_link": None, "colour": None, "material_type_id": None,
+                                "shelf_id": None})
 
     yield driver
     driver.quit()
