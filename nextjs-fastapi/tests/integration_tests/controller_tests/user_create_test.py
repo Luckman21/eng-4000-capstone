@@ -15,8 +15,8 @@ from backend.controller import constants
 
 @pytest.fixture(scope='module')
 def setup_database(request):
-    DATABASE_URL = constants.DATABASE_URL_TEST
-    engine = create_engine(constants.DATABASE_URL_TEST, echo=True)
+    DATABASE_URL = constants.DATABASE_URL
+    engine = create_engine(constants.DATABASE_URL, echo=True)
 
     # Bind the Base metadata to the engine
     Base.metadata.create_all(engine)

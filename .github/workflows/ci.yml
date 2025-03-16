@@ -54,7 +54,7 @@ jobs:
       run: echo "TEST_TYPE=integration" >> $GITHUB_ENV
 
     - name: Set DATABASE_URL
-      run: echo "DATABASE_URL=postgresql://postgres:0000@localhost:5432/capstone_db" >> $GITHUB_ENV
+      run: echo "ENV=development" >> $GITHUB_ENV
 
       # Run scripts to create tables and insert sample data
     - name: Create tables and insert sample data
