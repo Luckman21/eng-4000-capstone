@@ -71,6 +71,7 @@ def test_notif_panel(driver, login):
 
     WebDriverWait(nav, 40).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'svg')))
     notif_button = nav.find_element(By.TAG_NAME, 'svg')
+    driver.execute_script("arguments[0].scrollIntoView(true);", notif_button)
     notif_button.click()
     time.sleep(3)
 
