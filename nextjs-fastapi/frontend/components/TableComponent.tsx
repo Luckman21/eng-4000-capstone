@@ -81,6 +81,37 @@ const TableComponent = () => {
     onOpen: openModalThree,
     onOpenChange: handleModalThreeChange,
   } = useDisclosure();
+
+  const exportCSV = (data: any[], filename: string) => {
+    if (data.length === 0) {
+      alert("No data to export");
+      return;
+    }
+    const headers = Object.keys(data[0]);
+    const csvRows = [];
+    csvRows.push(headers.join(","));
+    for (const item of data) {
+      const values = headers.map((header) => {
+        let val = item[header as keyof typeof item];
+        if (typeof val === "string") {
+          // Escape quotes by doubling them
+          val = val.replace(/"/g, '""');
+          return `"${val}"`;
+        }
+        return val;
+      });
+      csvRows.push(values.join(","));
+    }
+    const csvString = csvRows.join("\n");
+    const blob = new Blob([csvString], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
   
   const list = useAsyncList({
     async load({ signal }) {
@@ -111,6 +142,7 @@ const TableComponent = () => {
     setOrder(material);
     openModalThree();
   };
+
 
   const handleDeleteClick = useCallback((material: Material) => {
     setDeleteMaterial(material);
@@ -327,7 +359,13 @@ const filteredItems = React.useMemo(() => {
         onClear={() => onClear()}
         onValueChange={onSearchChange}
       />
+
+      <Button color="primary" onPress={() => exportCSV(materials, "materials.csv")}>
+          Export CSV
+      </Button>
     </div>
+
+      
       <Table
         aria-label="Visualize information through table"
         isStriped
