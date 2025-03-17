@@ -10,11 +10,11 @@ from sqlalchemy.orm import sessionmaker
 from db.model.base import Base 
 from db.model.Material import Material 
 from db.model.MaterialType import MaterialType 
-from backend.controller.constants import DATABASE_URL_TEST 
+from backend.controller import constants
 
 @pytest.fixture(scope="module") 
 def setup_database(request): 
-    DATABASE_URL = DATABASE_URL_TEST 
+    DATABASE_URL = constants.DATABASE_URL
     engine = create_engine(DATABASE_URL, echo=True) 
     
     Base.metadata.create_all(engine) 

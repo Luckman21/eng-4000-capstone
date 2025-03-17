@@ -20,6 +20,7 @@ type DeletePopupTypes = {
 };
 
 const DeletePopup: React.FC<DeletePopupTypes> = ({ item, isOpen, onOpenChange, onDelete, itemType}) => {
+  const [errorMessage, setErrorMessage] = useState("");
 
   
 
@@ -37,6 +38,10 @@ const DeletePopup: React.FC<DeletePopupTypes> = ({ item, isOpen, onOpenChange, o
       onDelete(item.id);
       onOpenChange();
     } catch (error) {
+
+      // Extract "detail" if it exists
+      const errorMessage = "Login failed. Please try again.";
+      setErrorMessage(errorMessage);
       console.error("Error deleting material:", error);
     }
   };
@@ -57,6 +62,11 @@ const DeletePopup: React.FC<DeletePopupTypes> = ({ item, isOpen, onOpenChange, o
           <Button color="primary" onPress={handleDelete}>
             Delete
           </Button>
+                  {errorMessage && (
+            <p className="text-red-500 bg-red-100 border border-red-400 text-sm mt-2 p-2 rounded">
+        {errorMessage}
+            </p>
+        )}
         </ModalFooter>
       </ModalContent>
     </Modal>
