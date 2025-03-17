@@ -2,6 +2,9 @@ from sqlalchemy.exc import IntegrityError, DataError, SQLAlchemyError
 from sqlalchemy.orm import Session
 from db.model.Material import Material
 from db.model.MaterialType import MaterialType
+from sqlalchemy.future import select
+from sqlalchemy.orm import joinedload
+
 
 
 class MaterialRepository:
@@ -48,6 +51,18 @@ class MaterialRepository:
         Retrieve all materials from the database.
         """
         return self.session.query(Material).order_by(Material.id).all()
+
+    async def get_all_materials_async(self) -> list:
+        """
+        Retrieve all materials from the database asynchronously.
+        """
+        async with self.session.begin():  # Begin a transaction
+            result = await self.session.execute(
+                select(Material).order_by(Material.id).options(joinedload(Material.material_type))
+            )
+            materials = result.scalars().all()  # Get the result as a list of materials
+        return materials
+
 
     def update_material(self, material: Material, colour: str = None, supplier_link: str = None, mass: float = None,
                         material_type_id: int = None, shelf_id: int = None ) -> Material:

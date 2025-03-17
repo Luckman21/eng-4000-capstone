@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from backend.controller.dependencies import get_db
 from db.schemas import MaterialSchema
 from db.model.Material import Material
+from db.model.Shelf import Shelf
 from db.model.User import User
 from db.model.MaterialType import MaterialType
 from db.model.UserType import UserType
@@ -33,6 +34,7 @@ from backend.service.PasswordHashService import PasswordHashService
 from fastapi import FastAPI, Depends, HTTPException, Response, Request
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 import jwt
+from fastapi import  WebSocket, WebSocketDisconnect
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from typing import Optional
@@ -41,6 +43,7 @@ from backend.service.mailer.PasswordChangeMailer import PasswordChangeMailer
 from backend.service.TempPasswordRandomizeService import create_temp_password
 from backend.controller.schemas.ForgotPasswordRequest import ForgotPasswordRequest
 from backend.service.PasswordHashService import PasswordHashService
+from backend.controller.manager import manager
 
 app = FastAPI()
 origins = [
@@ -61,6 +64,7 @@ app.add_middleware(
 async def root():
     return {"message": "Hello Azure"}
 
+LOOP = None
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
@@ -185,9 +189,13 @@ def decode_access_token(token: str):
 
 # Set up listeners on startup
 @app.on_event("startup")
-def setup_listeners():
+async def setup_listeners():
+    global LOOP
+    LOOP = asyncio.get_running_loop()
     low_stock_listener()
+    shelf_listener()
 
+#Set up listeners on startup
 
 # Set up listeners on startup
 @app.on_event("startup")
@@ -207,6 +215,7 @@ def start_mqtt_receiver():
     receiver = MQTTReceiver(mqtt_broker, mqtt_port, mqtt_temp_topic, mqtt_humid_topic, db_url)
     receiver.start()
 
+#Create a listener that triggers when the Material table is updated, checks for Materials with a mass below the threshold
 # Define the MQTT scale start function
 def start_mqtt_scale():
     mqtt_broker = "test.mosquitto.org"
@@ -223,8 +232,35 @@ def start_mqtt_scale():
 def low_stock_listener():
     def listener_wrapper(mapper, connection, target):
         asyncio.create_task(listener.job_complete_listener(mapper, connection, target))
-
     event.listen(Material, 'after_update', listener_wrapper)
+
+def shelf_listener():
+
+    def shelf_update_listener(mapper, connection, target):
+        print(f"🆔 Manager ID (shelf_listener): {id(manager)}")  # Ensure it's the same instance
+        try:
+            future = asyncio.run_coroutine_threadsafe(listener.shelf_update_listener(mapper, connection, target), LOOP)
+            future.result()  # Ensure exceptions are caught
+            print("✅ Successfully ran shelf listener")
+        except RuntimeError as e:
+            print(f"❌ RuntimeError: {e} - Possibly no running event loop?")
+        except Exception as e:
+            print(f"❌ Error in shelf_update_listener: {e}")
+    event.listen(Shelf, 'after_update', shelf_update_listener)
+
+
+@app.websocket("/ws/alerts")
+async def websocket_endpoint(websocket: WebSocket):
+    """Handles WebSocket connections for real-time alerts."""
+    await manager.connect(websocket)
+
+    try:
+        while True:
+            await websocket.receive_text()  # Keep the connection alive
+    except WebSocketDisconnect:
+        await manager.disconnect(websocket)
+
+
 
 
 # Now define your API routes

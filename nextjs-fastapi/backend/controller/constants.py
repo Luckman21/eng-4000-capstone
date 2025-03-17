@@ -13,6 +13,11 @@ if os.getenv('ENV') == 'production':
 else:
     DATABASE_URL = "postgresql://postgres:0000@localhost/capstone_db"
     print("dev")
+    
+# The URL for our database
+DATABASE_URL = "postgresql://postgres:0000@localhost/capstone_db"
+DATABASE_URL_TEST = "postgresql://postgres:0000@localhost/capstone_db"
+DATABASE_URL_ASYNC = "postgresql+asyncpg://postgres:0000@localhost/capstone_db"
 
 
 DATABASE_URL_SQLLITE = 'sqlite:///../../db/capstone_db.db' # PRODUCTION
@@ -23,6 +28,9 @@ LOCALHOST_TEST =  "http://localhost:3000"
 DOCKER_TEST = "http://frontend:3000"
 
 THRESHOLD = 50  # 50g mass threshold for materials
+
+HUMIDITY_TOLERANCE = 20.0
+TEMPERATURE_TOLERANCE = 30.0
 
 SECRET_KEY = "your-secret-key"
 
