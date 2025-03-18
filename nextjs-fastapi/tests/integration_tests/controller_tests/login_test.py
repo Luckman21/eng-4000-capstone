@@ -15,7 +15,7 @@ from db.repositories.UserRepository import UserRepository
 
 @pytest.fixture(scope='module')
 def setup_database(request):
-    DATABASE_URL = constants.DATABASE_URL_TEST
+    DATABASE_URL = constants.DATABASE_URL
     engine = create_engine(DATABASE_URL, echo=True)
 
     # Bind the Base metadata to the engine
