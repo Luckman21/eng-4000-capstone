@@ -4,7 +4,7 @@ sys.path.append(str(Path().resolve().parent.parent))
 import asyncio
 from sqlalchemy import event
 from db.model.Material import Material
-from backend.controller import listener
+from backend.service.listener import listener
 
 
 def low_stock_listener():

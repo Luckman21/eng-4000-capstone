@@ -1,7 +1,7 @@
 from backend.controller import constants
-from backend.controller import listener
-from backend.controller.data_receiver import MQTTReceiver
-from backend.controller.scale_listener import MQTTscale
+from backend.service.listener import listener
+from backend.service.listener.data_receiver import MQTTReceiver
+from backend.service.listener.scale_listener import MQTTscale
 import asyncio
 from sqlalchemy import event
 from db.model.Shelf import Shelf
