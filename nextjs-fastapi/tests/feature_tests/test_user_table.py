@@ -20,7 +20,7 @@ TEST_URL = "http://127.0.0.1:3000/users"
 @pytest.fixture(scope="module")
 def driver():
     chrome_options = Options()
-    chrome_options.add_argument("--headless") # This means you won't see the actual icon
+    #chrome_options.add_argument("--headless") # This means you won't see the actual icon
     chrome_options.add_argument("--disable-gpu") # Disable GPU acceleration (required in headless mode)
     chrome_options.add_argument("--no-sandbox")  # Might help in some environments
     # This will change depending on your driver
@@ -56,14 +56,13 @@ def test_user_table_header(driver, login):
 
 def test_user_table_buttons(driver, login):
     driver.get(TEST_URL)
-    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "tbody tr")))
-
-
-    rows = driver.find_elements(By.CSS_SELECTOR, "tbody tr")
+    rows = WebDriverWait(driver, 30).until(
+        EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "tbody tr"))
+    )
 
     # Check each row for the presence of two SVG elements
     for index, row in enumerate(rows):
-        WebDriverWait(row, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "svg")))
+        WebDriverWait(row, 20).until(EC.presence_of_all_elements_located((By.TAG_NAME, "svg")))
         svg_elements = row.find_elements(By.TAG_NAME, "svg")
 
         # Assert that each row has exactly 2 SVGs (or adjust as necessary)
