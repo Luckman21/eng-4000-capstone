@@ -11,13 +11,13 @@
 #define YORKU_PASS ""  // Should autoconnect to AirYorkGuest as MAC address is registered
 
 // DHT11 important values
-#define DHTPIN 7
+#define DHTPIN 6
 #define DHTTYPE 11
 
 // Calibration values
-#define TEMP_CAL 21     // Adjusts the temperature reading for accuracy
-#define HUMID_CAL 10    // Adjusts the humidity reading for accuracy
-#define SCALE_CAL 405  // Adjusts the scale reading for accuracy
+#define TEMP_CAL 23     // Adjusts the temperature reading for accuracy
+#define HUMID_CAL 7     // Adjusts the humidity reading for accuracy
+#define SCALE_CAL 417   // Adjusts the scale reading for accuracy
 
 // Define HX711 pins
 #define DOUT 2  // Data pin (DT)
