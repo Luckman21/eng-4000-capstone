@@ -87,7 +87,7 @@ def test_material_table_order(driver, login):
     driver.get(TEST_URL)
     WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.TAG_NAME, "tbody")))
     rows = WebDriverWait(driver, 30).until(
-        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "tbody tr td"))
+        EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "tbody tr td"))
     )
 
     for _ in range(3):
