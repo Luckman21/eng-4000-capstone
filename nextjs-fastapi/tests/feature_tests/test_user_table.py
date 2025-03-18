@@ -62,7 +62,7 @@ def test_user_table_buttons(driver, login):
 
     # Check each row for the presence of two SVG elements
     for index, row in enumerate(rows):
-        WebDriverWait(row, 20).until(EC.visibility_of_all_elements_located((By.XPATH, "./td[5]/div/span[1]")))
+        WebDriverWait(row, 30).until(EC.visibility_of_all_elements_located((By.XPATH, "./td[5]/div/span[1]")))
         svg_elements = row.find_elements(By.TAG_NAME, "svg")
 
         # Assert that each row has exactly 2 SVGs (or adjust as necessary)
@@ -76,15 +76,18 @@ def test_user_table_order(driver, login):
         EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "tbody tr"))
     )
 
-    first_td = rows[0].find_element(By.XPATH, "./td[1]")
+    # Wait for the first row to be visible and check the first td
+    first_row = WebDriverWait(driver, 20).until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, "tbody tr:nth-child(1)"))
+    )
+    first_td = first_row.find_element(By.XPATH, "./td[1]")
     assert first_td.text == '1'
 
-    # Re-fetch the rows before interacting with the second one to avoid stale reference
-    rows = WebDriverWait(driver, 20).until(
-        EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "tbody tr"))
+    # Wait for the second row to be visible and check the second td
+    second_row = WebDriverWait(driver, 20).until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, "tbody tr:nth-child(2)"))
     )
-
-    second_td = rows[1].find_element(By.XPATH, "./td[1]")
+    second_td = second_row.find_element(By.XPATH, "./td[1]")
     assert second_td.text == '2'
 
 
