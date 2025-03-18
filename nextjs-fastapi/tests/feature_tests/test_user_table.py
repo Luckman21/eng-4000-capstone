@@ -73,24 +73,13 @@ def test_user_table_buttons(driver, login):
 
 def test_user_table_order(driver, login):
     driver.get(TEST_URL)
+    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[1]")))
+    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[2]/td[1]")))
 
-    WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.TAG_NAME, "tbody")))
-    rows = WebDriverWait(driver, 20).until(
-        EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "tbody tr"))
-    )
-
-    # Wait for the first row to be visible and check the first td
-    first_row = WebDriverWait(driver, 20).until(
-        EC.visibility_of_element_located((By.CSS_SELECTOR, "tbody tr:nth-child(1)"))
-    )
-    first_td = first_row.find_element(By.XPATH, "./td[1]")
+    first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[1]")
     assert first_td.text == '1'
 
-    # Wait for the second row to be visible and check the second td
-    second_row = WebDriverWait(driver, 20).until(
-        EC.visibility_of_element_located((By.CSS_SELECTOR, "tbody tr:nth-child(2)"))
-    )
-    second_td = second_row.find_element(By.XPATH, "./td[1]")
+    second_td = driver.find_element(By.XPATH, "//tbody/tr[2]/td[1]")
     assert second_td.text == '2'
 
 
