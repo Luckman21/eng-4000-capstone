@@ -62,7 +62,7 @@ def test_user_table_buttons(driver, login):
 
     # Check each row for the presence of two SVG elements
     for index, row in enumerate(rows):
-        WebDriverWait(row, 30).until(EC.visibility_of_all_elements_located((By.XPATH, "./td[5]/div/span[1]")))
+        WebDriverWait(row, 30).until(EC.visibility_of_all_elements_located((By.XPATH, "./td[5]/div")))
         svg_elements = row.find_elements(By.TAG_NAME, "svg")
 
         # Assert that each row has exactly 2 SVGs (or adjust as necessary)
