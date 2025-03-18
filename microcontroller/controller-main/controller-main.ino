@@ -16,7 +16,7 @@
 
 // Calibration values
 #define TEMP_CAL 23     // Adjusts the temperature reading for accuracy
-#define HUMID_CAL 7     // Adjusts the humidity reading for accuracy
+#define HUMID_CAL 17    // Adjusts the humidity reading for accuracy
 #define SCALE_CAL 417   // Adjusts the scale reading for accuracy
 
 // Define HX711 pins
