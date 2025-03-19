@@ -7,7 +7,7 @@
 #include "HX711.h"
 
 // YorkU network credentials
-#define YORKU_SSID "AirYorkGuest"
+#define YORKU_SSID "AirYorkGUEST"
 #define YORKU_PASS ""  // Should autoconnect to AirYorkGuest as MAC address is registered
 
 // DHT11 important values
