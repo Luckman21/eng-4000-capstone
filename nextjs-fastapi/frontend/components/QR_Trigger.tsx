@@ -31,7 +31,7 @@ const QR_Trigger = () => {
 
     const handleReplenish = async () => {
         try {
-            const response = await axios.patch(`http://127.0.0.1:8000/replenish_mass/${id}`, {
+            const response = await axios.patch(`http://127.0.0.1:8000/materials/replenish_mass/${id}`, {
                 mass_change: customMass,
             });
             if (response.status === 200) {
@@ -46,7 +46,7 @@ const QR_Trigger = () => {
 
     const handleConsume = async () => {
         try {
-            const response = await axios.patch(`http://127.0.0.1:8000/consume_mass/${id}`, {
+            const response = await axios.patch(`http://127.0.0.1:8000/materials/consume_mass/${id}`, {
                 mass_change: customMass,
             });
             if (response.status === 200) {
