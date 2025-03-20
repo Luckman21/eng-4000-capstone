@@ -86,17 +86,14 @@ def test_material_table_order(driver, login):
 
     driver.get(TEST_URL)
 
-    rows = WebDriverWait(driver, 40).until(
-        lambda d: d.find_elements(By.CSS_SELECTOR, "tbody tr") if len(d.find_elements(By.CSS_SELECTOR, "tbody tr")) >= 2 else False
-    )
+    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[1]")))
+    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[2]/td[1]")))
 
-    first_row = rows[0]
-    second_row = rows[1]
-    first_td = first_row.find_element(By.XPATH, ".//td[1]")
-    second_td = second_row.find_element(By.XPATH, ".//td[1]")
+    first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[1]")
+    assert first_td.text == '1'
 
-    assert first_td.text.strip() == '1'
-    assert second_td.text.strip() == '2'
+    second_td = driver.find_element(By.XPATH, "//tbody/tr[2]/td[1]")
+    assert second_td.text == '2'
 
 
 def test_edit_button(driver, login):
