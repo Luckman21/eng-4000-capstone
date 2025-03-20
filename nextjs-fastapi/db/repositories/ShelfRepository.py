@@ -1,6 +1,9 @@
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 from db.model.Shelf import Shelf
+from sqlalchemy.future import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from backend.controller import constants
 
 class ShelfRepository:
     def __init__(self, session: Session):
@@ -72,3 +75,21 @@ class ShelfRepository:
         except Exception as e:
             self.session.rollback()
             raise ValueError(f"Unexpected error: {e}")
+
+    async def get_high_humidity_shelves_async(self):
+        """
+        Return shelves with humidity above threshold.
+        """
+        result = await self.session.execute(
+            select(Shelf).where(Shelf.humidity_pct > constants.HUMIDITY_TOLERANCE)
+        )
+        return result.scalars().all()
+
+    async def get_high_temperature_shelves_async(self):
+        """
+        Return shelves with temperature above threshold.
+        """
+        result = await self.session.execute(
+            select(Shelf).where(Shelf.temperature_cel > constants.TEMPERATURE_TOLERANCE)
+        )
+        return result.scalars().all()
