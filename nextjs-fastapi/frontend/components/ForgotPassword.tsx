@@ -28,7 +28,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ user, isOpen, onOpenCha
   const handleForgotPassword = async () => {
     try {
       // Send the email to the backend for the forgot password process
-      const response = await axios.post('http://localhost:8000/forgot_password/', {
+      const response = await axios.post('http://localhost:8000/access_management/forgot_password/', {
         email: forgotEmail,
       });
 

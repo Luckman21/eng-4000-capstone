@@ -50,7 +50,7 @@ const defaultMaterialType: MaterialType = {
 };
 
 const MaterialTypeTable: React.FC<MaterialTypes> = () => {
-  const APIHEADER = "delete_mattype";  
+  const APIHEADER = "material_types/delete_mattype";
   const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
   const [user, setUser] = useState<UserInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -71,7 +71,7 @@ const MaterialTypeTable: React.FC<MaterialTypes> = () => {
   } = useDisclosure();
 
   useEffect(() => {
-      fetch("http://127.0.0.1:8000/protected", {
+      fetch("http://127.0.0.1:8000/access_management/protected", {
         method: "GET",
         credentials: "include", // Ensures cookies are included in the request
       })

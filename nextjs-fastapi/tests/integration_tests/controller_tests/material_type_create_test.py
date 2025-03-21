@@ -41,7 +41,7 @@ def test_create_material_type_success(setup_database):
     repository = MaterialTypeRepository(session)
 
     # Send a PUT request with valid entity_id and new mass
-    response = client.post("/create_mattype", json={"type_name": "Elastic Plastic"})
+    response = client.post("material_types/create_mattype", json={"type_name": "Elastic Plastic"})
 
     # Assert that the response status code is 200
     assert response.status_code == 200
@@ -66,7 +66,7 @@ def test_create_material_type_not_found(setup_database):
     )
 
     # Send a PUT request with an invalid entity_id
-    response = client.post("/create_mattype", json={"type_name" : "Dummy Material Type 2"})
+    response = client.post("material_types/create_mattype", json={"type_name" : "Dummy Material Type 2"})
 
     # Assert that the response status code is 404
     assert response.status_code == 404

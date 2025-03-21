@@ -42,7 +42,7 @@ type MaterialTypeSimple = {
 
 
 const TableComponent = () => {
-  const APIHEADER = "delete_material"; 
+  const APIHEADER = "materials/delete_material";
   const statusOptions = ["available", "unavailable", "in use"];
   const [user, setUser] = useState(null);
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -168,7 +168,7 @@ const TableComponent = () => {
     setMaterials((prevMaterials) => prevMaterials.filter((mat) => mat.id !== deletedId));
   };
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/protected", {
+    fetch("http://127.0.0.1:8000/access_management/protected", {
       method: "GET",
       credentials: "include", // Ensures cookies are included in the request
     })

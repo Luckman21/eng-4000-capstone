@@ -70,7 +70,7 @@ def test_delete_user_success(setup_database):
     user_id = user.id
 
     # Send a PUT request with valid entity_id and new mass
-    response = client.delete(f"/delete_user/{user_id}")
+    response = client.delete(f"users/delete_user/{user_id}")
 
     # Assert that the response status code is 200
     assert response.status_code == 200
@@ -81,7 +81,7 @@ def test_delete_user_success(setup_database):
 # Test invalid user_id (user not found)
 def test_update_user_not_found():
     # Send a PUT request with an invalid entity_id
-    response = client.delete("/delete_user/999")
+    response = client.delete("users/delete_user/999")
 
     # Assert that the response status code is 404
     assert response.status_code == 404

@@ -42,7 +42,7 @@ def test_create_material_success(setup_database):
     repository = MaterialRepository(session)
 
     # Send a PUT request with valid entity_id and new mass
-    response = client.post("/create_material", json={"mass": 200.0, "supplier_link": "Mickey Mouse", "colour": "red", "material_type_id": 1, "shelf_id" : 2})
+    response = client.post("materials/create_material", json={"mass": 200.0, "supplier_link": "Mickey Mouse", "colour": "red", "material_type_id": 1, "shelf_id" : 2})
 
     # Assert that the response status code is 200
     assert response.status_code == 200
@@ -70,7 +70,7 @@ def test_create_material_not_found(setup_database):
     )
 
     # Send a PUT request with an invalid entity_id
-    response = client.post("/create_material", json={"mass": 10.5, "supplier_link": "Dummy Material", "colour": "Red", "material_type_id": 1, "shelf_id" : 2})
+    response = client.post("materials/create_material", json={"mass": 10.5, "supplier_link": "Dummy Material", "colour": "Red", "material_type_id": 1, "shelf_id" : 2})
 
     # Assert that the response status code is 404
     assert response.status_code == 404
