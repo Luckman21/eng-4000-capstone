@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Button, useDisclosure, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/react";
+import { Button, useDisclosure, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Alert } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import axios from "axios";
@@ -29,6 +29,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
   const [newPassword, setNewPassword] = useState(""); // State for new password
   const [confirmPassword, setConfirmPassword] = useState(""); // State for confirm password
   const [passwordError, setPasswordError] = useState(""); // State to track password match error
+  const [alertFlag, setAlertFlag] = useState(false);
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/protected", {
@@ -64,10 +65,15 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
 
       if (response.status === 200) {
         console.log("User updated successfully");
-        alert("Profile updated!");
+        setAlertFlag(true);
+        setTimeout(() => {
+          setAlertFlag(false);
+          router.push("/inventory");
+        }
+        , 1500);
 
         
-        router.push("/inventory");
+        //router.push("/inventory");
       }
 
       const updatedUser = { ...editableUser };
@@ -107,9 +113,17 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
   };
 
   return (
+
+  
     <div className="flex items-center justify-center h-screen bg-black">
-      <div className="w-full max-w-lg p-8 bg-neutral-900 text-white rounded-xl shadow-lg">
-        <h1 className="text-2xl font-bold mb-4 text-center text-gray-100">User Profile</h1>
+      
+      <div className="w-full max-w-lg p-8  text-white rounded-xl shadow-lg">
+      {alertFlag && (
+        <Alert color="success" onClose={() => setAlertFlag(false)}>
+          User updated successfully
+        </Alert>
+      )}
+        <h1 className="text-2xl font-bold mb-4 text-center text-gray-100">Hi, {user?.username}</h1>
         <div className="space-y-4">
           <Input
             label="Username"

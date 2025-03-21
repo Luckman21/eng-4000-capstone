@@ -276,6 +276,7 @@ const filteredItems = React.useMemo(() => {
               size="sm"
               endContent={<ExternalLinkIcon size={18} stroke="currentColor" />}
               onClick={() => window.open(cellValue, "_blank")}
+              className="cursor-pointer"
             >
               Visit Supplier
             </Chip>
