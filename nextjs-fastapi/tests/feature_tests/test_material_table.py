@@ -85,13 +85,15 @@ def test_material_table_buttons(driver, login):
 def test_material_table_order(driver, login):
 
     driver.get(TEST_URL)
-    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[1]")))
-    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[2]/td[1]")))
 
-    first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[1]")
+    rows = WebDriverWait(driver, 40).until(
+        lambda d: d.find_elements(By.XPATH, "//tbody/tr") if len(d.find_elements(By.XPATH, "//tbody/tr")) >= 2 else False
+    )
+
+    first_td = rows[0].find_element(By.XPATH, "//tbody/tr[1]/td[1]")
     assert first_td.text == '1'
 
-    second_td = driver.find_element(By.XPATH, "//tbody/tr[2]/td[1]")
+    second_td = rows[1].find_element(By.XPATH, "//tbody/tr[2]/td[1]")
     assert second_td.text == '2'
 
 
