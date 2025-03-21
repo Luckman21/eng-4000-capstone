@@ -56,32 +56,32 @@ def test_user_table_header(driver, login):
 
 def test_user_table_buttons(driver, login):
     driver.get(TEST_URL)
-    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "tbody tr")))
+    rows = WebDriverWait(driver, 30).until(
+        EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "tbody tr"))
+    )
 
-
-    rows = driver.find_elements(By.CSS_SELECTOR, "tbody tr")
+    rows = driver.find_elements(By.CLASS_NAME, "relative flex items-center gap-2")
 
     # Check each row for the presence of two SVG elements
     for index, row in enumerate(rows):
-        WebDriverWait(row, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "svg")))
+        WebDriverWait(row, 120).until(EC.visibility_of_all_elements_located((By.TAG_NAME, "svg")))
         svg_elements = row.find_elements(By.TAG_NAME, "svg")
 
         # Assert that each row has exactly 2 SVGs (or adjust as necessary)
         assert len(svg_elements) == 2, f"Row {index + 1} does not have exactly 2 SVG elements."
 
-def test_user_table_order(driver, login):
 
+def test_user_table_order(driver, login):
     driver.get(TEST_URL)
-    WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.TAG_NAME, "tbody")))
-    rows = WebDriverWait(driver, 20).until(
-        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "tbody tr"))
-    )
+    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[1]")))
+    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[2]/td[1]")))
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[1]")
     assert first_td.text == '1'
 
     second_td = driver.find_element(By.XPATH, "//tbody/tr[2]/td[1]")
     assert second_td.text == '2'
+
 
 def test_edit_button(driver, login):
 

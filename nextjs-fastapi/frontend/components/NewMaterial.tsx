@@ -53,7 +53,7 @@ export const NewMaterial: React.FC<NewMaterialTypes> = ({ isOpen, onOpenChange, 
 
   const handleSave = async () => {
     try {
-      const response = await fetch("http://localhost:8000/create_material", {
+      const response = await fetch("http://localhost:8000/material_types/create_material", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newMaterial),

@@ -85,21 +85,14 @@ def test_material_table_buttons(driver, login):
 def test_material_table_order(driver, login):
 
     driver.get(TEST_URL)
-    WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.TAG_NAME, "tbody")))
-    rows = WebDriverWait(driver, 30).until(
-        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "tbody tr"))
-    )
+    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[1]/td[1]")))
+    WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//tbody/tr[2]/td[1]")))
 
-    for _ in range(3):
-        try:
-            first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[1]")
-            assert first_td.text == '1'
+    first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[1]")
+    assert first_td.text == '1'
 
-            second_td = driver.find_element(By.XPATH, "//tbody/tr[2]/td[1]")
-            assert second_td.text == '2'
-            break
-        except StaleElementReferenceException:
-            time.sleep(1)
+    second_td = driver.find_element(By.XPATH, "//tbody/tr[2]/td[1]")
+    assert second_td.text == '2'
 
 
 def test_edit_button(driver, login):

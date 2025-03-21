@@ -77,7 +77,7 @@ const Nav = () => {
   }, [lowStockMaterials, shelfStatus]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/protected", {
+    fetch("http://127.0.0.1:8000/access_management/protected", {
       method: "GET",
       credentials: "include",
     })
@@ -88,7 +88,7 @@ const Nav = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/logout", {
+      const response = await fetch("http://127.0.0.1:8000/access_management/logout", {
         method: "POST",
         credentials: "include",
         headers: {
