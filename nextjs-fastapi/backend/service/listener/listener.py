@@ -5,7 +5,7 @@ from db.repositories.ShelfRepository import ShelfRepository
 from backend.controller import constants
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session, Session
-from backend.service.listener.manager import manager
+from backend.service.listener import manager
 from asyncio import get_running_loop
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from backend.service.mailer.LowStockMailer import LowStockMailer
