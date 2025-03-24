@@ -31,7 +31,7 @@ const QR_Trigger = () => {
 
     const handleReplenish = async () => {
         try {
-            const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/replenish_mass/${id}`, {
+            const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/materials/replenish_mass/${id}`, {
                 mass_change: customMass,
             });
             if (response.status === 200) {
@@ -46,7 +46,7 @@ const QR_Trigger = () => {
 
     const handleConsume = async () => {
         try {
-            const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/consume_mass/${id}`, {
+            const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/materials/consume_mass/${id}`, {
                 mass_change: customMass,
             });
             if (response.status === 200) {

@@ -1,6 +1,6 @@
 "use client";
-import {Nav } from "@/components";
-import UserProfile from "@/components/UserProfile";
+import {Nav,UserProfile } from "@/components";
+
 
 
 export default function Home() {
@@ -10,8 +10,6 @@ export default function Home() {
   return (
     <div>
       <Nav />
-        
-   
       <UserProfile onSave={handleSave}/>
     </div>
     

@@ -61,7 +61,7 @@ def test_delete_material_type_success(setup_database):
     material_type_id = material_type.id
 
     # Send a PUT request with valid entity_id and new mass
-    response = client.delete(f"/delete_mattype/{material_type_id}")
+    response = client.delete(f"material_types/delete_mattype/{material_type_id}")
     print(response)
     # Assert that the response status code is 200
     assert response.status_code == 200
@@ -72,7 +72,7 @@ def test_delete_material_type_success(setup_database):
 # Test invalid material_id (material not found)
 def test_update_material_type_not_found():
     # Send a PUT request with an invalid entity_id
-    response = client.delete("/delete_mattype/999")
+    response = client.delete("material_types/delete_mattype/999")
 
     # Assert that the response status code is 404
     assert response.status_code == 404
