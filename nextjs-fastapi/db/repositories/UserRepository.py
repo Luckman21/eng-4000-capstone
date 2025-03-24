@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from db.model.User import User
 from db.model.UserType import UserType
 from sqlalchemy import select
-
+from sqlalchemy.future import select
 
 class UserRepository:
     def __init__(self, session: Session):
@@ -66,6 +66,11 @@ class UserRepository:
             select(User).join(UserType).where(UserType.type_name == "Super_Admin")
         ).all()
 
+    async def get_all_superadmins_async(self) -> list:
+        result = await self.session.execute(
+            select(User).join(UserType).where(UserType.type_name == "Super_Admin")
+        )
+        return result.scalars().all()
 
     def update_user(self, user: User, username: str = None, password: str = None, email: str = None,
                     user_type_id: int = None) -> User:

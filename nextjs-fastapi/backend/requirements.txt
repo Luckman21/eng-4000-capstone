@@ -13,9 +13,10 @@ passlib[bcrypt]
 python-multipart
 psycopg
 psycopg_binary
-psycopg2
 pytest-postgresql
-psycopg2-binary
+psycopg2-binary>=2.9.3
 pytest-asyncio
 gunicorn
 uvicorn
+asyncpg
+greenlet

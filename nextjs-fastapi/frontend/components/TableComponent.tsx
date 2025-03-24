@@ -42,7 +42,7 @@ type MaterialTypeSimple = {
 
 
 const TableComponent = () => {
-  const APIHEADER = "delete_material"; 
+  const APIHEADER = "materials/delete_material";
   const statusOptions = ["available", "unavailable", "in use"];
   const [user, setUser] = useState(null);
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -81,6 +81,37 @@ const TableComponent = () => {
     onOpen: openModalThree,
     onOpenChange: handleModalThreeChange,
   } = useDisclosure();
+
+  const exportCSV = (data: any[], filename: string) => {
+    if (data.length === 0) {
+      alert("No data to export");
+      return;
+    }
+    const headers = Object.keys(data[0]);
+    const csvRows = [];
+    csvRows.push(headers.join(","));
+    for (const item of data) {
+      const values = headers.map((header) => {
+        let val = item[header as keyof typeof item];
+        if (typeof val === "string") {
+          // Escape quotes by doubling them
+          val = val.replace(/"/g, '""');
+          return `"${val}"`;
+        }
+        return val;
+      });
+      csvRows.push(values.join(","));
+    }
+    const csvString = csvRows.join("\n");
+    const blob = new Blob([csvString], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
   
   const list = useAsyncList({
     async load({ signal }) {
@@ -112,6 +143,7 @@ const TableComponent = () => {
     openModalThree();
   };
 
+
   const handleDeleteClick = useCallback((material: Material) => {
     setDeleteMaterial(material);
     onDeleteOpen();
@@ -136,7 +168,7 @@ const TableComponent = () => {
     setMaterials((prevMaterials) => prevMaterials.filter((mat) => mat.id !== deletedId));
   };
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/protected", {
+    fetch("http://127.0.0.1:8000/access_management/protected", {
       method: "GET",
       credentials: "include", // Ensures cookies are included in the request
     })
@@ -328,7 +360,13 @@ const filteredItems = React.useMemo(() => {
         onClear={() => onClear()}
         onValueChange={onSearchChange}
       />
+
+      <Button color="primary" onPress={() => exportCSV(materials, "materials.csv")}>
+          Export CSV
+      </Button>
     </div>
+
+      
       <Table
         aria-label="Visualize information through table"
         isStriped

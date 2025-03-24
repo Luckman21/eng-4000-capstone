@@ -64,8 +64,8 @@ const Order: React.FC<OrderProps> = ({ material, isOpen, onOpenChange, onSave })
     if (!editableMaterial) return;
     try {
         const endpoint = actionType === "add" ? 
-        `http://localhost:8000/replenish_mass/${editableMaterial.id}`
-        : `http://localhost:8000/consume_mass/${editableMaterial.id}`;
+        `http://localhost:8000/materials/replenish_mass/${editableMaterial.id}`
+        : `http://localhost:8000/materials/consume_mass/${editableMaterial.id}`;
       // Send update request to backend
       const response = await fetch(endpoint, {
         method: "PATCH",

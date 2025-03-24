@@ -33,7 +33,7 @@ interface UserWithRole extends User {
 }
 
 const UserTable = () => {
-  const APIHEADER = "delete_user";  
+  const APIHEADER = "users/delete_user";
   const [users, setUsers] = useState<UserWithRole[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editUser, setEditUser] = useState<UserWithRole | null>(null); 
@@ -54,7 +54,7 @@ const UserTable = () => {
 
     const [user, setUser] = useState<UserWithRole | null>(null);
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/protected", {
+    fetch("http://127.0.0.1:8000/access_management/protected", {
       method: "GET",
       credentials: "include", // Ensures cookies are included in the request
     })

@@ -17,6 +17,10 @@ from tests.feature_tests.login_helper import log_admin_in, log_super_admin_in
 
 TEST_URL = "http://127.0.0.1:3000/materialType"
 
+DOWNLOAD_DIR = os.path.join(os.getcwd(), "downloads")
+if not os.path.exists(DOWNLOAD_DIR):
+    os.makedirs(DOWNLOAD_DIR)
+
 @pytest.fixture(scope="module")
 def driver():
     chromedriver_autoinstaller.install()
@@ -24,6 +28,12 @@ def driver():
     chrome_options.add_argument("--headless") # This means you won't see the actual icon
     chrome_options.add_argument("--disable-gpu") # Disable GPU acceleration (required in headless mode)
     chrome_options.add_argument("--no-sandbox")  # Might help in some environments
+    chrome_options.add_experimental_option("prefs", {
+         "download.default_directory": DOWNLOAD_DIR,
+         "download.prompt_for_download": False,
+         "download.directory_upgrade": True,
+         "safebrowsing.enabled": True
+    })
     # This will change depending on your driver
 
     chromedriver_autoinstaller.install()
@@ -84,8 +94,8 @@ def test_edit_button(driver, login):
 
     driver.get(TEST_URL)
     WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.TAG_NAME, "tbody")))
-    rows = WebDriverWait(driver, 20).until(
-        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "tbody tr"))
+    WebDriverWait(driver, 20).until(
+        EC.presence_of_all_elements_located((By.XPATH, "//tbody/tr[1]/td[3]/div/span[1]"))
     )
 
     button = driver.find_element(By.XPATH, "//tbody/tr[1]/td[3]/div/span[1]")
@@ -146,5 +156,23 @@ def test_delete_confirmation(driver, login):
     buttons = footer.find_elements(By.CSS_SELECTOR, "button")
 
     assert len(buttons) == 2
+
+def test_export_material_types(driver, login):
+    driver.get(TEST_URL)
+
+    time.sleep(3)
+
+    export_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Export CSV')]")
+    export_button.click()
+
+    time.sleep(5)
+
+    downloaded_files = os.listdir(DOWNLOAD_DIR)
+    matching_files = [f for f in downloaded_files if "materialTypes.csv" in f]
+    assert len(matching_files) > 0, "No materialTypes.csv file was downloaded."
+
+    print("Downloaded file:", matching_files[0])
+    for f in matching_files:
+        os.remove(os.path.join(DOWNLOAD_DIR, f))
 
 # TODO: Make test to assess status once material migration is complete

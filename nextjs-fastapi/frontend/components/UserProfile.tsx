@@ -32,7 +32,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
   const [alertFlag, setAlertFlag] = useState(false);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/protected", {
+    fetch("http://127.0.0.1:8000/access_management/protected", {
       method: "GET",
       credentials: "include", // Ensures cookies are included in the request
     })
@@ -58,7 +58,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
   const handleSave = async () => {
     try {
       // Send update request to backend
-      const response = await axios.put(`http://localhost:8000/update_user/${editableUser.id}`, {
+      const response = await axios.put(`http://localhost:8000/users/update_user/${editableUser.id}`, {
         username: editableUser.username,
         email: editableUser.email,
       });
@@ -98,7 +98,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
 
     try {
       if (!user) return;
-      const response = await axios.put(`http://localhost:8000/update_user/${user.id}`, {
+      const response = await axios.put(`http://localhost:8000/users/update_user/${user.id}`, {
         password: newPassword, // Send only the password to the backend
       });
 
