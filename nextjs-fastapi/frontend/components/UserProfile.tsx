@@ -123,7 +123,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
           User updated successfully
         </Alert>
       )}
-        <h1 className="text-2xl font-bold mb-4 text-center text-gray-100">Hi, {user?.username}</h1>
+        <h1 className="text-2xl font-bold mb-4 text-center text-gray-100">User Profile</h1>
         <div className="space-y-4">
           <Input
             label="Username"
