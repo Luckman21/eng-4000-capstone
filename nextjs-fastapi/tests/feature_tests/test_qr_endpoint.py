@@ -30,7 +30,7 @@ def test_material_description(driver):
 
     # Test header
     title = driver.find_element(By.CSS_SELECTOR, "h2")
-    assert title.text == 'FDM - Black'
+    assert title.text == 'TPU - Black'
 
     subtitles = driver.find_elements(By.CSS_SELECTOR, "p")
 
