@@ -38,7 +38,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ lowstock ,shelfSt
   useEffect(() => {
     async function fetchServiceStatus() {
       try {
-        const res = await fetch("http://localhost:8000/mqtt-status");  // Update to match your API route
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/mqtt-status"`);  // Update to match your API route
         const data = await res.json();
         setScaleActive(data.dht_connection);
         setDhtActive(data.scale_connection);

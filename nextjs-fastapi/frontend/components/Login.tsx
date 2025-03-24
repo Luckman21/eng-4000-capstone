@@ -24,7 +24,7 @@ const Login = () => {
     const params= new URLSearchParams();
       params.append('username', data.username);
       params.append('password', data.password);
-    const response = await fetch("http://127.0.0.1:8000/access_management/login", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/access_management/login`, {
       method: "POST",
       body: params,
       headers: { "Content-Type": "application/x-www-form-urlencoded" },

@@ -36,7 +36,7 @@ const Nav = () => {
   }, []);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8000/ws/alerts");
+    const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WS_URL}/ws/alerts`);
     ws.onopen = () => {
       console.log("🔌 WebSocket connected")
     }
@@ -77,7 +77,7 @@ const Nav = () => {
   }, [lowStockMaterials, shelfStatus]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/access_management/protected", {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/access_management/protected`, {
       method: "GET",
       credentials: "include",
     })
@@ -88,7 +88,7 @@ const Nav = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/access_management/logout", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/access_management/logout`, {
         method: "POST",
         credentials: "include",
         headers: {

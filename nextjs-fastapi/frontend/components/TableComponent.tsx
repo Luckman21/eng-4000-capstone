@@ -115,7 +115,7 @@ const TableComponent = () => {
   
   const list = useAsyncList({
     async load({ signal }) {
-      let res = await fetch("http://127.0.0.1:8000/materials", { signal });
+      let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/materials`, { signal });
       let json = await res.json();
 
       const updatedMaterials = json.map((material: { mass: number; }) => ({
@@ -168,7 +168,7 @@ const TableComponent = () => {
     setMaterials((prevMaterials) => prevMaterials.filter((mat) => mat.id !== deletedId));
   };
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/access_management/protected", {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/access_management/protected`, {
       method: "GET",
       credentials: "include", // Ensures cookies are included in the request
     })

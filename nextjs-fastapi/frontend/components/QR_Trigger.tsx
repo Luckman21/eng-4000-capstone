@@ -17,7 +17,7 @@ const QR_Trigger = () => {
 
         const fetchMaterialData = async () => {
             try {
-                const response = await axios.get(`http://127.0.0.1:8000/qr_display/${id}`);
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/qr_display/${id}`);
                 setMaterial(response.data);
                 setCustomMass(response.data.mass || 0);
             } catch (err) {
@@ -31,7 +31,7 @@ const QR_Trigger = () => {
 
     const handleReplenish = async () => {
         try {
-            const response = await axios.patch(`http://127.0.0.1:8000/materials/replenish_mass/${id}`, {
+            const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/materials/replenish_mass/${id}`, {
                 mass_change: customMass,
             });
             if (response.status === 200) {
@@ -46,7 +46,7 @@ const QR_Trigger = () => {
 
     const handleConsume = async () => {
         try {
-            const response = await axios.patch(`http://127.0.0.1:8000/materials/consume_mass/${id}`, {
+            const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/materials/consume_mass/${id}`, {
                 mass_change: customMass,
             });
             if (response.status === 200) {

@@ -71,7 +71,7 @@ const MaterialTypeTable: React.FC<MaterialTypes> = () => {
   } = useDisclosure();
 
   useEffect(() => {
-      fetch("http://127.0.0.1:8000/access_management/protected", {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/access_management/protected`, {
         method: "GET",
         credentials: "include", // Ensures cookies are included in the request
       })
@@ -83,7 +83,7 @@ const MaterialTypeTable: React.FC<MaterialTypes> = () => {
 
   const list = useAsyncList<MaterialType>({
     async load({ signal }) {
-      let res = await fetch("http://localhost:8000/material_types", { signal });
+      let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/material_types`, { signal });
       let json = await res.json();
       setMaterialTypes(json);
       setIsLoading(false);

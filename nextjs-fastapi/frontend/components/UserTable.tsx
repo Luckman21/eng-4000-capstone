@@ -54,7 +54,7 @@ const UserTable = () => {
 
     const [user, setUser] = useState<UserWithRole | null>(null);
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/access_management/protected", {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/access_management/protected`, {
       method: "GET",
       credentials: "include", // Ensures cookies are included in the request
     })
@@ -67,7 +67,7 @@ const UserTable = () => {
 
   const list = useAsyncList({
     async load({ signal }) {
-      let res = await fetch("http://localhost:8000/users", { signal });
+      let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, { signal });
       let json = await res.json();
 
 

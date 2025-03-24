@@ -51,7 +51,7 @@ export const NewUser: React.FC<NewUserOptions> = ({ isOpen, onOpenChange, onAddU
 
   const handleSave = async () => {
     try {
-      const response = await fetch("http://localhost:8000/users/create_user", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/create_user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newUser),

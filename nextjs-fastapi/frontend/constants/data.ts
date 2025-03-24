@@ -12,7 +12,7 @@ type UserType = {
 
 const fetchMaterialTypes = async () => {
   try {
-    const res = await fetch("http://localhost:8000/material_types");
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/material_types`);
     const data: MaterialType[] = await res.json();
 
     // Transform fetched data to match AutocompleteItem structure
@@ -40,7 +40,7 @@ async function MaterialTypeName(id: number): Promise<string | null> {
 
 const fetchUserTypes = async () => {
   try {
-    const res = await fetch("http://localhost:8000/user_types");
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user_types`);
     const data: UserType[] = await res.json();
 
     // Transform fetched data to match AutocompleteItem structure

@@ -28,7 +28,7 @@ const DeletePopup: React.FC<DeletePopupTypes> = ({ item, isOpen, onOpenChange, o
     if (!item) return;
     try {
       // send delete request to backend
-      const response = await fetch(`http://localhost:8000/${itemType}/${item.id}` , {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${itemType}/${item.id}` , {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       });
