@@ -61,6 +61,7 @@ async def setup_listeners():
 # Set up listeners on startup
 @app.on_event("startup")
 def setup_mqtt():
+    "Establish an MQTT connection. Report MQTT service outages"
     global mqtt_service
     try:
         EmbeddedListener.start_mqtt_receiver()
@@ -74,6 +75,12 @@ def setup_mqtt():
     except Exception:
         print("Failed to connect to scale")
         mqtt_service["scale_connection"] = False
+
+@app.get("/mqtt-status")
+def get_mqtt_status():
+
+    "Return the status of the MQTT services"
+    return mqtt_service
 
 @app.websocket("/ws/alerts")
 async def websocket_endpoint(websocket: WebSocket):
