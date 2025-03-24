@@ -54,7 +54,7 @@ async def setup_listeners():
     global LOOP
     LOOP = asyncio.get_running_loop()
     low_stock_listener()
-    EmbeddedListener.shelf_listener()
+    EmbeddedListener.shelf_listener(LOOP)
 
 
 # Set up listeners on startup

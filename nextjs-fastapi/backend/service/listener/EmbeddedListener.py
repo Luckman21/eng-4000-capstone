@@ -2,6 +2,7 @@ from backend.controller import constants
 from backend.service.listener import listener
 from backend.service.listener.data_receiver import MQTTReceiver
 from backend.service.listener.scale_listener import MQTTscale
+from backend.service.listener.manager import manager
 import asyncio
 from sqlalchemy import event
 from db.model.Shelf import Shelf
@@ -31,7 +32,7 @@ def start_mqtt_scale():
     print(f"Latest value: {receiver.get_latest_value()}")
 
 
-def shelf_listener():
+def shelf_listener(LOOP):
 
     def shelf_update_listener(mapper, connection, target):
         print(f"🆔 Manager ID (shelf_listener): {id(manager)}")  # Ensure it's the same instance
