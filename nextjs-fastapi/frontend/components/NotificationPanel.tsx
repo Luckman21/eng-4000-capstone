@@ -30,9 +30,27 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ lowstock ,shelfSt
     const sortedShelves = [...shelfStat].sort((a, b) => a.id - b.id);
     setShelfStatus(sortedShelves);
   }, [lowstock, shelfStat]);
-  
-  
-  
+
+  const [scaleActive, setScaleActive] = useState<boolean | null>(null);
+  const [dhtActive, setDhtActive] = useState<boolean | null>(null);
+
+    // Fetch service status
+  useEffect(() => {
+    async function fetchServiceStatus() {
+      try {
+        const res = await fetch("http://localhost:8000/mqtt-status");  // Update to match your API route
+        const data = await res.json();
+        setScaleActive(data.dht_connection);
+        setDhtActive(data.scale_connection);
+      } catch (error) {
+        console.error("Failed to fetch service status:", error);
+        setScaleActive(false);
+        setDhtActive(false);
+      }
+    }
+    fetchServiceStatus();
+  }, []);
+
     return (
       <>
         <Drawer isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -40,6 +58,21 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ lowstock ,shelfSt
                 {(onClose) => (
                 <>
                     <DrawerHeader className="flex flex-col gap-1">Alerts</DrawerHeader>
+
+                    {/* Service Status Alerts */}
+                    <div className="px-4 pb-4">
+                        {scaleActive === false && (
+                            <div className="bg-red-500 text-white p-2 rounded-md mb-2">
+                                ⚠️ Scale service is down!
+                            </div>
+                            )}
+                        {dhtActive === false && (
+                        <div className="bg-red-500 text-white p-2 rounded-md mb-2">
+                            ⚠️ DHT-11 service is down!
+                        </div>
+                        )}
+                    </div>
+
                     <DrawerBody>
                     <div>
                         <h1 className="text-lg font-semibold mb-4 pb-4">Low Stock Materials</h1>
