@@ -303,11 +303,12 @@ const filteredItems = React.useMemo(() => {
         if (cellValue) {
           return (
           <Chip
-              color="primary"
+              color="warning"
               variant="flat"
               size="sm"
               endContent={<ExternalLinkIcon size={18} stroke="currentColor" />}
               onClick={() => window.open(cellValue, "_blank")}
+              className="cursor-pointer"
             >
               Visit Supplier
             </Chip>
@@ -373,23 +374,23 @@ const filteredItems = React.useMemo(() => {
         sortDescriptor={list.sortDescriptor}
       >
         <TableHeader>
-          <TableColumn allowsSorting key="id">
+          <TableColumn   key="id">
             ID
           </TableColumn>
-          <TableColumn allowsSorting key="material_type_id">
+          <TableColumn   key="material_type_id">
             MATERIAL TYPE
           </TableColumn>
-          <TableColumn allowsSorting key="colour">
+          <TableColumn   key="colour">
             COLOUR
           </TableColumn>
-          <TableColumn allowsSorting key="mass">
+          <TableColumn   key="mass">
             MASS (g)
           </TableColumn>
-          <TableColumn allowsSorting key="shelf_id">
+          <TableColumn   key="shelf_id">
             SHELF
           </TableColumn>
           <TableColumn key="status">STATUS</TableColumn>
-          <TableColumn allowsSorting key="supplier_link">
+          <TableColumn   key="supplier_link">
             SUPPLIER LINK
           </TableColumn>
           <TableColumn key="actions">
