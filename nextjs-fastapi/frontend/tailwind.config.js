@@ -9,7 +9,7 @@ export const theme = {
   extend: {
     colors: {
       primary: {
-        DEFAULT: "#ffbd00", // your new primary color (e.g., Tailwind's blue-700)
+        DEFAULT: "#ffbd00", 
       },
     },
   },
