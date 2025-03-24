@@ -130,14 +130,14 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
             placeholder="Enter username"
             variant="bordered"
             className="py-2"
-            value={user?.username || ""}
+            value={editableUser?.username || ""}
             onChange={(e) => handleChange("username", e.target.value)}
           />
           <Input
             label="Email"
             placeholder="Enter user email"
             variant="bordered"
-            value={user?.email || ""}
+            value={editableUser?.email || ""}
             onChange={(e) => handleChange("email", e.target.value)}
           />
           <div className="flex justify-between items-center gap-4 mt-6 py-2">
