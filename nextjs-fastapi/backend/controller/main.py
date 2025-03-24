@@ -43,6 +43,7 @@ async def root():
 
 
 LOOP = None
+mqtt_service = {"dht_connection": True, "scale_connection" : True}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
@@ -60,9 +61,19 @@ async def setup_listeners():
 # Set up listeners on startup
 @app.on_event("startup")
 def setup_mqtt():
-    EmbeddedListener.start_mqtt_receiver()
-    EmbeddedListener.start_mqtt_scale()
-
+    global mqtt_service
+    try:
+        EmbeddedListener.start_mqtt_receiver()
+        mqtt_service["dht_connection"] = True
+    except Exception:
+        print("Failed to connect to DHT-11")
+        mqtt_service["dht_connection"] = False
+    try:
+        EmbeddedListener.start_mqtt_scale()
+        mqtt_service["scale_connection"] = True
+    except Exception:
+        print("Failed to connect to scale")
+        mqtt_service["scale_connection"] = False
 
 @app.websocket("/ws/alerts")
 async def websocket_endpoint(websocket: WebSocket):
