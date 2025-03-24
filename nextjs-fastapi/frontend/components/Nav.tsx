@@ -105,16 +105,16 @@ const Nav = () => {
   };
 
   return (
-    <Navbar >
+    <><Navbar>
       <NavbarBrand>
-        <img src="/logo.svg" alt="Logo" className="h-12 w-auto"/>
-     
+        <img src="/logo.svg" alt="Logo" className="h-12 w-auto" />
+
       </NavbarBrand>
       <NavbarContent className=" sm:flex gap-4" justify="center">
-       
-        <NavbarItem isActive={pathname === "/inventory"}  className={pathname === "/inventory" ? "text-primary font-semibold" : "text-white"}>
-          <Link href="/inventory" >
-          Inventory
+
+        <NavbarItem isActive={pathname === "/inventory"} className={pathname === "/inventory" ? "text-primary font-semibold" : "text-white"}>
+          <Link href="/inventory">
+            Inventory
           </Link>
         </NavbarItem>
         {user?.user_type_id === 2 && ( // Only render this if user_type_id is 2
@@ -122,50 +122,47 @@ const Nav = () => {
             <Link href="/users">Users</Link>
           </NavbarItem>
         )}
-        <NavbarItem  isActive={pathname === "/materialType"} className={pathname === "/materialType" ? "text-primary font-semibold" : "text-white"}>
+        <NavbarItem isActive={pathname === "/materialType"} className={pathname === "/materialType" ? "text-primary font-semibold" : "text-white"}>
           <Link href="/materialType">
             Material Type
           </Link>
         </NavbarItem>
       </NavbarContent>
       <NavbarContent justify="end">
-        <NavbarItem className="lg:flex " >
-        <Dropdown>
-              <DropdownTrigger>
-                <Avatar
-                  color="primary"
-                  src="https://img.icons8.com/?size=100&id=23265&format=png&color=FFFFFF"
-                  isBordered
-                  showFallback
-                  name={user?.username}
-                  className="cursor-pointer"
-                />
-              </DropdownTrigger>
-              <DropdownMenu>
-                <DropdownItem key="profile">
-                  <Link href="/userProfile">Edit Profile</Link>
-                </DropdownItem>
-                <DropdownItem className="text-danger" color="danger" key="logout" onClick={handleLogout}>
-                  Logout
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </NavbarItem>
-          <NavbarItem onClick={onOpen} style={{ cursor: "pointer" }}>
-            <Badge color="danger" content={notificationCount} isInvisible={isInvisible} shape="circle">
-              <NotificationIcon className="fill-current" size={30} height={30} width={30} />
-            </Badge>
-          </NavbarItem>
-        </NavbarContent>
-      </Navbar>
-      <NotificationPanel
+        <NavbarItem className="lg:flex ">
+          <Dropdown>
+            <DropdownTrigger>
+              <Avatar
+                color="primary"
+                src="https://img.icons8.com/?size=100&id=23265&format=png&color=FFFFFF"
+                isBordered
+                showFallback
+                name={user?.username}
+                className="cursor-pointer" />
+            </DropdownTrigger>
+            <DropdownMenu>
+              <DropdownItem key="profile">
+                <Link href="/userProfile">Edit Profile</Link>
+              </DropdownItem>
+              <DropdownItem className="text-danger" color="danger" key="logout" onClick={handleLogout}>
+                Logout
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </NavbarItem>
+        <NavbarItem onClick={onOpen} style={{ cursor: "pointer" }}>
+          <Badge color="danger" content={notificationCount} isInvisible={isInvisible} shape="circle">
+            <NotificationIcon className="fill-current" size={30} height={30} width={30} />
+          </Badge>
+        </NavbarItem>
+      </NavbarContent>
+    </Navbar><NotificationPanel
         lowstock={lowStockMaterials}
         shelfStat={shelfStatus}
         isOpen={isOpen}
         onOpen={onOpen}
-        onOpenChange={onOpenChange}
-      />
-    </>
+        onOpenChange={onOpenChange} /></>
+    
   );
 };
 
