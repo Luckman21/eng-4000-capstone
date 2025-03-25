@@ -44,11 +44,11 @@ def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), 
     response.set_cookie(
         key="access_token",
         value=access_token,
-        httponly=True,  # Prevent JavaScript access (XSS protection)
-        secure=False,  # Requires HTTPS in production
-        samesite="Lax",  # Prevents CSRF but allows login flow
-        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,  # Set expiration
-        path="/",  # Apply to all routes
+        httponly=True,
+        secure=True,
+        samesite="none",
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        path="/",
     )
 
     return {"message": "Login successful"}
@@ -59,9 +59,9 @@ def logout(response: Response):
         key="access_token",
         value="",
         httponly=True,
-        secure=False,  # Secure=True only in production
-        samesite="Lax",
-        max_age=0,  # Expire immediately
+        secure=True,
+        samesite="none",
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         path="/",
     )
     return {"message": "Logged out successfully"}
@@ -88,8 +88,8 @@ def protected_route(request: Request, response: Response):
             key="access_token",
             value=new_token,
             httponly=True,
-            secure=False,
-            samesite="Lax",
+            secure=True,
+            samesite="none",
             max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
             path="/",
         )
