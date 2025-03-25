@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-
+import os
 import uvicorn
 sys.path.append(str(Path().resolve().parent.parent))
 from sqlalchemy.orm import Session
@@ -25,6 +25,7 @@ router = APIRouter(
 
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+IS_PRODUCTION = os.getenv("ENV") == "production"
 
 # OAuth2 scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -45,9 +46,8 @@ def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), 
         key="access_token",
         value=access_token,
         httponly=True,
-        secure=True,
-        samesite="none",
-        partitioned=True,
+        secure=IS_PRODUCTION,  # Secure only in production
+        samesite="none" if IS_PRODUCTION else "lax",  # "none" for cross-origin, "lax" for local
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         path="/",
     )
@@ -60,9 +60,8 @@ def logout(response: Response):
         key="access_token",
         value="",
         httponly=True,
-        secure=True,
-        samesite="none",
-        partitioned=True,
+        secure=IS_PRODUCTION,  # Secure only in production
+        samesite="none" if IS_PRODUCTION else "lax",  # "none" for cross-origin, "lax" for local
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         path="/",
     )
@@ -90,9 +89,8 @@ def protected_route(request: Request, response: Response):
             key="access_token",
             value=new_token,
             httponly=True,
-            secure=True,
-            samesite="none",
-            partitioned=True,
+            secure=IS_PRODUCTION,  # Secure only in production
+            samesite="none" if IS_PRODUCTION else "lax",  # "none" for cross-origin, "lax" for local
             max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
             path="/",
         )
