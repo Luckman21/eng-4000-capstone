@@ -15,7 +15,7 @@ const Nav = () => {
     user_type_id: number;
     username: string;
   }
-
+  console.log("ENV_VAR: "+ process.env.NEXT_PUBLIC_API_URL);
   const [user, setUser] = useState<UserType | null>(null);
   const router = useRouter();
   const [lowStockMaterials, setLowStockMaterials] = useState<MaterialCardType[]>([]);
