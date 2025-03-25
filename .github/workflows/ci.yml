@@ -84,6 +84,11 @@ jobs:
         cd nextjs-fastapi/backend/controller  # Navigate to the 'controller' folder where 'main.py' is located
         nohup uvicorn main:app --host 0.0.0.0 --port 8000 --reload &
         echo "Backend is running"
+    - name: Set BACKEND_URL
+      run: |
+        echo "NEXT_PUBLIC_API_URL=http://127.0.0.1:8000" >> $GITHUB_ENV
+        echo  "NEXT_PUBLIC_WS_URL=ws://127.0.0.1:8000" >> $GITHUB_ENV
+
 
 
       # Start the frontend Next.js service (run in background)
