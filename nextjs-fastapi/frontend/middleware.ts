@@ -6,6 +6,7 @@ const protectedRoutes = ["/inventory", "/users", "/materialType", "/profile"];
 
 export function middleware(req: NextRequest) {
   const token = req.cookies.get("access_token")?.value; // Read token from cookies
+  console.log("🧪 access_token in middleware:", token);
   const { pathname } = req.nextUrl;
 
  
