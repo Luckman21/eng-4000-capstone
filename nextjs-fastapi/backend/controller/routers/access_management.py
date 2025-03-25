@@ -47,6 +47,7 @@ def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), 
         httponly=True,
         secure=True,
         samesite="none",
+        partitioned=True,
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         path="/",
     )
@@ -61,6 +62,7 @@ def logout(response: Response):
         httponly=True,
         secure=True,
         samesite="none",
+        partitioned=True,
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         path="/",
     )
@@ -90,6 +92,7 @@ def protected_route(request: Request, response: Response):
             httponly=True,
             secure=True,
             samesite="none",
+            partitioned=True,
             max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
             path="/",
         )
