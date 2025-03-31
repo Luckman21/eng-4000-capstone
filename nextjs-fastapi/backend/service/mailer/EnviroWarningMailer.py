@@ -8,7 +8,7 @@ class EnviroWarningMailer:
 
     def send_notification(self, to_addr, enviro_deficiency, shelf_number):
         subject = "Pantheon Inventory Management: Environmental Warning"
-        body = f"Well met,\n\n Shelf {shelf_number} has a {enviro_deficiency} exception. Make sure to check the unit to " \
+        body = f"Well met,<br><br>Shelf {shelf_number} has a {enviro_deficiency} exception. Make sure to check the unit to " \
                f"ensure your product does not spoil. "
 
         # Send the email using the private _MailerService
