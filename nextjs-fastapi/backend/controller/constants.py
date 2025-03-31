@@ -8,9 +8,9 @@ address = 'db.lzulfwvbuuoaipbbdzmi.supabase.co'
 # Use different database URLs based on the environment
 print(f"env var: {os.getenv('ENV')}")
 if os.getenv('ENV') == 'production':
-    DATABASE_URL = f"postgresql://postgres.lzulfwvbuuoaipbbdzmi:{password}@aws-0-ca-central-1.pooler.supabase.com:5432/postgres"
+    DATABASE_URL = f"postgresql://postgres.lzulfwvbuuoaipbbdzmi:{password}@aws-0-ca-central-1.pooler.supabase.com:6543/postgres"
     DATABASE_URL_TEST = f"postgresql://postgres.lzulfwvbuuoaipbbdzmi:{password}@aws-0-ca-central-1.pooler.supabase.com:5432/postgres"
-    DATABASE_URL_ASYNC = f"postgresql+asyncpg://postgres.lzulfwvbuuoaipbbdzmi:{password}@aws-0-ca-central-1.pooler.supabase.com:5432/postgres"
+    DATABASE_URL_ASYNC = f"postgresql+psycopg://postgres.lzulfwvbuuoaipbbdzmi:{password}@aws-0-ca-central-1.pooler.supabase.com:5432/postgres"
     print("prod")
 else:
     DATABASE_URL = "postgresql://postgres:0000@localhost/capstone_db"

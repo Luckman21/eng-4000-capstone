@@ -16,7 +16,14 @@ from backend.controller.ApplicationState import app_state
 DATABASE_URL = constants.DATABASE_URL_ASYNC  # Example: "postgresql+asyncpg://user:password@localhost/dbname"
 
 # Create an async engine
-engine = create_async_engine(DATABASE_URL, echo=True)
+engine = create_async_engine(
+    DATABASE_URL,
+    pool_size=10,  # Adjust as needed
+    max_overflow=20,
+    pool_recycle=1800,  # Recycle connections after 30 minutes
+    pool_pre_ping=True,
+    echo=True
+)
 
 # Create an async session factory
 AsyncSessionLocal = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
@@ -62,7 +69,7 @@ async def job_complete_listener(mapper, connection, target):
 
     alert_materials = await quantity_poll(materials)
 
-    session.close()
+    await session.close()
 
     # Track previous states
     for material in materials:
@@ -94,6 +101,7 @@ async def shelf_update_listener(mapper, connection, target):
             superadmins = await user_repo.get_all_superadmins_async()
             high_humidity_shelves = await repo.get_high_humidity_shelves_async()
             high_temp_shelves = await repo.get_high_temperature_shelves_async()
+            print(high_humidity_shelves)
 
             alert_shelfs = []
 
