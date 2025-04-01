@@ -60,14 +60,15 @@ async def job_complete_listener(mapper, connection, target):
         A list of materials that have a mass below the threshold value.
     """
 
-    session = AsyncSessionLocal()
-    print(f"🆔 Manager ID (listener): {id(manager)}")
-
-    # Create MaterialRepository instance
-    repo = MaterialRepository(session)
-    materials = await repo.get_all_materials_async()
-
-    alert_materials = await quantity_poll(materials)
+    async with AsyncSessionLocal() as session:
+        print(f"🆔 Manager ID (listener): {id(manager)}")
+        try:
+            # Create MaterialRepository instance
+            repo = MaterialRepository(session)
+            materials = await repo.get_all_materials_async()
+            alert_materials = await quantity_poll(materials)
+        except Exception as e:
+            print(f"Error in job_complete_listener: {e}")
 
     await session.close()
 
