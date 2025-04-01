@@ -26,7 +26,8 @@ app.include_router(qr.router)
 origins = [
     "http://127.0.0.1:3000",
     "http://localhost:3000",
-    "https://eng-4000-capstone-delta.vercel.app"
+    "https://eng-4000-capstone-delta.vercel.app",
+    "https://capstone-teal.vercel.app/"
 ]
 
 app.add_middleware(
