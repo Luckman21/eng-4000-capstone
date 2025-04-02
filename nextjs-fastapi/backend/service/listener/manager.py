@@ -30,31 +30,49 @@ class ConnectionManager:
         print(f"Alert queued: {alert_materials}")
 
     async def process_command_queue(self):
-        """Process the command queue and send alerts at a controlled rate."""
+        """Continuously process the command queue, batching alerts to prevent flooding."""
         while True:
-            if not self.command_queue.empty():
-                alert_materials = await self.command_queue.get()
-                await self.send_alerts(alert_materials)
-                self.command_queue.task_done()
-            else:
-                await asyncio.sleep(0.1)  # Brief sleep if no commands to process
+            try:
+                if self.command_queue.empty():
+                    await asyncio.sleep(0.5)  # Reduce CPU usage
+                    continue
+
+                batch_alerts = []
+                while not self.command_queue.empty():
+                    batch_alerts.append(await self.command_queue.get())
+                    self.command_queue.task_done()
+
+                if batch_alerts:
+                    alert_message = json.dumps({"batch": batch_alerts})
+                    await self.send_alerts(alert_message)
+                    await asyncio.sleep(0.2)  # Prevent message storms
+
+            except Exception as e:
+                print(f"❌ Error processing command queue: {e}")
 
     async def send_alerts(self, alert_materials):
-        """Send alerts to all connected clients."""
+        """Send alerts to all connected clients with improved error handling."""
         if not self.active_connections:
             print("⚠️ No active WebSockets to send alerts to!")
             return
 
-        print(f"Sending alert to {len(self.active_connections)} clients...")
+        print(f"📢 Sending alert to {len(self.active_connections)} clients...")
 
-        # Send alert to all active WebSockets
+        disconnected_clients = set()
         for ws in self.active_connections.copy():
             try:
                 await ws.send_text(alert_materials)
-                print(f"📤 Sent alert to client {ws.client}")
+                print(f"✅ Alert sent to {ws.client}")
+                await asyncio.sleep(0.1)  # Prevent flooding
+            except WebSocketDisconnect:
+                print(f"❌ Client {ws.client} disconnected.")
+                disconnected_clients.add(ws)
             except Exception as e:
                 print(f"⚠️ Error sending message to {ws.client}: {e}")
-                self.active_connections.remove(ws)  # Remove disconnected clients
+                disconnected_clients.add(ws)
+
+        # Remove disconnected clients
+        self.active_connections -= disconnected_clients
 
 
 # Create manager instance
