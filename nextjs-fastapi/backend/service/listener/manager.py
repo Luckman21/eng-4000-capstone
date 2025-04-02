@@ -59,6 +59,7 @@ class ConnectionManager:
 
 # Create manager instance
 manager = ConnectionManager()
+print("manager ready")
 
 
 # To start processing the command queue
