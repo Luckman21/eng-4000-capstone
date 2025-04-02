@@ -3,7 +3,7 @@ name: Deploy FastAPI to Azure
 on:
   push:
     branches:
-      - main  # Change this if using a different branch
+      - SCRUM-164  # Change this if using a different branch
 
 jobs:
   deploy:
