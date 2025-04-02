@@ -55,6 +55,3 @@ manager = ConnectionManager()
 # Run the background task that processes alerts
 async def start_alert_processor():
     await manager.process_alerts()
-
-# In your FastAPI app, start the background task like this:
-# app.add_event_handler("startup", start_alert_processor())

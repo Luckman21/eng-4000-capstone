@@ -57,7 +57,7 @@ async def setup_listeners():
     LOOP = asyncio.get_running_loop()
     low_stock_listener()
     EmbeddedListener.shelf_listener(LOOP)
-    asyncio.create_task(start_alert_processor())
+    asyncio.run_coroutine_threadsafe(start_alert_processor(), LOOP)
 
 
 # Set up listeners on startup
