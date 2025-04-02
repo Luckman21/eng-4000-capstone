@@ -34,7 +34,12 @@ class ConnectionManager:
         while True:
             print("⏳ Waiting for alert in queue...")
             # Wait for an alert to be put in the queue
-            alert_materials = await self.alert_queue.get()
+            try:
+                alert_materials = await self.alert_queue.get()
+            except Exception as e:
+                print(f"⚠️ Error retrieving alert from queue: {e}")
+                continue
+
             print("📤 Processing alert from queue")
 
             if not self.active_connections:
