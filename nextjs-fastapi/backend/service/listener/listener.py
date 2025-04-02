@@ -35,7 +35,6 @@ async def quantity_poll(materials):
         user_repo = UserRepository(session)
         superadmins = await user_repo.get_all_superadmins_async()
 
-
     for material in materials:
         if material.mass < constants.THRESHOLD:
             alerts.append(material)
@@ -50,15 +49,7 @@ async def quantity_poll(materials):
     return alerts
 
 async def job_complete_listener(mapper, connection, target):
-
-    """  A function triggered by the listener when the Material table is updated.  It checks for materials below the threshold value.
-    Args:
-        mapper (object): SQLAlchemy mapper associated with the Material class.
-        connection (object): the database connection object.
-        target (Material): the target Material instance that was updated in the database.
-    Returns:
-        A list of materials that have a mass below the threshold value.
-    """
+    """A function triggered by the listener when the Material table is updated. It checks for materials below the threshold value."""
 
     async with AsyncSessionLocal() as session:
         print(f"🆔 Manager ID (listener): {id(manager)}")
@@ -85,11 +76,8 @@ async def job_complete_listener(mapper, connection, target):
 
     json_data = json.dumps(data)
     if json_data:
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
-            asyncio.create_task(manager.send_alerts(json_data))
-        else:
-            asyncio.run(manager.send_alerts(json_data))
+        # Push the alert data into the queue
+        await manager.send_alerts(json_data)
 
     return alert_materials
 
@@ -142,11 +130,7 @@ async def shelf_update_listener(mapper, connection, target):
         json_data = json.dumps(data)
 
         try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                asyncio.create_task(manager.send_alerts(json_data))
-            else:
-                asyncio.run_coroutine_threadsafe(manager.send_alerts(json_data), loop)
+            # Push the alert data into the queue
+            await manager.send_alerts(json_data)
         except Exception as e:
             print(f"❌ Error while scheduling alert: {e}")
-
