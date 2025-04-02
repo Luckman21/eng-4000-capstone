@@ -24,7 +24,7 @@ const Login = () => {
     const params= new URLSearchParams();
       params.append('username', data.username);
       params.append('password', data.password);
-    const response = await fetch(`/access_management/login`, {
+    const response = await fetch(`$/access_management/login`, {
       method: "POST",
       body: params,
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
