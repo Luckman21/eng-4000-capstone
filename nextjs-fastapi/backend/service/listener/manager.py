@@ -4,10 +4,16 @@ from fastapi import WebSocket, WebSocketDisconnect
 
 class ConnectionManager:
     """Manages active WebSocket connections with buffering."""
-    def __init__(self):
-        self.active_connections = set()
-        self.alert_queue = asyncio.Queue()  # Queue for alert messages
-        print(f"Connection Manager at {id(self)}")
+    _instance = None  # Private instance
+
+    def __new__(cls):
+        """Override the default instance creation to ensure singleton."""
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.active_connections = set()
+            cls._instance.alert_queue = asyncio.Queue()
+            print(f"Connection Manager instance created at {id(cls._instance)}")
+        return cls._instance
 
     async def connect(self, websocket: WebSocket):
         """Accept WebSocket connection and store it."""
