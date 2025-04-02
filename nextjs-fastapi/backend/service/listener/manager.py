@@ -19,10 +19,12 @@ class ConnectionManager:
         """Accept WebSocket connection and store it."""
         await websocket.accept()
         self.active_connections.add(websocket)
+        print(f"✅ WebSocket connected: {websocket.client}")
 
     async def disconnect(self, websocket: WebSocket):
         """Remove disconnected WebSocket."""
         self.active_connections.remove(websocket)
+        print(f"❌ WebSocket disconnected: {websocket.client}")
 
     async def send_alerts(self, alert_materials):
         """Push alert to queue for processing and sending."""
