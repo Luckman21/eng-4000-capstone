@@ -77,9 +77,10 @@ const Nav = () => {
   }, [lowStockMaterials, shelfStatus]);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/access_management/protected`, {
+    fetch(`/access_management/protected`, {
       method: "GET",
-      credentials: "include",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      credentials: "include", // Ensures cookies are sent & received
     })
       .then((res) => res.json())
       .then((data) => setUser(data.user))
