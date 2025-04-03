@@ -22,7 +22,7 @@ import {
 
 import { EditIcon } from "@/constants/EditIcon";
 import { DeleteIcon } from "@/constants/DeleteIcon";
-import { NewUser, EditUser,DeletePopup } from "@/components";
+import { NewUser, EditUser, DeleteUser } from "@/components";
 
 interface UserWithRole extends User {
   role: string;
@@ -54,22 +54,27 @@ const UserTable = () => {
 
     const [user, setUser] = useState<UserWithRole | null>(null);
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/access_management/protected`, {
+    fetch(`/access_management/protected`, {
       method: "GET",
       credentials: "include", // Ensures cookies are included in the request
     })
       .then((res) => res.json())
       .then((data) => setUser(data.user))
       .catch((err) => console.error(err));
+      
+    }, []);
+    
 
-  }, []);
-
-
-  const list = useAsyncList({
+  const list = useAsyncList<UserWithRole>({
     async load({ signal }) {
-      let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/all_users`, { signal });
+      let res = await fetch(`/users/all_users`, { signal,
+        method: "GET",
+        headers: { 
+          'Accept': 'application/json' 
+        }
+       });
       let json = await res.json();
-
+      
 
       const UpdatedUsers = json.map((user: User) => ({
         ...user, 
@@ -77,7 +82,9 @@ const UserTable = () => {
         user_type_id: user.user_type_id,
         password: "",
       }));
+      
       setUsers(UpdatedUsers);
+      console.log(`Users list: ${UpdatedUsers}`)
       setIsLoading(false);
 
       return {
@@ -161,26 +168,24 @@ const UserTable = () => {
       <Table
         aria-label="Visualize information through table"
         isStriped
-        onSortChange={list.sort}
-        sortDescriptor={list.sortDescriptor}
       >
         <TableHeader>
-          <TableColumn allowsSorting key="id">
+          <TableColumn  key="id">
             ID
           </TableColumn>
-          <TableColumn allowsSorting key="username">
+          <TableColumn  key="username">
             USERNAME
           </TableColumn>
-          <TableColumn allowsSorting key="email">
+          <TableColumn  key="email">
             EMAIL
           </TableColumn>
-          <TableColumn allowsSorting key="user_type_id">
+          <TableColumn  key="user_type_id">
             USER TYPE
           </TableColumn>
           <TableColumn key="actions">ACTIONS</TableColumn>
         </TableHeader>
         <TableBody
-          items={users}
+          items={list.items}
           isLoading={isLoading}
           loadingContent={<Spinner label="Loading..." />}
         >
@@ -198,7 +203,7 @@ const UserTable = () => {
         onSave={handleSaveMaterial} // Pass callback to Popup
       />
       <NewUser isOpen={isModalTwoOpen} onOpenChange={handleModalTwoChange} onAddUser={addUser} users={users} />
-       <DeletePopup
+       <DeleteUser
         item={deleteUser}
         isOpen={isDeleteOpen}
         onOpenChange={onDeleteOpenChange}
