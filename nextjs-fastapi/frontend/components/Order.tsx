@@ -64,8 +64,8 @@ const Order: React.FC<OrderProps> = ({ material, isOpen, onOpenChange, onSave })
     if (!editableMaterial) return;
     try {
         const endpoint = actionType === "add" ? 
-        `${process.env.NEXT_PUBLIC_API_URL}/materials/replenish_mass/${editableMaterial.id}`
-        : `${process.env.NEXT_PUBLIC_API_URL}/materials/consume_mass/${editableMaterial.id}`;
+        `/materials/replenish_mass/${editableMaterial.id}`
+        : `/materials/consume_mass/${editableMaterial.id}`;
       // Send update request to backend
       const response = await fetch(endpoint, {
         method: "PATCH",
