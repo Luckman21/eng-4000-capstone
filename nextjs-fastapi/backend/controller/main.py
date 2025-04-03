@@ -12,7 +12,7 @@ import asyncio
 from fastapi import FastAPI, Depends
 from backend.controller.routers import materials, material_types, users, access_management, qr
 from fastapi import WebSocket, WebSocketDisconnect
-from backend.service.listener.manager import manager
+from backend.service.listener.manager import manager, start_alert_processor
 from backend.service.listener.LowStockListener import low_stock_listener
 from backend.service.listener import EmbeddedListener
 
@@ -58,6 +58,7 @@ async def setup_listeners():
     LOOP = asyncio.get_running_loop()
     low_stock_listener()
     EmbeddedListener.shelf_listener(LOOP)
+    asyncio.run_coroutine_threadsafe(start_alert_processor(), LOOP)
 
 
 # Set up listeners on startup
