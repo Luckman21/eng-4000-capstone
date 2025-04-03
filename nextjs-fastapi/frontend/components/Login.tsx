@@ -18,12 +18,13 @@ const Login = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const login = async (data:LoginData) => {
+  const login = async (data: LoginData) => {
     setErrorMessage(""); // Clear previous errors
 
-    const params= new URLSearchParams();
-      params.append('username', data.username);
-      params.append('password', data.password);
+    const params = new URLSearchParams();
+    params.append('username', data.username);
+    params.append('password', data.password);
+
     const response = await fetch(`/access_management/login`, {
       method: "POST",
       body: params,
@@ -32,7 +33,10 @@ const Login = () => {
     });
 
     if (response.ok) {
-      router.push("/inventory");
+      // Wait for a short moment to allow cookies to propagate
+      setTimeout(() => {
+        router.push("/inventory");
+      }, 500);  // Adjust timeout as necessary
       console.log("Login successful");
     } else {
       const errorData = await response.json();
@@ -42,7 +46,7 @@ const Login = () => {
       const errorMessage = errorData?.detail || "Login failed. Please try again.";
       setErrorMessage(errorMessage);
     }
-  };
+};
 
   return (
     <><Form
