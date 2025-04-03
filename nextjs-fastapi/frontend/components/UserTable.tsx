@@ -67,7 +67,7 @@ const UserTable = () => {
 
   const list = useAsyncList({
     async load({ signal }) {
-      let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, { signal });
+      let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/all_users`, { signal });
       let json = await res.json();
 
 
