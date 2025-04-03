@@ -15,6 +15,8 @@ import QR_Trigger from "./QR_Trigger";
 import MaterialCard from "./MaterialCard";
 import NotificationPanel from "./NotificationPanel";
 import ShelfCard from "./ShelfCard";
+import DeleteUser from "./DeleteUser";
+import DeleteMaterialType from "./DeleteMaterialType";
 
 
 export { TableComponent, 
@@ -32,5 +34,7 @@ export { TableComponent,
      QR_Trigger,
      MaterialCard, 
      NotificationPanel, 
-    ShelfCard
+     ShelfCard,
+     DeleteUser,
+     DeleteMaterialType
     };
