@@ -28,7 +28,7 @@ const DeletePopup: React.FC<DeletePopupTypes> = ({ item, isOpen, onOpenChange, o
     if (!item) return;
     try {
       // send delete request to backend
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${itemType}/${item.id}` , {
+      const response = await fetch(`/materials/${itemType}/${item.id}` , {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       });
@@ -40,7 +40,7 @@ const DeletePopup: React.FC<DeletePopupTypes> = ({ item, isOpen, onOpenChange, o
     } catch (error) {
 
       // Extract "detail" if it exists
-      const errorMessage = "Login failed. Please try again.";
+      const errorMessage = "Delete attempt failed. Please try again.";
       setErrorMessage(errorMessage);
       console.error("Error deleting material:", error);
     }
@@ -63,7 +63,7 @@ const DeletePopup: React.FC<DeletePopupTypes> = ({ item, isOpen, onOpenChange, o
             Delete
           </Button>
                   {errorMessage && (
-            <p className="text-red-500 bg-red-100 border border-red-400 text-sm mt-2 p-2 rounded">
+            <p className="text-danger bg-red-100 border border-red-400 text-sm mt-2 p-2 rounded">
         {errorMessage}
             </p>
         )}
