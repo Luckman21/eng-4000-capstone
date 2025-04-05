@@ -16,7 +16,14 @@ from backend.controller.ApplicationState import app_state
 DATABASE_URL = constants.DATABASE_URL_ASYNC  # Example: "postgresql+asyncpg://user:password@localhost/dbname"
 
 # Create an async engine
-engine = create_async_engine(DATABASE_URL, echo=True)
+engine = create_async_engine(
+    DATABASE_URL,
+    pool_size=10,  # Adjust as needed
+    max_overflow=20,
+    pool_recycle=1800,  # Recycle connections after 30 minutes
+    pool_pre_ping=True,
+    echo=True
+)
 
 # Create an async session factory
 AsyncSessionLocal = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
@@ -27,7 +34,6 @@ async def quantity_poll(materials):
     async with AsyncSessionLocal() as session:
         user_repo = UserRepository(session)
         superadmins = await user_repo.get_all_superadmins_async()
-
 
     for material in materials:
         if material.mass < constants.THRESHOLD:
@@ -43,26 +49,19 @@ async def quantity_poll(materials):
     return alerts
 
 async def job_complete_listener(mapper, connection, target):
+    """A function triggered by the listener when the Material table is updated. It checks for materials below the threshold value."""
 
-    """  A function triggered by the listener when the Material table is updated.  It checks for materials below the threshold value.
-    Args:
-        mapper (object): SQLAlchemy mapper associated with the Material class.
-        connection (object): the database connection object.
-        target (Material): the target Material instance that was updated in the database.
-    Returns:
-        A list of materials that have a mass below the threshold value.
-    """
+    async with AsyncSessionLocal() as session:
+        print(f"🆔 Manager ID (listener): {id(manager)}")
+        try:
+            # Create MaterialRepository instance
+            repo = MaterialRepository(session)
+            materials = await repo.get_all_materials_async()
+            alert_materials = await quantity_poll(materials)
+        except Exception as e:
+            print(f"Error in job_complete_listener: {e}")
 
-    session = AsyncSessionLocal()
-    print(f"🆔 Manager ID (listener): {id(manager)}")
-
-    # Create MaterialRepository instance
-    repo = MaterialRepository(session)
-    materials = await repo.get_all_materials_async()
-
-    alert_materials = await quantity_poll(materials)
-
-    session.close()
+    await session.close()
 
     # Track previous states
     for material in materials:
@@ -77,11 +76,8 @@ async def job_complete_listener(mapper, connection, target):
 
     json_data = json.dumps(data)
     if json_data:
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
-            asyncio.create_task(manager.send_alerts(json_data))
-        else:
-            asyncio.run(manager.send_alerts(json_data))
+        # Push the alert data into the queue
+        await manager.send_alerts(json_data)
 
     return alert_materials
 
@@ -94,6 +90,7 @@ async def shelf_update_listener(mapper, connection, target):
             superadmins = await user_repo.get_all_superadmins_async()
             high_humidity_shelves = await repo.get_high_humidity_shelves_async()
             high_temp_shelves = await repo.get_high_temperature_shelves_async()
+            print(high_humidity_shelves)
 
             alert_shelfs = []
 
@@ -133,11 +130,7 @@ async def shelf_update_listener(mapper, connection, target):
         json_data = json.dumps(data)
 
         try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                asyncio.create_task(manager.send_alerts(json_data))
-            else:
-                asyncio.run_coroutine_threadsafe(manager.send_alerts(json_data), loop)
+            # Push the alert data into the queue
+            await manager.send_alerts(json_data)
         except Exception as e:
             print(f"❌ Error while scheduling alert: {e}")
-

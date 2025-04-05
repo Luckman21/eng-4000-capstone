@@ -18,5 +18,12 @@ import os
 
 # Create the SQLAlchemy engine and session
 DATABASE_URL = constants.DATABASE_URL
-engine = create_engine(DATABASE_URL, echo=True)
-session = sessionmaker(bind=engine)
+engine = create_engine(
+    DATABASE_URL,
+    pool_size=10,           # Keep up to 10 connections open
+    max_overflow=20,        # Allow 20 more temporary connections
+    pool_timeout=30,        # Wait up to 30 seconds for a connection before failing
+    pool_recycle=1800,      # Recycle connections every 30 minutes
+    echo=True
+)
+session = sessionmaker(autocommit=False, autoflush=False, bind=engine)

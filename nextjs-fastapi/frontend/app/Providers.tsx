@@ -1,10 +1,12 @@
+import { HeroUIProvider } from "@heroui/react";
+import { WebSocketProvider } from "@/contexts/WebSocketContext";
 
-import {HeroUIProvider} from "@heroui/react";
-
-export function Providers({children}: { children: React.ReactNode }) {
+export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <HeroUIProvider>
-      {children}
+      <WebSocketProvider>
+        {children}
+      </WebSocketProvider>
     </HeroUIProvider>
-  )
+  );
 }

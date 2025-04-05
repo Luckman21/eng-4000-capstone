@@ -42,7 +42,7 @@ type MaterialTypeSimple = {
 
 
 const TableComponent = () => {
-  const APIHEADER = "materials/delete_material";
+  const APIHEADER = "/delete_material";
   const statusOptions = ["available", "unavailable", "in use"];
   const [user, setUser] = useState(null);
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -115,7 +115,7 @@ const TableComponent = () => {
   
   const list = useAsyncList({
     async load({ signal }) {
-      let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/materials`, { signal });
+      let res = await fetch(`/materials`, { signal });
       let json = await res.json();
 
       const updatedMaterials = json.map((material: { mass: number; }) => ({
@@ -168,7 +168,7 @@ const TableComponent = () => {
     setMaterials((prevMaterials) => prevMaterials.filter((mat) => mat.id !== deletedId));
   };
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/access_management/protected`, {
+    fetch(`/access_management/protected`, {
       method: "GET",
       credentials: "include", // Ensures cookies are included in the request
     })

@@ -143,7 +143,7 @@ def test_delete_confirmation(driver, login):
     assert header.text == "Delete Item"
 
     text = popup.find_element(By.XPATH, "div[2]")
-    assert text.text == 'Are you sure you want to delete this item? This action cannot be undone.'
+    assert text.text == 'Are you sure you want to delete james7\'s profile? This action cannot be undone.'
 
     footer = popup.find_element(By.CSS_SELECTOR, "footer")
 

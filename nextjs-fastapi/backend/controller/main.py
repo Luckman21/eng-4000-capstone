@@ -12,7 +12,7 @@ import asyncio
 from fastapi import FastAPI, Depends
 from backend.controller.routers import materials, material_types, users, access_management, qr
 from fastapi import WebSocket, WebSocketDisconnect
-from backend.service.listener.manager import manager
+from backend.service.listener.manager import manager, start_alert_processor
 from backend.service.listener.LowStockListener import low_stock_listener
 from backend.service.listener import EmbeddedListener
 
@@ -26,7 +26,8 @@ app.include_router(qr.router)
 origins = [
     "http://127.0.0.1:3000",
     "http://localhost:3000",
-    "https://eng-4000-capstone-delta.vercel.app"
+    "https://eng-4000-capstone-delta.vercel.app",
+     "https://capstone-teal.vercel.app",
 ]
 
 app.add_middleware(
@@ -57,6 +58,7 @@ async def setup_listeners():
     LOOP = asyncio.get_running_loop()
     low_stock_listener()
     EmbeddedListener.shelf_listener(LOOP)
+    asyncio.run_coroutine_threadsafe(start_alert_processor(), LOOP)
 
 
 # Set up listeners on startup
@@ -93,6 +95,7 @@ async def websocket_endpoint(websocket: WebSocket):
             await websocket.receive_text()  # Keep the connection alive
     except WebSocketDisconnect:
         await manager.disconnect(websocket)
+        print("\n\n\nClient disconnected\n\n\n")
 
 
 @app.get("/user_types")
