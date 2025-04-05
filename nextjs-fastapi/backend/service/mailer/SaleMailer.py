@@ -8,7 +8,7 @@ class SaleMailer:
 
     def send_notification(self, to_addr, sale_materials):
         subject = "Pantheon Inventory Management: Inventory Sale Found"
-        body = f"Well met, the following inventory items have sales or special prices: \n{sale_materials}"
+        body = f"Well met,<br><br>The following inventory items have sales or special prices: <br>{sale_materials}"
 
         # Send the email using the private _MailerService
         return self.client.send_email(to_addr, subject, body, self.from_addr)

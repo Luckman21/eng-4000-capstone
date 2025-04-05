@@ -42,7 +42,7 @@ def test_send_temp_password_email_success(mock_sendgrid):
     mock_sendgrid.send_email.assert_called_once_with(
         recipient,
         "Pantheon Inventory Management: Your Temporary Password",
-        f"Well met,\n\nYour temporary password is: {temp_password}\n\nPlease use this password to log in and reset it as soon as possible.\n\nIf you have not requested a change, you can ignore this email.",
+        f"Well met,<br><br>Your temporary password is: {temp_password}<br><br>Please use this password to log in and reset it as soon as possible.<br>If you have not requested a change, you can ignore this email.",
         verified_email
     )
 
@@ -82,7 +82,7 @@ def test_send_password_change_email_success(mock_sendgrid):
     mock_sendgrid.send_email.assert_called_once_with(
         recipient,
         "Pantheon Inventory Management: Password Change Notice",
-        f"Well met, Your password has successfully been changed. If this was not you, please contact a system Super Admin for support.",
+        f"Well met,<br><br>Your password has successfully been changed. If this was not you, please contact a system Super Admin for support.",
         verified_email
     )
 
@@ -126,7 +126,7 @@ def test_send_low_stock_email_success(mock_sendgrid):
     mock_sendgrid.send_email.assert_called_once_with(
         recipient,
         "Pantheon Inventory Management: Low Stock Warning",
-        f"Well met,\n\n You have less than 50g left of {colour} {type}.\n\n Use {link} to purchase more.",
+        f'Well met,<br><br>You have less than 50g left of <b>{colour} {type}.</b> Use <a href="{link}">this link</a> to purchase more.',
         verified_email
     )
 
@@ -171,7 +171,7 @@ def test_sale_mailer_success(mock_sendgrid):
     mock_sendgrid.send_email.assert_called_once_with(
         recipient,
         "Pantheon Inventory Management: Inventory Sale Found",
-        f"Well met, the following inventory items have sales or special prices: \n{materials}",
+        f"Well met,<br><br>The following inventory items have sales or special prices: <br>{materials}",
         verified_email
     )
 
@@ -217,7 +217,7 @@ def test_enviro_success(mock_sendgrid):
     mock_sendgrid.send_email.assert_called_once_with(
         recipient,
         "Pantheon Inventory Management: Environmental Warning",
-        f"Well met,\n\n Shelf {shelf} has a {error} exception. Make sure to check the unit to " \
+        f"Well met,<br><br>Shelf {shelf} has a {error} exception. Make sure to check the unit to " \
                f"ensure your product does not spoil. ",
         verified_email
     )
