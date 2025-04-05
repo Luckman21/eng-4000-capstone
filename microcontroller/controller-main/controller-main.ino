@@ -7,7 +7,7 @@
 #include "HX711.h"
 
 // YorkU network credentials
-#define YORKU_SSID "AirYorkGuest"
+#define YORKU_SSID "AirYorkGUEST"
 #define YORKU_PASS ""  // Should autoconnect to AirYorkGuest as MAC address is registered
 
 // DHT11 important values
@@ -15,16 +15,16 @@
 #define DHTTYPE 11
 
 // Calibration values
-#define TEMP_CAL 23     // Adjusts the temperature reading for accuracy
-#define HUMID_CAL 17    // Adjusts the humidity reading for accuracy
-#define SCALE_CAL 417   // Adjusts the scale reading for accuracy
+#define TEMP_CAL 23    // Adjusts the temperature reading for accuracy
+#define HUMID_CAL 17   // Adjusts the humidity reading for accuracy
+#define SCALE_CAL 417  // Adjusts the scale reading for accuracy
 
 // Define HX711 pins
 #define DOUT 2  // Data pin (DT)
 #define CLK 3   // Clock pin (SCK)
 
 #define BUTTON_PIN 4  // Button pin to tare the scale
-#define SHELF_ID 1  // Unique to each board, set for each new unit
+#define SHELF_ID 1    // Unique to each board, set for each new unit
 
 // For more information, check out https://freenove.com/fnk0079
 // note:If lcd1602 uses PCF8574T, IIC's address is 0x27, or lcd1602 uses PCF8574AT, IIC's address is 0x3F.
@@ -108,6 +108,28 @@ void setup() {
 
 // The main body of the code, allows us to constantly run after setup
 void loop() {
+  // Maintain WiFi connection
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("WiFi connection lost. Reconnecting...");
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("NWork Offline.");
+    lcd.setCursor(0, 1);
+    lcd.print("Reconnecting:");
+    wifiConnect();  // Reconnect WiFi if disconnected
+  }
+
+  // Maintain MQTT Broker connection
+  if (!mqttClient.connected()) {
+    Serial.println("MQTT broker connection lost. Reconnecting...");
+    // Update LCD display
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("MQTT Offline.");
+    lcd.setCursor(0, 1);
+    lcd.print("Reconnecting:");
+    connectMQTT();  // Attempt to reconnect to MQTT broker
+  }
   mqttClient.poll();  // Sends MQTT keep alive, constantly called to keep connection alive
 
   if (digitalRead(BUTTON_PIN) == LOW) {
@@ -192,6 +214,15 @@ void wifiConnect() {
   lcd.setCursor(0, 1);
   lcd.print("Connect to MQTT:");
 
+  connectMQTT();  // Connect to the MQTT broker
+}
+
+// Attempts to reconnect to the MQTT broker if it goes offline
+void connectMQTT() {
+  // Try to reconnect to the MQTT broker if the connection is lost
+  Serial.println("Attempting to reconnect to MQTT broker...");
+  
+  // Try connecting to the MQTT broker
   if (!mqttClient.connect(broker, port)) {
     Serial.print("MQTT connection failed\nError Code = ");
     Serial.println(mqttClient.connectError());  // Prints the error code for debugging
@@ -244,6 +275,7 @@ void updateDisplay(long weight, float temp, float humid) {
   printDHT(temp + TEMP_CAL, humid + HUMID_CAL);
 }
 
+// Reads data from the DHT11 Temp and Humid sensor, publishes to the MQTT broker
 void readDHT11() {
   dht.temperature().getEvent(&temp_event);
   dht.humidity().getEvent(&humid_event);
