@@ -3,34 +3,62 @@ import asyncio
 from fastapi import WebSocket, WebSocketDisconnect
 
 class ConnectionManager:
-    """Manages active WebSocket connections."""
-    def __init__(self):
-        self.active_connections = set()
-        print(f"Connection Manager at {id(self)}")
+    """Manages active WebSocket connections with buffering."""
+    _instance = None  # Private instance
+
+    def __new__(cls):
+        """Override the default instance creation to ensure singleton."""
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.active_connections = set()
+            cls._instance.alert_queue = asyncio.Queue()
+            print(f"Connection Manager instance created at {id(cls._instance)}")
+        return cls._instance
 
     async def connect(self, websocket: WebSocket):
         """Accept WebSocket connection and store it."""
         await websocket.accept()
         self.active_connections.add(websocket)
+        print(f"✅ WebSocket connected: {websocket.client}")
 
     async def disconnect(self, websocket: WebSocket):
         """Remove disconnected WebSocket."""
         self.active_connections.remove(websocket)
+        print(f"❌ WebSocket disconnected: {websocket.client}")
 
     async def send_alerts(self, alert_materials):
-        """Send alerts to all connected clients."""
+        """Push alert to queue for processing and sending."""
+        await self.alert_queue.put(alert_materials)
+        print("📝 Alert queued for processing")
 
-        if not self.active_connections:
-            print("⚠️ No active WebSockets to send alerts to!")
-            return
-
-        for ws in self.active_connections.copy():
+    async def process_alerts(self):
+        """Process and send alerts to all connected clients."""
+        while True:
+            print("⏳ Waiting for alert in queue...")
+            # Wait for an alert to be put in the queue
             try:
-                await ws.send_text(alert_materials)
-                print("📤 Sent alert to client")
+                alert_materials = await self.alert_queue.get()
             except Exception as e:
-                print(f"⚠️ Error sending message: {e}")
-                self.active_connections.remove(ws)  # Remove disconnected clients
+                print(f"⚠️ Error retrieving alert from queue: {e}")
+                continue
 
-# create manager instance 
+            print("📤 Processing alert from queue")
+
+            if not self.active_connections:
+                print("⚠️ No active WebSockets to send alerts to!")
+                continue
+
+            for ws in self.active_connections.copy():
+                try:
+                    await ws.send_text(alert_materials)
+                    print("📤 Sent alert to client")
+                except Exception as e:
+                    print(f"⚠️ Error sending message: {e}")
+                    self.active_connections.remove(ws)  # Remove disconnected clients
+
+# create manager instance
 manager = ConnectionManager()
+
+# Run the background task that processes alerts
+async def start_alert_processor():
+    await manager.process_alerts()

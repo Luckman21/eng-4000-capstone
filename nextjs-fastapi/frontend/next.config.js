@@ -1,32 +1,43 @@
+      const { m } = require('framer-motion');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-
     domains: ["images.squarespace-cdn.com"], // Allow Squarespace images
   },
-  rewrites: async () => {
+  async rewrites() {
     return [
       {
-        source: "/api/py/:path*",
-        destination:
-          process.env.NODE_ENV === "development"
-            ? "http://127.0.0.1:8000/api/py/:path*"
-            : "/api/",
+        source: "/access_management/:path*",
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/access_management/:path*`,
       },
       {
-        source: "/docs",
-        destination:
-          process.env.NODE_ENV === "development"
-            ? "http://127.0.0.1:8000/api/py/docs"
-            : "/api/py/docs",
+        source: "/materials/:path*",
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/materials/:path*`,
       },
       {
-        source: "/openapi.json",
-        destination:
-          process.env.NODE_ENV === "development"
-            ? "http://127.0.0.1:8000/api/py/openapi.json"
-            : "/api/py/openapi.json",
+        source: "/materials",
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/materials`,
       },
+      {
+        source: "/material_types/:path*",
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/material_types/:path*`,
+      },
+      {
+        source: "/material_types",
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/material_types`,
+      },
+      {
+        source: "/users/:path*",
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/users/:path*`,
+      },
+      {
+        source: "/user_types",
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/user_types`,
+      },
+
+
+      
     ];
   },
   reactStrictMode: true,

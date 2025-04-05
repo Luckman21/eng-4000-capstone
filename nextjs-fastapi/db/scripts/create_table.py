@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS materials (
     id SERIAL PRIMARY KEY,
     colour TEXT NOT NULL,
     supplier_link TEXT NOT NULL, 
-    mass DOUBLE PRECISION NOT NULL,
+    mass DOUBLE PRECISION NOT NULL CHECK (mass >= 0),
     material_type_id INTEGER NOT NULL REFERENCES material_types(id) ON DELETE CASCADE,
     shelf_id INTEGER REFERENCES shelfs(id) ON DELETE CASCADE
 )

@@ -8,7 +8,7 @@ class PasswordChangeMailer:
 
     def send_notification(self, to_addr):
         subject = "Pantheon Inventory Management: Password Change Notice"
-        body = f"Well met, Your password has successfully been changed. If this was not you, please contact a system Super Admin for support."
+        body = f"Well met,<br><br>Your password has successfully been changed. If this was not you, please contact a system Super Admin for support."
 
         # Send the email using the private _MailerService
         return self.client.send_email(to_addr, subject, body, self.from_addr)

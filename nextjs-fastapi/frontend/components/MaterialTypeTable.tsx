@@ -21,7 +21,7 @@ import {
 
 import { EditIcon } from "@/constants/EditIcon";
 import { DeleteIcon } from "@/constants/DeleteIcon";
-import { NewMaterialType, EditMaterialType, DeletePopup } from "@/components";
+import { NewMaterialType, EditMaterialType, DeleteMaterialType } from "@/components";
 
 type MaterialTypes = {
   materialTypes: MaterialType[];
@@ -71,7 +71,7 @@ const MaterialTypeTable: React.FC<MaterialTypes> = () => {
   } = useDisclosure();
 
   useEffect(() => {
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/access_management/protected`, {
+      fetch(`/access_management/protected`, {
         method: "GET",
         credentials: "include", // Ensures cookies are included in the request
       })
@@ -83,7 +83,7 @@ const MaterialTypeTable: React.FC<MaterialTypes> = () => {
 
   const list = useAsyncList<MaterialType>({
     async load({ signal }) {
-      let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/material_types`, { signal });
+      let res = await fetch(`/material_types`, { signal });
       let json = await res.json();
       setMaterialTypes(json);
       setIsLoading(false);
@@ -245,7 +245,7 @@ const MaterialTypeTable: React.FC<MaterialTypes> = () => {
         onSave={handleSaveMaterialType} // Pass callback to Popup
       />
       <NewMaterialType isOpen={isModalTwoOpen} onOpenChange={handleModalTwoChange} onAddMaterialType={addMaterialType} materialtypes={materialTypes} />
-       <DeletePopup
+       <DeleteMaterialType
         item={deleteMaterialType ?? {id: 0}}
         isOpen={isDeleteOpen}
         onOpenChange={onDeleteOpenChange}

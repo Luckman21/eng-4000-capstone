@@ -19,7 +19,7 @@ type DeletePopupTypes = {
   itemType: string;
 };
 
-const DeletePopup: React.FC<DeletePopupTypes> = ({ item, isOpen, onOpenChange, onDelete, itemType}) => {
+const DeleteMaterialType: React.FC<DeletePopupTypes> = ({ item, isOpen, onOpenChange, onDelete, itemType}) => {
   const [errorMessage, setErrorMessage] = useState("");
 
   
@@ -28,21 +28,21 @@ const DeletePopup: React.FC<DeletePopupTypes> = ({ item, isOpen, onOpenChange, o
     if (!item) return;
     try {
       // send delete request to backend
-      const response = await fetch(`/materials/${itemType}/${item.id}` , {
+      const response = await fetch(`/${itemType}/${item.id}` , {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       });
 
-      if (!response.ok) throw new Error("Failed to delete material");
+      if (!response.ok) throw new Error("Failed to delete material type");
 
       onDelete(item.id);
       onOpenChange();
     } catch (error) {
 
       // Extract "detail" if it exists
-      const errorMessage = "Delete attempt failed. Please try again.";
+      const errorMessage = "Delete material type attempt failed. Please try again.";
       setErrorMessage(errorMessage);
-      console.error("Error deleting material:", error);
+      console.error("Error deleting material type:", error);
     }
   };
 
@@ -53,7 +53,7 @@ const DeletePopup: React.FC<DeletePopupTypes> = ({ item, isOpen, onOpenChange, o
           Delete Item
         </ModalHeader>
         <ModalBody>
-          Are you sure you want to delete this item? This action cannot be undone.
+          Are you sure you want to delete this material type? This action cannot be undone.
         </ModalBody>
         <ModalFooter>
           <Button color="danger" variant="flat" onPress={onOpenChange}>
@@ -72,4 +72,4 @@ const DeletePopup: React.FC<DeletePopupTypes> = ({ item, isOpen, onOpenChange, o
     </Modal>
   );
 };
-export default DeletePopup;
+export default DeleteMaterialType;

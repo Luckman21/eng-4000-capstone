@@ -32,7 +32,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
   const [alertFlag, setAlertFlag] = useState(false);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/access_management/protected`, {
+    fetch(`/access_management/protected`, {
       method: "GET",
       credentials: "include", // Ensures cookies are included in the request
     })
@@ -58,7 +58,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
   const handleSave = async () => {
     try {
       // Send update request to backend
-      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/users/update_user/${editableUser.id}`, {
+      const response = await axios.put(`/users/update_user/${editableUser.id}`, {
         username: editableUser.username,
         email: editableUser.email,
       });
@@ -98,7 +98,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
 
     try {
       if (!user) return;
-      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/users/update_user/${user.id}`, {
+      const response = await axios.put(`/users/update_user/${user.id}`, {
         password: newPassword, // Send only the password to the backend
       });
 

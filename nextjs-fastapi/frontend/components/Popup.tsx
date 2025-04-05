@@ -51,7 +51,7 @@ const Popup: React.FC<NewMaterials> = ({ material, isOpen, onOpenChange, onSave 
     try {
 
       // Send update request to backend
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/materials/update_material/${editableMaterial.id}`, {
+      const response = await fetch(`/materials/update_material/${editableMaterial.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
