@@ -93,3 +93,12 @@ class ShelfRepository:
             select(Shelf).where(Shelf.temperature_cel > constants.TEMPERATURE_TOLERANCE)
         )
         return result.scalars().all()
+
+    async def get_all_shelves_async(self):
+        """
+        Return shelves with humidity above threshold.
+        """
+        result = await self.session.execute(
+            select(Shelf)
+        )
+        return result.scalars().all()
