@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 import pytest
+from backend.service.listener import EmbeddedListener
 from fastapi.testclient import TestClient
 from backend.controller.main import get_app
 from sqlalchemy import create_engine
@@ -13,7 +14,7 @@ from db.model.base import Base
 from db.repositories.MaterialRepository import MaterialRepository
 from backend.controller import constants
 from unittest.mock import patch
-
+import paho.mqtt.publish as publish
 
 @pytest.fixture(scope='module')
 def setup_database(request):
@@ -34,13 +35,12 @@ def setup_database(request):
 
 # Initialize the TestClient to simulate schemas
 client = TestClient(get_app())
+EmbeddedListener.start_mqtt_scale() # Starts an instance of the Scale MQTT listener to begin listening
 
 # Test valid mass update
 def test_qr_display_success(setup_database):
     session = setup_database
-
     repository = MaterialRepository(session)
-
     material = repository.get_material_by_id(1)
 
     mass = material.mass
@@ -48,21 +48,29 @@ def test_qr_display_success(setup_database):
     colour = material.colour
     id = material.id
 
-    # Send a PUT request with valid entity_id and new mass
-    response = client.get("/qr_display/1")
+    # Publish a test mass based on the mass value of the specified material ID
+    publish.single(
+        topic="mass_value",
+        payload="1|"+str(int(mass)),
+        hostname="test.mosquitto.org",
+        port=1883
+    )
 
-    # Assert that the response status code is 200
-    assert response.status_code == 200
+    with TestClient(get_app()) as client:
+        # Send a PUT request with valid entity_id and new mass
+        response = client.get("/qr_display/1")
 
-    response_as_json = response.json()
-    print(response_as_json)
+        # Assert that the response status code is 200
+        assert response.status_code == 200
 
-    # Assert that the response message and new mass are correct
-    assert response_as_json['material_type_name'] == name
-    assert response_as_json['material']['colour'] == colour
-    assert response_as_json['material']['mass'] == mass
-    assert response_as_json['material']['id'] == id
+        response_as_json = response.json()
+        print(response_as_json)
 
+        # Assert that the response message and new mass are correct
+        assert response_as_json['material_type_name'] == name
+        assert response_as_json['material']['colour'] == colour
+        assert response_as_json['material']['mass'] == mass
+        assert response_as_json['material']['id'] == id
 
 # Test invalid material_id (material not found)
 def test_material_consume_not_found():
@@ -76,7 +84,6 @@ def test_material_consume_not_found():
     # Assert that the response contains the correct error message
     assert response.json() == {"detail": "Material not found"}
 
-
 @pytest.mark.parametrize("mock_mass", [0.0, -5.0])
 def test_auto_consume_mass_throws_500(mock_mass):
     """Test that the endpoint returns 500 when mass_on_the_scale is ≤ 0.0"""
@@ -84,4 +91,3 @@ def test_auto_consume_mass_throws_500(mock_mass):
         response = client.get("/qr_display/1")
         assert response.status_code == 500
         assert response.json() == {"detail": "Mass reading on scale is less than or equal to zero"}
-

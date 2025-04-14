@@ -7,30 +7,31 @@ import asyncio
 from sqlalchemy import event
 from db.model.Shelf import Shelf
 
+dht11_mqtt_instance = MQTTReceiver(
+    mqtt_broker = "test.mosquitto.org",
+    mqtt_port = 1883,
+    mqtt_temp_topic = "temp_value",
+    mqtt_humid_topic = "humid_value",
+    db_url = constants.DATABASE_URL
+)
+
+scale_mqtt_instance = MQTTscale(
+    mqtt_broker = "test.mosquitto.org",
+    mqtt_port = 1883,
+    mqtt_topic = "mass_value"
+)
+
 # Define the MQTT receiver start function
 def start_mqtt_receiver():
-    mqtt_broker = "test.mosquitto.org"
-    mqtt_port = 1883
-    mqtt_temp_topic = "temp_value"
-    mqtt_humid_topic = "humid_value"
-    db_url = constants.DATABASE_URL
-
-    receiver = MQTTReceiver(mqtt_broker, mqtt_port, mqtt_temp_topic, mqtt_humid_topic, db_url)
-    receiver.start()
+    dht11_mqtt_instance.start()
 
 #Create a listener that triggers when the Material table is updated, checks for Materials with a mass below the threshold
 # Define the MQTT scale start function
 def start_mqtt_scale():
-    mqtt_broker = "test.mosquitto.org"
-    mqtt_port = 1883
-    mqtt_topic = "mass_value"
-
-    receiver = MQTTscale(mqtt_broker, mqtt_port, mqtt_topic)
-    receiver.start()
+    scale_mqtt_instance.start()
 
     # Now the listener is running, and you can retrieve the latest value when needed.
-    print(f"Latest value: {receiver.get_latest_value()}")
-
+    print(f"Latest value: {scale_mqtt_instance.get_latest_value()}")
 
 def shelf_listener(LOOP):
 
