@@ -90,9 +90,15 @@ async def shelf_update_listener(mapper, connection, target):
             superadmins = await user_repo.get_all_superadmins_async()
             high_humidity_shelves = await repo.get_high_humidity_shelves_async()
             high_temp_shelves = await repo.get_high_temperature_shelves_async()
-            print(high_humidity_shelves)
+            all_shelves = await repo.get_all_shelves_async()
+
+            compliant_shelves = list(set(all_shelves) - set(high_temp_shelves) - set(high_humidity_shelves))
 
             alert_shelfs = []
+
+            # Update shelf previous states
+            for shelf in compliant_shelves:
+                 app_state.set_previous_shelf_state(shelf.id, shelf.humidity_pct, shelf.temperature_cel)
 
             for shelf in high_humidity_shelves + high_temp_shelves:
                 # Check if shelf state has changed (from acceptable to unacceptable)
@@ -108,7 +114,6 @@ async def shelf_update_listener(mapper, connection, target):
                         for superadmin in superadmins:
                             EnviroWarningMailer(constants.MAILER_EMAIL).send_notification(superadmin.email, "temperature", shelf.id)
 
-                # Update the previous states
                 app_state.set_previous_shelf_state(shelf.id, shelf.humidity_pct, shelf.temperature_cel)
 
                 # Keep the shelves that need alert
