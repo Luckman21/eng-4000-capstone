@@ -48,29 +48,20 @@ def test_qr_display_success(setup_database):
     colour = material.colour
     id = material.id
 
-    # Publish a test mass based on the mass value of the specified material ID
-    publish.single(
-        topic="mass_value",
-        payload="1|"+str(int(mass)),
-        hostname="test.mosquitto.org",
-        port=1883
-    )
+    with patch("backend.controller.routers.qr.get_scale_listener") as mock_get_listener:
+        mock_instance = mock_get_listener.return_value
+        mock_instance.get_latest_value.return_value = mass
 
-    with TestClient(get_app()) as client:
-        # Send a PUT request with valid entity_id and new mass
-        response = client.get("/qr_display/1")
+        with TestClient(get_app()) as client:
+            response = client.get("/qr_display/1")
+            print(f"response: {response.json()}")
+            assert response.status_code == 200
 
-        # Assert that the response status code is 200
-        assert response.status_code == 200
-
-        response_as_json = response.json()
-        print(response_as_json)
-
-        # Assert that the response message and new mass are correct
-        assert response_as_json['material_type_name'] == name
-        assert response_as_json['material']['colour'] == colour
-        assert response_as_json['material']['mass'] == mass
-        assert response_as_json['material']['id'] == id
+            response_as_json = response.json()
+            assert response_as_json['material_type_name'] == name
+            assert response_as_json['material']['colour'] == colour
+            assert response_as_json['material']['mass'] == mass
+            assert response_as_json['material']['id'] == id
 
 # Test invalid material_id (material not found)
 def test_material_consume_not_found():

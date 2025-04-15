@@ -7,7 +7,7 @@ from backend.controller.dependencies import get_db
 from db.schemas import MaterialSchema
 from db.model.Material import Material
 from db.repositories.MaterialRepository import MaterialRepository
-from backend.service.listener.EmbeddedListener import scale_mqtt_instance
+from backend.service.listener.EmbeddedListener import get_scale_listener
 from backend.controller.schemas.MaterialUpdateRequest import MaterialUpdateRequest
 from backend.controller.schemas.MaterialCreateRequest import MaterialCreateRequest
 from backend.controller.schemas.MaterialMutationRequest import MaterialMutationRequest
@@ -41,4 +41,5 @@ async def auto_consume_mass(entity_id: int, db: Session = Depends(get_db)):
 
 def get_mass_from_scale():
     """Retrieves latest mass value stored."""
+    scale_mqtt_instance = get_scale_listener()
     return scale_mqtt_instance.get_latest_value()
