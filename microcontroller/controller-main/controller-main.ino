@@ -15,9 +15,9 @@
 #define DHTTYPE 11
 
 // Calibration values
-#define TEMP_CAL 23    // Adjusts the temperature reading for accuracy
-#define HUMID_CAL 17   // Adjusts the humidity reading for accuracy
-#define SCALE_CAL 417  // Adjusts the scale reading for accuracy
+#define TEMP_CAL 21    // Adjusts the temperature reading for accuracy
+#define HUMID_CAL 19   // Adjusts the humidity reading for accuracy
+#define SCALE_CAL 414  // Adjusts the scale reading for accuracy
 
 // Define HX711 pins
 #define DOUT 2  // Data pin (DT)
@@ -25,6 +25,10 @@
 
 #define BUTTON_PIN 4  // Button pin to tare the scale
 #define SHELF_ID 1    // Unique to each board, set for each new unit
+
+// Mass values for our measuring modes
+#define SPOOL_MASS 256
+#define RESIN_MASS 1  // TODO: get mass of resin container
 
 // For more information, check out https://freenove.com/fnk0079
 // note:If lcd1602 uses PCF8574T, IIC's address is 0x27, or lcd1602 uses PCF8574AT, IIC's address is 0x3F.
@@ -54,6 +58,7 @@ unsigned long prev_ms = 0;
 // Values for scale measurements
 long weight = 0;
 long prev_weight = -1;  // Stores the value of the previous recorded weight, used to compare with the current reading
+int mode = 0; // Default scale mode
 
 // Values for temp and humidity
 float temp = 0;
@@ -133,7 +138,13 @@ void loop() {
   mqttClient.poll();  // Sends MQTT keep alive, constantly called to keep connection alive
 
   if (digitalRead(BUTTON_PIN) == LOW) {
-    tare();  // Tare the scale if button is pressed (pin is LOW)
+    delay(500);
+    if (digitalRead(BUTTON_PIN) == HIGH) {
+      scaleMode();  // Change scale mode if button is pressed (pin is HIGH --> LOW (press) --> HIGH)
+    }
+    else {
+      tare();  // Tare the scale if button is held (pin is HIGH --> LOW (held))
+    }
   }
 
   // If the HX711 is ready, read the weight
@@ -147,7 +158,7 @@ void loop() {
     lcd.setCursor(0, 1);
     lcd.print("found.");
   }
-  delay(500);
+  delay(500); // Required for HX711 module to ready
 
   readDHT11();  // Read from DHT11 sensor and update temp and humidity values accordingly
 }
@@ -316,7 +327,7 @@ void readDHT11() {
 
 // Tares the scale reading
 void tare() {
-  Serial.println("Button pressed! Taring scale...");
+  Serial.println("Button held! Taring scale...");
 
   // Update the LCD with Tare sequence
   lcd.clear();
@@ -333,10 +344,31 @@ void tare() {
   updateDisplay(weight, temp, humid);
 }
 
+void scaleMode() {
+  Serial.println("Button pressed! Changing mode...");
+  if (mode == 2) {
+    mode = 0;
+  }
+  else {
+    mode++;
+  }
+  // Update the LCD with Tare sequence
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Change Mode");
+  lcd.setCursor(0, 1);
+  if (mode == 1) lcd.print("Mode: SPOOL");
+  else if (mode == 2) lcd.print("Mode: RESIN");
+  else lcd.print("Mode: ZERO");
+  delay(500);
+  updateDisplay(weight, temp, humid);
+}
+
 // Performs the scale measruement and outputs to MQTT and the serial monitor
 void scaleMeasure() {
   // Get the average of 10 readings from the HX711
   weight = scale.get_units(10);  // Average of 10 readings
+  weight -= ((mode == 0) ? 0:((mode == 1) ? SPOOL_MASS:RESIN_MASS));  // Set 0 level based on scale mode
 
   // Print the weight to Serial Monitor for debugging
   Serial.print("Weight: ");
