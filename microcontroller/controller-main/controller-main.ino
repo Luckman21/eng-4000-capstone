@@ -232,12 +232,11 @@ void connectMQTT() {
   // Try to reconnect to the MQTT broker if the connection is lost
   Serial.println("Attempting to reconnect to MQTT broker...");
 
-  // Try connecting to the MQTT broker
-  if (!mqttClient.connect(broker, port)) {
+  // Try connecting to the MQTT broker and keep trying until connection is successful
+  while (!mqttClient.connect(broker, port)) {
     Serial.print("MQTT connection failed\nError Code = ");
     Serial.println(mqttClient.connectError());  // Prints the error code for debugging
-    while (1)
-      ;  // Keep trying until connection is successful
+    delay(5000);
   }
 
   Serial.println("Connected to MQTT broker.\n");
