@@ -58,7 +58,7 @@ unsigned long prev_ms = 0;
 // Values for scale measurements
 long weight = 0;
 long prev_weight = -1;  // Stores the value of the previous recorded weight, used to compare with the current reading
-int mode = 0; // Default scale mode
+int mode = 0;           // Default scale mode
 
 // Values for temp and humidity
 float temp = 0;
@@ -125,7 +125,7 @@ void loop() {
   }
 
   // Maintain MQTT Broker connection
-  if (!mqttClient.connected()) {
+  else if (!mqttClient.connected()) {
     Serial.println("MQTT broker connection lost. Reconnecting...");
     // Update LCD display
     lcd.clear();
@@ -141,8 +141,7 @@ void loop() {
     delay(500);
     if (digitalRead(BUTTON_PIN) == HIGH) {
       scaleMode();  // Change scale mode if button is pressed (pin is HIGH --> LOW (press) --> HIGH)
-    }
-    else {
+    } else {
       tare();  // Tare the scale if button is held (pin is HIGH --> LOW (held))
     }
   }
@@ -158,7 +157,7 @@ void loop() {
     lcd.setCursor(0, 1);
     lcd.print("found.");
   }
-  delay(500); // Required for HX711 module to ready
+  delay(500);  // Required for HX711 module to ready
 
   readDHT11();  // Read from DHT11 sensor and update temp and humidity values accordingly
 }
@@ -232,7 +231,7 @@ void wifiConnect() {
 void connectMQTT() {
   // Try to reconnect to the MQTT broker if the connection is lost
   Serial.println("Attempting to reconnect to MQTT broker...");
-  
+
   // Try connecting to the MQTT broker
   if (!mqttClient.connect(broker, port)) {
     Serial.print("MQTT connection failed\nError Code = ");
@@ -348,8 +347,7 @@ void scaleMode() {
   Serial.println("Button pressed! Changing mode...");
   if (mode == 2) {
     mode = 0;
-  }
-  else {
+  } else {
     mode++;
   }
   // Update the LCD with Tare sequence
@@ -367,8 +365,8 @@ void scaleMode() {
 // Performs the scale measruement and outputs to MQTT and the serial monitor
 void scaleMeasure() {
   // Get the average of 10 readings from the HX711
-  weight = scale.get_units(10);  // Average of 10 readings
-  weight -= ((mode == 0) ? 0:((mode == 1) ? SPOOL_MASS:RESIN_MASS));  // Set 0 level based on scale mode
+  weight = scale.get_units(10);                                           // Average of 10 readings
+  weight -= ((mode == 0) ? 0 : ((mode == 1) ? SPOOL_MASS : RESIN_MASS));  // Set 0 level based on scale mode
 
   // Print the weight to Serial Monitor for debugging
   Serial.print("Weight: ");
