@@ -4,11 +4,9 @@ import time
 from selenium import webdriver
 from selenium.common import StaleElementReferenceException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver import Remote
 import chromedriver_autoinstaller
 import re
 import os
@@ -307,4 +305,20 @@ def test_export_materials(driver, login):
     for f in matching_files:
         os.remove(os.path.join(DOWNLOAD_DIR, f))
 
-# TODO: Make test to assess status once material migration is complete
+def test_popovers(driver, login):
+    cell_xpaths = [
+        "//table//tr[1]/td[2]",
+        "//table//tr[1]/td[3]"
+    ]
+    for xpath in cell_xpaths:
+
+        cell = driver.find_element(By.XPATH, xpath)
+        clickable_span = cell.find_element(By.CSS_SELECTOR, "span")
+        clickable_span.click()
+
+        # Wait for the popover content to become visible
+        wait = WebDriverWait(driver, 10)
+        popover = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "whitespace-pre-wrap")))
+
+        assert popover.is_displayed(), "Popover did not appear after clicking the cell."
+        assert popover.text.strip() != "", "Popover content is empty."

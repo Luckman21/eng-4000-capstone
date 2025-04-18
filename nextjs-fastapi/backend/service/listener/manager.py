@@ -34,12 +34,12 @@ class ConnectionManager:
     async def process_alerts(self):
         """Process and send alerts to all connected clients."""
         while True:
-            print("⏳ Waiting for alert in queue...")
+            #print("⏳ Waiting for alert in queue...")
             # Wait for an alert to be put in the queue
             try:
                 alert_materials = await self.alert_queue.get()
             except Exception as e:
-                print(f"⚠️ Error retrieving alert from queue: {e}")
+                #print(f"⚠️ Error retrieving alert from queue: {e}")
                 continue
 
             print("📤 Processing alert from queue")

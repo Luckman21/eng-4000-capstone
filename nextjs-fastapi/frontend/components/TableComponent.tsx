@@ -5,6 +5,7 @@ import axios from "axios";
 import { useAsyncList } from "@react-stately/data";
 import { fetchMaterialTypes } from "@/constants/data";
 import Levenshtein from 'fast-levenshtein';
+import { Popover, PopoverTrigger, PopoverContent } from "@heroui/popover";
 
 import React from "react";
 import {
@@ -249,7 +250,38 @@ const filteredItems = React.useMemo(() => {
     (material: Material, columnKey: keyof Material | "actions" | "supplier_link") => {
       const cellValue = material[columnKey as keyof Material];
       switch (columnKey) {
-        case "status":
+    case "colour":
+    const sameColourMaterials = materials.filter((mat) => mat.colour === material.colour);
+    const colourTooltipContent = sameColourMaterials.map((mat) => `#${mat.id}: ${mat.mass}g`).join("\n");
+    return (
+        <Popover>
+        <PopoverTrigger>
+            <span className="cursor-pointer">{material.colour}</span>
+         </PopoverTrigger>
+         <PopoverContent>
+         <pre className="whitespace-pre-wrap">{colourTooltipContent}</pre>
+         </PopoverContent>
+        </Popover>
+    );
+
+    case "material_type_id":
+        const materialType = materialTypes.find((type) => Number(type.key) === Number(material.material_type_id));
+        const sameTypeMaterials = materials.filter((mat) => mat.material_type_id === material.material_type_id);
+        const typeTooltipContent = sameTypeMaterials.map((mat) => `#${mat.id}: ${mat.colour}, ${mat.mass}g`).join("\n");
+
+    return (
+        <Popover>
+        <PopoverTrigger>
+         <span className="cursor-pointer">
+            {materialType ? materialType.label : "Unknown Type"}
+            </span>
+        </PopoverTrigger>
+        <PopoverContent>
+         <pre className="whitespace-pre-wrap">{typeTooltipContent}</pre>
+        </PopoverContent>
+        </Popover>
+    );
+   case "status":
           return (
             <Chip
               className="capitalize"
@@ -260,12 +292,7 @@ const filteredItems = React.useMemo(() => {
               {cellValue}
             </Chip>
           );
-        case "material_type_id":
-          const materialType = materialTypes.find(
-             (type) => Number(type.key) === Number(material.material_type_id)
-           );
 
-          return materialType ? materialType.label : "Unknown Type";
         case "actions":
           return  (
             <div className="relative flex items-center gap-2">
