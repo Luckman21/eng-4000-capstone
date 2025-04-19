@@ -211,7 +211,7 @@ void wifiConnect() {
   while (WiFi.begin(ssid, pass) != WL_CONNECTED) {
     // failed, retry
     Serial.print(".");
-    delay(5000);
+    delay(60000);
   }
   Serial.println("Connected to network.\n");
   Serial.println("Attempting to connect to the MQTT broker: ");
@@ -281,7 +281,7 @@ void printDHT(float temp, float humid) {
 void updateDisplay(long weight, float temp, float humid) {
   lcd.clear();
   printMass(weight);
-  printDHT(temp + TEMP_CAL, humid + HUMID_CAL);
+  printDHT(temp + TEMP_CAL, 2.36 * humid + 16.04);
 }
 
 // Reads data from the DHT11 Temp and Humid sensor, publishes to the MQTT broker
@@ -312,11 +312,11 @@ void readDHT11() {
 
     Serial.print("Send humid to topic_humid: ");
     Serial.println(topic_humid);
-    Serial.println(humid + HUMID_CAL);
+    Serial.println(2.36 * humid + 16.04);
 
     // Send message, using print to send message contents
     mqttClient.beginMessage(topic_humid);
-    mqttClient.print(String(SHELF_ID) + "|" + String(humid + HUMID_CAL));
+    mqttClient.print(String(SHELF_ID) + "|" + String(2.36 * humid + 16.04));
     mqttClient.endMessage();
 
     updateDisplay(weight, temp, humid);
