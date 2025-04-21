@@ -10,7 +10,6 @@ from db.repositories.MaterialRepository import MaterialRepository
 from unittest.mock import patch
 import paho.mqtt.publish as publish
 
-
 # Fixture to set up the database
 @pytest.fixture(scope='module')
 def setup_database(request):
@@ -34,10 +33,8 @@ def setup_database(request):
     # Cleanup manually after the test has finished (this could be redundant)
     session.close()
 
-
 # Initialize the TestClient to simulate schemas
 client = TestClient(get_app())
-
 
 # Test valid QR display success
 def test_qr_display_success(setup_database):
@@ -52,7 +49,12 @@ def test_qr_display_success(setup_database):
 
     # Mock the get_scale_listener to return a predefined value
     with patch("backend.controller.routers.qr.get_scale_listener") as mock_get_listener:
+
         mock_instance = mock_get_listener.return_value
+
+        # Simulate receiving an MQTT message
+        payload = "2|"+str(mass)
+        mock_instance.process_message(payload)
         mock_instance.get_latest_value.return_value = mass
 
         # Send a GET request to simulate the QR display endpoint
@@ -65,13 +67,11 @@ def test_qr_display_success(setup_database):
         assert response_as_json['material']['mass'] == mass
         assert response_as_json['material']['id'] == id
 
-
 # Test invalid material_id (material not found)
 def test_material_consume_not_found():
     response = client.get("/qr_display/-1")
     assert response.status_code == 404
     assert response.json() == {"detail": "Material not found"}
-
 
 # Test mass reading on the scale is ≤ 0.0
 @pytest.mark.parametrize("mock_mass", [0.0, -5.0])
