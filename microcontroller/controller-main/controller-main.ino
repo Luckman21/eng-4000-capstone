@@ -15,9 +15,11 @@
 #define DHTTYPE 11
 
 // Calibration values
-#define TEMP_CAL 21    // Adjusts the temperature reading for accuracy
-#define HUMID_CAL 19   // Adjusts the humidity reading for accuracy
-#define SCALE_CAL 416  // Adjusts the scale reading for accuracy
+#define TEMP_CAL 24     // Adjusts the temperature reading for accuracy
+#define TEMP_FAC 0.571  // Scales the humidity reading for accuracy
+#define HUMID_CAL 18.46 // Adjusts the humidity reading for accuracy
+#define HUMID_FAC 1.15   // Scales the humidity reading for accuracy
+#define SCALE_CAL 416   // Adjusts the scale reading for accuracy
 
 // Define HX711 pins
 #define DOUT 2  // Data pin (DT)
@@ -27,7 +29,7 @@
 #define SHELF_ID 1    // Unique to each board, set for each new unit
 
 // Mass values for our measuring modes
-#define SPOOL_MASS 256
+#define SPOOL_MASS 255
 #define RESIN_MASS 1  // TODO: get mass of resin container
 
 // For more information, check out https://freenove.com/fnk0079
@@ -281,7 +283,7 @@ void printDHT(float temp, float humid) {
 void updateDisplay(long weight, float temp, float humid) {
   lcd.clear();
   printMass(weight);
-  printDHT(temp + TEMP_CAL, 2.36 * humid + 16.04);
+  printDHT(TEMP_FAC * temp + TEMP_CAL, HUMID_FAC * humid + HUMID_CAL);
 }
 
 // Reads data from the DHT11 Temp and Humid sensor, publishes to the MQTT broker
@@ -297,11 +299,11 @@ void readDHT11() {
 
     Serial.print("Send temp to topic_temp: ");
     Serial.println(topic_temp);
-    Serial.println(temp + TEMP_CAL);
+    Serial.println(TEMP_FAC * temp + TEMP_CAL);
 
     // Send message, using print to send message contents
     mqttClient.beginMessage(topic_temp);
-    mqttClient.print(String(SHELF_ID) + "|" + String(temp + TEMP_CAL));
+    mqttClient.print(String(SHELF_ID) + "|" + String(TEMP_FAC * temp + TEMP_CAL));
     mqttClient.endMessage();
 
     updateDisplay(weight, temp, humid);
@@ -312,11 +314,11 @@ void readDHT11() {
 
     Serial.print("Send humid to topic_humid: ");
     Serial.println(topic_humid);
-    Serial.println(2.36 * humid + 16.04);
+    Serial.println(HUMID_FAC * humid + HUMID_CAL);
 
     // Send message, using print to send message contents
     mqttClient.beginMessage(topic_humid);
-    mqttClient.print(String(SHELF_ID) + "|" + String(2.36 * humid + 16.04));
+    mqttClient.print(String(SHELF_ID) + "|" + String(HUMID_FAC * humid + HUMID_CAL));
     mqttClient.endMessage();
 
     updateDisplay(weight, temp, humid);
