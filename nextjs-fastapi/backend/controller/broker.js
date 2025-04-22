@@ -2,19 +2,20 @@ const aedes = require('aedes')();
 const net = require('net');
 const server = net.createServer(aedes.handle);
 
-server.listen(1883, function () {
+server.listen(1883, () => {
   console.log('Aedes MQTT broker running on port 1883');
 });
 
-// 👇 Listen for published messages
-aedes.on('publish', function (packet, client) {
-  if (client) {
-    console.log(`[${new Date().toISOString()}] Message received from client '${client.id}'`);
-  } else {
-    console.log(`[${new Date().toISOString()}] Message published by broker`);
-  }
+aedes.on('client', client => {
+  console.log(`[BROKER] Client connected: ${client.id}`);
+});
 
-  console.log(`→ Topic: ${packet.topic}`);
-  console.log(`→ Payload: ${packet.payload.toString()}`);
-  console.log('---');
+aedes.on('subscribe', (subscriptions, client) => {
+  console.log(`[BROKER] ${client.id} subscribed to:`, subscriptions.map(s => s.topic));
+});
+
+aedes.on('publish', (packet, client) => {
+  if (client) {
+    console.log(`[BROKER] ${client.id} published to ${packet.topic}: ${packet.payload.toString()}`);
+  }
 });
