@@ -34,6 +34,7 @@ def start_mqtt_scale():
 
     # Now the listener is running, and you can retrieve the latest value when needed.
     print(f"Latest value: {scale_mqtt_instance.get_latest_value()}")
+    scale_mqtt_instance.start()
 
 def shelf_listener(LOOP):
 
