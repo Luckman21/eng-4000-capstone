@@ -239,7 +239,7 @@ void connectMQTT() {
     if (!mqttClient.connect(broker, port)) {
       Serial.print("MQTT connection failed\nError Code = ");
       Serial.println(mqttClient.connectError());  // Prints the error code for debugging
-      delay(60000);
+      delay(1800000); // 10 Minutes per retry
     } else {
       break;
 
