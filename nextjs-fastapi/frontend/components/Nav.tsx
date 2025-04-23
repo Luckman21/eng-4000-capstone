@@ -19,64 +19,6 @@ const Nav = () => {
   const { lowStockMaterials, shelfStatus, notificationCount } = useWebSocket();
   const [user, setUser] = useState<UserType | null>(null);
   const router = useRouter();
-  // const [lowStockMaterials, setLowStockMaterials] = useState<MaterialCardType[]>([]);
-  // const [shelfStatus, setShelfStatus] = useState([]);
-  // const [notificationCount, setNotificationCount] = useState(0);
-  
-
-  
-  // useEffect(() => {
-  //   if (typeof window !== "undefined") {
-  //     const storedLowStock = JSON.parse(localStorage.getItem("lowStockMaterials") || "[]");
-  //     const storedShelfStatus = JSON.parse(localStorage.getItem("shelfStatus") || "[]");
-  //     const storedNotificationCount = parseInt(localStorage.getItem("notificationCount") || "0", 10);
-
-  //     setLowStockMaterials(storedLowStock);
-  //     setShelfStatus(storedShelfStatus);
-  //     setNotificationCount(storedNotificationCount);
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WS_URL}/ws/alerts`);
-  //   ws.onopen = () => {
-  //     console.log("🔌 WebSocket connected")
-  //   }
-  //   ws.onmessage = (event) => {
-  //     try {
-  //       const data = JSON.parse(event.data);
-
-  //       if (data.type === "material_alert") {
-  //         setLowStockMaterials((prev) => {
-  //           const updatedMaterials = data.data;
-  //           localStorage.setItem("lowStockMaterials", JSON.stringify(updatedMaterials));
-  //           return updatedMaterials;
-  //         });
-  //       }if (data.type === "shelf_alert") {
-  //         setShelfStatus((prev) => {
-  //           const updatedShelfStatus = data.data;
-  //           localStorage.setItem("shelfStatus", JSON.stringify(updatedShelfStatus));
-  //           return updatedShelfStatus;
-
-  //         });
-  //       }
-  //     } catch (error) {
-  //       console.error("Error parsing WebSocket data:", error);
-  //     }
-  //   };
-  //   ws.onclose = () => {
-  //     console.log("🔌 WebSocket disconnected");
-  //   }
-
-  //   return () => ws.close();
-  // }, []);
-
-  
-  // useEffect(() => {
-  //   const newNotificationCount = lowStockMaterials.length + shelfStatus.length;
-  //   setNotificationCount(newNotificationCount);
-  //   localStorage.setItem("notificationCount", newNotificationCount.toString());
-  // }, [lowStockMaterials, shelfStatus]);
 
   useEffect(() => {
     fetch(`/access_management/protected`, {
