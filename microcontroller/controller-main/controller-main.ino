@@ -15,11 +15,11 @@
 #define DHTTYPE 11
 
 // Calibration values
-#define TEMP_CAL 24     // Adjusts the temperature reading for accuracy
-#define TEMP_FAC 0.571  // Scales the humidity reading for accuracy
-#define HUMID_CAL 18.46 // Adjusts the humidity reading for accuracy
+#define TEMP_CAL 24      // Adjusts the temperature reading for accuracy
+#define TEMP_FAC 0.571   // Scales the humidity reading for accuracy
+#define HUMID_CAL 18.46  // Adjusts the humidity reading for accuracy
 #define HUMID_FAC 1.15   // Scales the humidity reading for accuracy
-#define SCALE_CAL 416   // Adjusts the scale reading for accuracy
+#define SCALE_CAL 416    // Adjusts the scale reading for accuracy
 
 // Define HX711 pins
 #define DOUT 2  // Data pin (DT)
@@ -234,21 +234,25 @@ void connectMQTT() {
   // Try to reconnect to the MQTT broker if the connection is lost
   Serial.println("Attempting to reconnect to MQTT broker...");
 
-  // Try connecting to the MQTT broker and keep trying until connection is successful
-  while (!mqttClient.connect(broker, port)) {
-    Serial.print("MQTT connection failed\nError Code = ");
-    Serial.println(mqttClient.connectError());  // Prints the error code for debugging
-    delay(5000);
+  // Try connecting to the MQTT broker, gives up after 10 attempts to retry later
+  for (int i = 0; i < 10; i++) {
+    if (!mqttClient.connect(broker, port)) {
+      Serial.print("MQTT connection failed\nError Code = ");
+      Serial.println(mqttClient.connectError());  // Prints the error code for debugging
+      delay(60000);
+    } else {
+      break;
+
+      Serial.println("Connected to MQTT broker.\n");
+
+      // Update LCD Display
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Connected to ");
+      lcd.setCursor(0, 1);
+      lcd.print("MQTT Broker!");
+    }
   }
-
-  Serial.println("Connected to MQTT broker.\n");
-
-  // Update LCD Display
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Connected to ");
-  lcd.setCursor(0, 1);
-  lcd.print("MQTT Broker!");
 }
 
 // Used to test the address of the display to ensure it exists
