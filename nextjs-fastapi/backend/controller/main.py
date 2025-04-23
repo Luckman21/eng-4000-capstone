@@ -8,6 +8,8 @@ from sqlalchemy.orm import Session
 from backend.controller.dependencies import get_db
 from fastapi.middleware.cors import CORSMiddleware
 from db.repositories.UserTypeRepository import UserTypeRepository
+from db.repositories.MaterialRepository import MaterialRepository
+from db.repositories.ShelfRepository import ShelfRepository
 import asyncio
 from fastapi import FastAPI, Depends
 from backend.controller.routers import materials, material_types, users, access_management, qr
@@ -102,6 +104,17 @@ async def websocket_endpoint(websocket: WebSocket):
 async def get_all_user_types(db: Session = Depends(get_db)):
     repo = UserTypeRepository(db)
     return repo.get_all_user_types()
+
+@app.get("/shelf_details/{shelf_id}")
+async def get_shelf_details(shelf_id: int, db: Session = Depends(get_db)):
+    """
+    Get shelf details from the database.
+    """
+    repo = MaterialRepository(db)
+    shelf_repo = ShelfRepository(db)
+    shelf = shelf_repo.get_shelf_by_id(shelf_id)
+    materials = repo.get_materials_by_shelf_id(shelf_id)
+    return {"shelf": shelf, "materials": materials}
 
 
 def get_app():

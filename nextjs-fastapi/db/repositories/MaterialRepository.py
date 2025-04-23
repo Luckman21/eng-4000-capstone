@@ -45,6 +45,12 @@ class MaterialRepository:
         Retrieve a material by its ID.
         """
         return self.session.query(Material).filter(Material.id == material_id).first()
+    
+    def get_materials_by_shelf_id(self, shelf_id: int) -> Material:
+        """
+        Retrieve a material by its shelf ID.
+        """
+        return self.session.query(Material).filter(Material.shelf_id == shelf_id).order_by(Material.id).all()
 
     def get_all_materials(self) -> list:
         """

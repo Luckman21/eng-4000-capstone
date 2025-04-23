@@ -26,7 +26,7 @@ import {
 import { EditIcon } from "@/constants/EditIcon";
 import { DeleteIcon } from "@/constants/DeleteIcon";
 
-import { Order, Popup } from "@/components";
+import { Order, Popup, ShelfDetails } from "@/components";
 import { NewMaterial } from "@/components";
 import { DeletePopup } from "@/components";
 import { PlusIcon } from "@/constants/PlusIcon";
@@ -53,6 +53,7 @@ const TableComponent = () => {
   const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [filterValue, setFilterValue] = React.useState("");
+  const [selectedShelfID, setSelectedShelfID] = useState<number | null>(null);
   const {
     isOpen: isModalOneOpen,
     onOpen: openModalOne,
@@ -65,6 +66,11 @@ const TableComponent = () => {
     isOpen: isModalTwoOpen,
     onOpen: openModalTwo,
     onOpenChange: handleModalTwoChange,
+  } = useDisclosure();
+  const {
+    isOpen: isShelfDetailsOpen,
+    onOpen: openShelfDetails,
+    onOpenChange: handleShelfDetailsChange,
   } = useDisclosure();
   useEffect(() => {
     const fetchTypes = async () => {
@@ -263,6 +269,18 @@ const filteredItems = React.useMemo(() => {
          </PopoverContent>
         </Popover>
     );
+    case "shelf_id":
+      return (
+        <span
+          onClick={() => {
+            setSelectedShelfID(material.shelf_id);
+            openShelfDetails(); // Trigger modal opening
+          }}
+          className="text-primary  cursor-pointer"
+        >
+         {material.shelf_id}
+        </span>
+      );
 
     case "material_type_id":
         const materialType = materialTypes.find((type) => Number(type.key) === Number(material.material_type_id));
@@ -455,6 +473,12 @@ const filteredItems = React.useMemo(() => {
         isOpen={isModalThreeOpen}
         onOpenChange={handleModalThreeChange}
         onSave={handleSaveMaterial} // Pass callback to
+        />
+        <ShelfDetails 
+        shelf_id={selectedShelfID}
+        isOpen={isShelfDetailsOpen}
+        onOpenChange={handleShelfDetailsChange}
+        onOpen={openShelfDetails} // Pass callback to
         />
     </div>
   );

@@ -17,6 +17,7 @@ import NotificationPanel from "./NotificationPanel";
 import ShelfCard from "./ShelfCard";
 import DeleteUser from "./DeleteUser";
 import DeleteMaterialType from "./DeleteMaterialType";
+import ShelfDetails from "./ShelfDetails";
 
 
 export { TableComponent, 
@@ -36,5 +37,7 @@ export { TableComponent,
      NotificationPanel, 
      ShelfCard,
      DeleteUser,
-     DeleteMaterialType
+     DeleteMaterialType,
+     ShelfDetails
+
     };
