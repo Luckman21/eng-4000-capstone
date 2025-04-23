@@ -5,7 +5,7 @@ from io import StringIO
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
-from backend.controller.scale_listener import MQTTscale
+from backend.service.listener.scale_listener import MQTTscale
 
 # Pytest Fixture to setup MQTTscale instance
 @pytest.fixture
