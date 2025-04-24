@@ -475,7 +475,7 @@ const filteredItems = React.useMemo(() => {
         onSave={handleSaveMaterial} // Pass callback to
         />
         <ShelfDetails 
-        shelf_id={selectedShelfID}
+        shelf_id={selectedShelfID ?? 0} 
         isOpen={isShelfDetailsOpen}
         onOpenChange={handleShelfDetailsChange}
         onOpen={openShelfDetails} // Pass callback to
