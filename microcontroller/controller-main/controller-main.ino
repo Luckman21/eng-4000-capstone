@@ -15,9 +15,11 @@
 #define DHTTYPE 11
 
 // Calibration values
-#define TEMP_CAL 23    // Adjusts the temperature reading for accuracy
-#define HUMID_CAL 17   // Adjusts the humidity reading for accuracy
-#define SCALE_CAL 417  // Adjusts the scale reading for accuracy
+#define TEMP_CAL 24      // Adjusts the temperature reading for accuracy
+#define TEMP_FAC 0.571   // Scales the humidity reading for accuracy
+#define HUMID_CAL 18.46  // Adjusts the humidity reading for accuracy
+#define HUMID_FAC 1.15   // Scales the humidity reading for accuracy
+#define SCALE_CAL 416    // Adjusts the scale reading for accuracy
 
 // Define HX711 pins
 #define DOUT 2  // Data pin (DT)
@@ -25,6 +27,10 @@
 
 #define BUTTON_PIN 4  // Button pin to tare the scale
 #define SHELF_ID 1    // Unique to each board, set for each new unit
+
+// Mass values for our measuring modes
+#define SPOOL_MASS 255
+#define RESIN_MASS 1  // TODO: get mass of resin container
 
 // For more information, check out https://freenove.com/fnk0079
 // note:If lcd1602 uses PCF8574T, IIC's address is 0x27, or lcd1602 uses PCF8574AT, IIC's address is 0x3F.
@@ -54,6 +60,7 @@ unsigned long prev_ms = 0;
 // Values for scale measurements
 long weight = 0;
 long prev_weight = -1;  // Stores the value of the previous recorded weight, used to compare with the current reading
+int mode = 0;           // Default scale mode
 
 // Values for temp and humidity
 float temp = 0;
@@ -120,7 +127,7 @@ void loop() {
   }
 
   // Maintain MQTT Broker connection
-  if (!mqttClient.connected()) {
+  else if (!mqttClient.connected()) {
     Serial.println("MQTT broker connection lost. Reconnecting...");
     // Update LCD display
     lcd.clear();
@@ -133,7 +140,12 @@ void loop() {
   mqttClient.poll();  // Sends MQTT keep alive, constantly called to keep connection alive
 
   if (digitalRead(BUTTON_PIN) == LOW) {
-    tare();  // Tare the scale if button is pressed (pin is LOW)
+    delay(500);
+    if (digitalRead(BUTTON_PIN) == HIGH) {
+      scaleMode();  // Change scale mode if button is pressed (pin is HIGH --> LOW (press) --> HIGH)
+    } else {
+      tare();  // Tare the scale if button is held (pin is HIGH --> LOW (held))
+    }
   }
 
   // If the HX711 is ready, read the weight
@@ -147,7 +159,7 @@ void loop() {
     lcd.setCursor(0, 1);
     lcd.print("found.");
   }
-  delay(500);
+  delay(500);  // Required for HX711 module to ready
 
   readDHT11();  // Read from DHT11 sensor and update temp and humidity values accordingly
 }
@@ -201,7 +213,7 @@ void wifiConnect() {
   while (WiFi.begin(ssid, pass) != WL_CONNECTED) {
     // failed, retry
     Serial.print(".");
-    delay(5000);
+    delay(60000);
   }
   Serial.println("Connected to network.\n");
   Serial.println("Attempting to connect to the MQTT broker: ");
@@ -221,23 +233,26 @@ void wifiConnect() {
 void connectMQTT() {
   // Try to reconnect to the MQTT broker if the connection is lost
   Serial.println("Attempting to reconnect to MQTT broker...");
-  
-  // Try connecting to the MQTT broker
-  if (!mqttClient.connect(broker, port)) {
-    Serial.print("MQTT connection failed\nError Code = ");
-    Serial.println(mqttClient.connectError());  // Prints the error code for debugging
-    while (1)
-      ;  // Keep trying until connection is successful
+
+  // Try connecting to the MQTT broker, gives up after 10 attempts to retry later
+  for (int i = 0; i < 10; i++) {
+    if (!mqttClient.connect(broker, port)) {
+      Serial.print("MQTT connection failed\nError Code = ");
+      Serial.println(mqttClient.connectError());  // Prints the error code for debugging
+      delay(1800000); // 10 Minutes per retry
+    } else {
+      break;
+
+      Serial.println("Connected to MQTT broker.\n");
+
+      // Update LCD Display
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Connected to ");
+      lcd.setCursor(0, 1);
+      lcd.print("MQTT Broker!");
+    }
   }
-
-  Serial.println("Connected to MQTT broker.\n");
-
-  // Update LCD Display
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Connected to ");
-  lcd.setCursor(0, 1);
-  lcd.print("MQTT Broker!");
 }
 
 // Used to test the address of the display to ensure it exists
@@ -272,7 +287,7 @@ void printDHT(float temp, float humid) {
 void updateDisplay(long weight, float temp, float humid) {
   lcd.clear();
   printMass(weight);
-  printDHT(temp + TEMP_CAL, humid + HUMID_CAL);
+  printDHT(TEMP_FAC * temp + TEMP_CAL, HUMID_FAC * humid + HUMID_CAL);
 }
 
 // Reads data from the DHT11 Temp and Humid sensor, publishes to the MQTT broker
@@ -288,11 +303,11 @@ void readDHT11() {
 
     Serial.print("Send temp to topic_temp: ");
     Serial.println(topic_temp);
-    Serial.println(temp + TEMP_CAL);
+    Serial.println(TEMP_FAC * temp + TEMP_CAL);
 
     // Send message, using print to send message contents
     mqttClient.beginMessage(topic_temp);
-    mqttClient.print(String(SHELF_ID) + "|" + String(temp + TEMP_CAL));
+    mqttClient.print(String(SHELF_ID) + "|" + String(TEMP_FAC * temp + TEMP_CAL));
     mqttClient.endMessage();
 
     updateDisplay(weight, temp, humid);
@@ -303,11 +318,11 @@ void readDHT11() {
 
     Serial.print("Send humid to topic_humid: ");
     Serial.println(topic_humid);
-    Serial.println(humid + HUMID_CAL);
+    Serial.println(HUMID_FAC * humid + HUMID_CAL);
 
     // Send message, using print to send message contents
     mqttClient.beginMessage(topic_humid);
-    mqttClient.print(String(SHELF_ID) + "|" + String(humid + HUMID_CAL));
+    mqttClient.print(String(SHELF_ID) + "|" + String(HUMID_FAC * humid + HUMID_CAL));
     mqttClient.endMessage();
 
     updateDisplay(weight, temp, humid);
@@ -316,7 +331,7 @@ void readDHT11() {
 
 // Tares the scale reading
 void tare() {
-  Serial.println("Button pressed! Taring scale...");
+  Serial.println("Button held! Taring scale...");
 
   // Update the LCD with Tare sequence
   lcd.clear();
@@ -333,10 +348,30 @@ void tare() {
   updateDisplay(weight, temp, humid);
 }
 
+void scaleMode() {
+  Serial.println("Button pressed! Changing mode...");
+  if (mode == 2) {
+    mode = 0;
+  } else {
+    mode++;
+  }
+  // Update the LCD with Tare sequence
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Change Mode");
+  lcd.setCursor(0, 1);
+  if (mode == 1) lcd.print("Mode: SPOOL");
+  else if (mode == 2) lcd.print("Mode: RESIN");
+  else lcd.print("Mode: ZERO");
+  delay(500);
+  updateDisplay(weight, temp, humid);
+}
+
 // Performs the scale measruement and outputs to MQTT and the serial monitor
 void scaleMeasure() {
   // Get the average of 10 readings from the HX711
-  weight = scale.get_units(10);  // Average of 10 readings
+  weight = scale.get_units(10);                                           // Average of 10 readings
+  weight -= ((mode == 0) ? 0 : ((mode == 1) ? SPOOL_MASS : RESIN_MASS));  // Set 0 level based on scale mode
 
   // Print the weight to Serial Monitor for debugging
   Serial.print("Weight: ");
