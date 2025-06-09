@@ -45,4 +45,4 @@ class MQTTscale:
     def start(self):
         """Start the MQTT client and begin receiving messages."""
         self.client.connect(self.mqtt_broker, self.mqtt_port, 60)
-        self.client.loop_start()  # Starts the loop to receive messages in the background
+        self.client.loop_start()

@@ -54,7 +54,7 @@ class ConnectionManager:
                     print("📤 Sent alert to client")
                 except Exception as e:
                     print(f"⚠️ Error sending message: {e}")
-                    self.active_connections.remove(ws)  # Remove disconnected clients
+                    self.active_connections.remove(ws)
 
 # create manager instance
 manager = ConnectionManager()
