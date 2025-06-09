@@ -3,14 +3,14 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[3])) 
 import pytest 
 from fastapi.testclient import TestClient 
-from backend.controller.main import get_app 
-from backend.controller.dependencies import get_db 
+from backend.controller.main import get_app
 from sqlalchemy import create_engine 
 from sqlalchemy.orm import sessionmaker 
 from db.model.base import Base 
 from db.model.Material import Material 
 from db.model.MaterialType import MaterialType 
 from backend.controller import constants
+
 
 @pytest.fixture(scope="module") 
 def setup_database(request): 
@@ -27,9 +27,11 @@ def setup_database(request):
         session.close()  
     
     yield session 
-    
+
+
 client = TestClient(get_app()) 
-    
+
+
 def test_get_all_materials(setup_database): 
     session = setup_database 
     material_type = session.query(MaterialType).filter_by(type_name="Plastic").first() 
