@@ -2,8 +2,8 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 from db.model.Shelf import Shelf
 from sqlalchemy.future import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from backend.controller import constants
+
 
 class ShelfRepository:
     def __init__(self, session: Session):

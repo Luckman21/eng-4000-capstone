@@ -2,6 +2,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 from db.model.UserType import UserType
 
+
 class UserTypeRepository:
     def __init__(self, session: Session):
         """
@@ -15,7 +16,6 @@ class UserTypeRepository:
         Create a new UserType in the database.
         """
         try:
-            # Create new UserType instance
             new_user_type = UserType(type_name=type_name)
             self.session.add(new_user_type)
             self.session.commit()
