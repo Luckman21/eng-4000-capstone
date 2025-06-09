@@ -4,14 +4,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from db.model.Material import Material
 from db.model.MaterialType import MaterialType
 from db.model.base import Base
-from db.repositories.MaterialRepository import MaterialRepository
 from db.repositories.MaterialTypeRepository import MaterialTypeRepository
 from backend.controller import constants
 
-# Use an existing database instead of an in-memory one
+
+
 @pytest.fixture(scope='module')
 def setup_database(request):
     engine = create_engine(constants.DATABASE_URL, echo=True)
@@ -39,17 +38,12 @@ def setup_database(request):
     # Register cleanup to be executed after the test, even if it fails
     request.addfinalizer(cleanup)
 
-    yield session  # Yield the session to the test
-
-    # Cleanup manually after the test has finished (this could be redundant)
+    yield session
     session.close()
 
 
 def test_get_material_type_by_id(setup_database):
-    # Get the session from the fixture
     session = setup_database
-
-    # Fetch an existing material and update its data
     material_type = session.query(MaterialType).filter_by(type_name="Plastic").first()
 
     repository = MaterialTypeRepository(session)
@@ -60,7 +54,6 @@ def test_get_material_type_by_id(setup_database):
 
 
 def test_create_material(setup_database):
-    # Get the session from the fixture
     session = setup_database
     repository = MaterialTypeRepository(session)
 
@@ -73,8 +66,8 @@ def test_create_material(setup_database):
     session.query(MaterialType).filter_by(type_name="dummy").delete()
     session.commit()
 
+
 def test_update_material_type(setup_database):
-    # Get the session from the fixture
     session = setup_database
     repository = MaterialTypeRepository(session)
 
@@ -107,6 +100,7 @@ def test_delete_material_type(setup_database):
     queried_material_type = repository.get_material_type_by_id(material_type.id)
 
     assert queried_material_type is None
+
 
 def test_material_type_existance(setup_database):
     # Get the session from the fixture
