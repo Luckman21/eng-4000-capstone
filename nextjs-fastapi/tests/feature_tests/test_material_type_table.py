@@ -1,19 +1,13 @@
-import subprocess
 import pytest
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver import Remote
 import chromedriver_autoinstaller
-import re
 import os
 from tests.feature_tests.login_helper import log_admin_in, log_super_admin_in
-
-
 
 TEST_URL = "http://127.0.0.1:3000/materialType"
 
@@ -21,20 +15,20 @@ DOWNLOAD_DIR = os.path.join(os.getcwd(), "downloads")
 if not os.path.exists(DOWNLOAD_DIR):
     os.makedirs(DOWNLOAD_DIR)
 
+
 @pytest.fixture(scope="module")
 def driver():
     chromedriver_autoinstaller.install()
     chrome_options = Options()
-    chrome_options.add_argument("--headless") # This means you won't see the actual icon
-    chrome_options.add_argument("--disable-gpu") # Disable GPU acceleration (required in headless mode)
-    chrome_options.add_argument("--no-sandbox")  # Might help in some environments
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--no-sandbox")
     chrome_options.add_experimental_option("prefs", {
          "download.default_directory": DOWNLOAD_DIR,
          "download.prompt_for_download": False,
          "download.directory_upgrade": True,
          "safebrowsing.enabled": True
     })
-    # This will change depending on your driver
 
     chromedriver_autoinstaller.install()
     driver = webdriver.Chrome(options=chrome_options)
@@ -75,7 +69,6 @@ def test_mattype_table_buttons(driver, login):
         WebDriverWait(row, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "svg")))
         svg_elements = row.find_elements(By.TAG_NAME, "svg")
 
-        # Assert that each row has exactly 2 SVGs (or adjust as necessary)
         assert len(svg_elements) == 2, f"Row {index + 1} does not have exactly 2 SVG elements."
 
 def test_mattype_table_order(driver, login):
@@ -174,5 +167,3 @@ def test_export_material_types(driver, login):
     print("Downloaded file:", matching_files[0])
     for f in matching_files:
         os.remove(os.path.join(DOWNLOAD_DIR, f))
-
-# TODO: Make test to assess status once material migration is complete
