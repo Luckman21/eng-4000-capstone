@@ -3,7 +3,7 @@ name: Deploy FastAPI to Azure
 on:
   push:
     branches:
-      - main
+      - verify-structure
 
 jobs:
   deploy:

@@ -2,8 +2,8 @@
 import os
 
 # Get the environment variable to determine which DB URL to use
-password = 'JanusIsThe_ROMAN_GodOfTransitions44'
-address = 'lzulfwvbuuoaipbbdzmi'
+password = os.getenv('DB_PASSWORD')
+address = os.getenv('DB_ADDRESS')
 
 # Use different database URLs based on the environment
 print(f"env var: {os.getenv('ENV')}")
