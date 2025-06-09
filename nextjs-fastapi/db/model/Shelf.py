@@ -32,7 +32,6 @@ class Shelf(Base):
         self.humidity_pct = humidity_pct
         self.temperature_cel = temperature_cel
 
-    # Class Method
     def getAll(cls, session):
         """
         Returns all the instances of Shelf stored in the shelf table.

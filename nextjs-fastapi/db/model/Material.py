@@ -1,10 +1,6 @@
 from sqlalchemy import create_engine, Column, Integer, String, Float, CheckConstraint, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy.exc import IntegrityError, DataError, SQLAlchemyError
 from .base import Base  # Import Base from a separate file
-from .MaterialType import MaterialType
-from .Shelf import Shelf
 
 # Base class for SQLAlchemy (this is the table essentially)
 
@@ -30,9 +26,7 @@ class Material(Base):
     material_type = relationship("MaterialType", backref="materials")
     shelf_type = relationship("Shelf", backref="materials")
 
-
     # Set Methods
-
     def setColour(self, newColour):
         if type(newColour) is not str:
             raise ValueError("colour must be string")
