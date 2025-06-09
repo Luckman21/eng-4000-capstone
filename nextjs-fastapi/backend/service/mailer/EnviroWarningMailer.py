@@ -1,7 +1,7 @@
 from backend.service.mailer.MailerService import _MailerService
 
-class EnviroWarningMailer:
 
+class EnviroWarningMailer:
     def __init__(self, from_addr):
         self.from_addr = from_addr
         self.client = _MailerService()
@@ -11,5 +11,4 @@ class EnviroWarningMailer:
         body = f"Well met,<br><br>Shelf {shelf_number} has a {enviro_deficiency} exception. Make sure to check the unit to " \
                f"ensure your product does not spoil. "
 
-        # Send the email using the private _MailerService
         return self.client.send_email(to_addr, subject, body, self.from_addr)
