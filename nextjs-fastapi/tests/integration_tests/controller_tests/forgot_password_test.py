@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 import pytest
+import os
 from fastapi.testclient import TestClient
 from backend.controller.main import get_app
 from unittest import mock
@@ -11,7 +12,7 @@ from db.model.User import User
 from db.model.base import Base
 from backend.service.mailer.TempPasswordMailer import TempPasswordMailer
 from backend.controller import constants
-
+os.environ["SENDGRID_API_KEY"] = "turtles"
 
 @pytest.fixture(scope='module')
 def setup_database(request):

@@ -11,6 +11,8 @@ from db.model.base import Base
 from db.repositories.UserRepository import UserRepository
 from backend.service.mailer.PasswordChangeMailer import PasswordChangeMailer
 from backend.controller import constants
+import os
+os.environ["SENDGRID_API_KEY"] = "turtles"
 
 
 @pytest.fixture(scope='module')
