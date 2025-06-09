@@ -7,7 +7,7 @@ from backend.service.scrapers.SaleScraper import scrape_amazon_page_for_sale, sc
 @pytest.fixture
 def driver():
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    #chrome_options.add_argument("--headless")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument(
@@ -28,14 +28,15 @@ def test_scrape_amazon_page_for_sale_found(driver):
     bool = scrape_amazon_page_for_sale(url, driver)
     assert bool is True
 
+#TODO digikey website is broken. If Pantheon intends on reinstating this feature and digikey's website is fine, restore this test
 
-def test_scrape_digitmaker_page_for_sale_found(driver):
-    url = 'https://www.digitmakers.ca/collections/esun-filaments/products/esun-emarble-pla-filament-1-75mm-1kg'
-    bool = scrape_digitkey_page_for_sale(url, driver)
-    assert bool is True
-
-
-def test_scrape_digitmaker_page_for_sale_found_2(driver):
-    url = 'https://www.digitmakers.ca/collections/offer-of-the-week-3d-printing-canada-3d-filaments-canada/products/d3d-premium-petg-filament-1-75-mm-1kg-spool?variant=8112650649636'
-    bool = scrape_digitkey_page_for_sale(url, driver)
-    assert bool is True
+# def test_scrape_digitmaker_page_for_sale_found_1(driver):
+#     url = 'https://www.digitmakers.ca/collections/esun-filaments/products/esun-emarble-pla-filament-1-75mm-1kg'
+#     bool = scrape_digitkey_page_for_sale(url, driver)
+#     assert bool is True
+#
+#
+# def test_scrape_digitmaker_page_for_sale_found_2(driver):
+#     url = 'https://www.digitmakers.ca/collections/offer-of-the-week-3d-printing-canada-3d-filaments-canada/products/d3d-premium-petg-filament-1-75-mm-1kg-spool?variant=8112650649636'
+#     bool = scrape_digitkey_page_for_sale(url, driver)
+#     assert bool is True

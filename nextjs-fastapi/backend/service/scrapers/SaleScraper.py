@@ -68,6 +68,10 @@ def scrape_amazon_page_for_sale(url, driver):
 def scrape_digitkey_page_for_sale(url, driver) -> bool:
     driver.get(url)
     session = setup_database()
+    driver.execute_script("""
+        var dlg = document.querySelector('dialog');
+        dlg.remove();
+    """)
 
     # Let's see if the sale exists. If not return false
     try:
