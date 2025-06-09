@@ -168,8 +168,6 @@ const MaterialTypeTable: React.FC<MaterialTypes> = () => {
         ];
   })();
   
-  
-
 
   const renderCell = React.useCallback(
     (materialType: MaterialType, columnKey: string) => {

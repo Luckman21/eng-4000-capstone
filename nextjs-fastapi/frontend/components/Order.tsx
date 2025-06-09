@@ -30,7 +30,6 @@ interface OrderProps {
 }
 
 
-
 const Order: React.FC<OrderProps> = ({ material, isOpen, onOpenChange, onSave }) => {
   const [editableMaterial, setEditableMaterial] = useState<Material | null>(material);
   const [materialTypes, setMaterialTypes] = useState<{label: string}[]>([]);
@@ -59,7 +58,6 @@ const Order: React.FC<OrderProps> = ({ material, isOpen, onOpenChange, onSave })
   };
 
 
-
   const handleSave = async (actionType: string) => {
     if (!editableMaterial) return;
     try {
@@ -71,13 +69,13 @@ const Order: React.FC<OrderProps> = ({ material, isOpen, onOpenChange, onSave })
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            mass_change: parseFloat(editableMaterial.mass.toString()) // Make sure mass_change is passed correctly
+            mass_change: parseFloat(editableMaterial.mass.toString())
         }),
       });
         if (!response.ok) {
         console.log(response.body)
          const errorData = await response.json();
-         console.error("Error updating material:", errorData); // Log the error response from the backend
+         console.error("Error updating material:", errorData);
          throw new Error("Failed to update material");
       }
         const updatedMaterial = { ...editableMaterial };

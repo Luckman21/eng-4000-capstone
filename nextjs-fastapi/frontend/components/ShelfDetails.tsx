@@ -30,7 +30,7 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = ({shelf_id, isOpen, onOpen, on
   useEffect(() => { 
     async function fetchShelfDetails() {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/shelf_details/${shelf_id}`);  // Update to match your API route
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/shelf_details/${shelf_id}`);
         const data = await res.json();
         console.log(data);
         setShelfDetails(data.shelf);

@@ -50,7 +50,6 @@ const Popup: React.FC<NewMaterials> = ({ material, isOpen, onOpenChange, onSave 
 
     try {
 
-      // Send update request to backend
       const response = await fetch(`/materials/update_material/${editableMaterial.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -66,7 +65,7 @@ const Popup: React.FC<NewMaterials> = ({ material, isOpen, onOpenChange, onSave 
         if (!response.ok) {
         console.log(response.body)
          const errorData = await response.json();
-         console.error("Error updating material:", errorData); // Log the error response from the backend
+         console.error("Error updating material:", errorData);
          throw new Error("Failed to update material");
       }
         const updatedMaterial = { ...editableMaterial };

@@ -12,7 +12,6 @@ type LoginData = {
 };
 
 
-
 const Login = () => {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
