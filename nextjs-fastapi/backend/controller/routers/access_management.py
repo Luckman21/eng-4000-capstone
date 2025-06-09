@@ -1,18 +1,17 @@
 import sys
 from pathlib import Path
 import os
-import uvicorn
+
 sys.path.append(str(Path().resolve().parent.parent))
 from sqlalchemy.orm import Session
 from backend.controller.dependencies import get_db
 from db.repositories.UserRepository import UserRepository
 from backend.controller import constants
-from fastapi import FastAPI, Depends, HTTPException, Response, Request, APIRouter
+from fastapi import Depends, HTTPException, Response, Request, APIRouter
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 import jwt
 from backend.service.PasswordHashService import PasswordHashService
-from datetime import datetime, timedelta
-from typing import Optional
+from datetime import timedelta
 from backend.service.mailer.TempPasswordMailer import TempPasswordMailer
 from backend.service.TempPasswordRandomizeService import create_temp_password
 from backend.controller.schemas.ForgotPasswordRequest import ForgotPasswordRequest
@@ -23,12 +22,12 @@ router = APIRouter(
     tags=["Access"],
 )
 
-
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 IS_PRODUCTION = os.getenv("ENV") == "production"
 
 # OAuth2 scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
 
 @router.post("/login")
 def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
@@ -53,6 +52,7 @@ def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), 
     )
 
     return {"message": "Login successful"}
+
 
 @router.post("/logout")
 def logout(response: Response):
@@ -111,16 +111,11 @@ async def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(
 
     user = repo.get_user_by_email(request.email)
 
-    # Create password, update, and send
-
     plain_password = create_temp_password()
     hashed_password = PasswordHashService.hash_password(plain_password)
 
     try:
-        # Call the setter method to update the user
-
-        repo.update_user(user,
-                         password=hashed_password)
+        repo.update_user(user, password=hashed_password)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -131,5 +126,3 @@ async def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(
         raise HTTPException(status_code=500, detail=str(e))
 
     return {'message': "Password successfully sent"}
-
-
