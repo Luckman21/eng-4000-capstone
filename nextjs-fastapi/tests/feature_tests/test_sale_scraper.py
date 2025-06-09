@@ -7,7 +7,7 @@ from backend.service.scrapers.SaleScraper import scrape_amazon_page_for_sale, sc
 @pytest.fixture
 def driver():
     chrome_options = Options()
-    #chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument(
