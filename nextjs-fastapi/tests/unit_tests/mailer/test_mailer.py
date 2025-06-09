@@ -1,5 +1,6 @@
 import pytest
 import sys
+import os
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from unittest.mock import MagicMock
@@ -10,6 +11,7 @@ from backend.service.mailer.SaleMailer import SaleMailer
 from backend.service.mailer.EnviroWarningMailer import EnviroWarningMailer
 
 verified_email = 'pantheonprototyping@gmail.com'
+os.environ["SENDGRID_API_KEY"] = "turtles"
 
 # Test the TempPasswordMailer class
 @pytest.fixture
