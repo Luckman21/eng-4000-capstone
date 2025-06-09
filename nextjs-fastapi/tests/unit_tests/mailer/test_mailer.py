@@ -31,14 +31,13 @@ def test_send_temp_password_email_success(mock_sendgrid):
 
     # Initialize TempPasswordMailer with a mock sendgrid service
     temp_password_mailer = TempPasswordMailer(from_addr=verified_email)
-    temp_password_mailer.client = mock_sendgrid  # Use the mocked service
+    temp_password_mailer.client = mock_sendgrid
 
     # Mock sending an email
     recipient = "recipient@example.com"
     temp_password = "temp123password"
     response = temp_password_mailer.send_notification(recipient, temp_password)
 
-    # Assert that the send_email method was called once
     mock_sendgrid.send_email.assert_called_once_with(
         recipient,
         "Pantheon Inventory Management: Your Temporary Password",
@@ -57,14 +56,13 @@ def test_send_temp_password_email_failure(mock_sendgrid):
 
     # Initialize TempPasswordMailer with a mock sendgrid service
     temp_password_mailer = TempPasswordMailer(from_addr=verified_email)
-    temp_password_mailer.mailer_service = mock_sendgrid  # Use the mocked service
+    temp_password_mailer.mailer_service = mock_sendgrid
 
-    # Mock sending an email
     recipient = "recipient@example.com"
     temp_password = "temp123password"
 
     # Call the method and assert that it prints the error
-    with pytest.raises(Exception):  # Expect an exception to be raised
+    with pytest.raises(Exception):
         temp_password_mailer.send_temp_password_email(recipient, temp_password)
 
 
@@ -72,7 +70,7 @@ def test_send_password_change_email_success(mock_sendgrid):
 
     # Initialize TempPasswordMailer with a mock sendgrid service
     password_change_mailer = PasswordChangeMailer(from_addr=verified_email)
-    password_change_mailer.client = mock_sendgrid  # Use the mocked service
+    password_change_mailer.client = mock_sendgrid
 
     # Mock sending an email
     recipient = "recipient@example.com"
@@ -97,14 +95,14 @@ def test_send_password_change_email_failure(mock_sendgrid):
 
     # Initialize TempPasswordMailer with a mock sendgrid service
     password_change_mailer = PasswordChangeMailer(from_addr=verified_email)
-    password_change_mailer.client = mock_sendgrid  # Use the mocked service
+    password_change_mailer.client = mock_sendgrid
 
     # Mock sending an email
     recipient = "recipient@example.com"
     temp_password = "temp123password"
 
     # Call the method and assert that it prints the error
-    with pytest.raises(Exception):  # Expect an exception to be raised
+    with pytest.raises(Exception):
         password_change_mailer.send_notification(recipient, temp_password)
 
 
@@ -150,7 +148,7 @@ def test_send_low_stock_email_failure(mock_sendgrid):
     link = "link.com"
 
     # Call the method and assert that it prints the error
-    with pytest.raises(Exception):  # Expect an exception to be raised
+    with pytest.raises(Exception):
         low_stock_mailer.send_notification(recipient, type, colour, link)
 
 
@@ -159,7 +157,7 @@ def test_sale_mailer_success(mock_sendgrid):
 
     # Initialize TempPasswordMailer with a mock sendgrid service
     sale_mailer = SaleMailer(from_addr=verified_email)
-    sale_mailer.client = mock_sendgrid  # Use the mocked service
+    sale_mailer.client = mock_sendgrid
 
     # Mock sending an email
     recipient = "recipient@example.com"
@@ -167,7 +165,7 @@ def test_sale_mailer_success(mock_sendgrid):
 
     response = sale_mailer.send_notification(recipient, materials )
 
-    # Assert that the send_email method was called once
+
     mock_sendgrid.send_email.assert_called_once_with(
         recipient,
         "Pantheon Inventory Management: Inventory Sale Found",
@@ -194,26 +192,22 @@ def test_send_sale_email_failure(mock_sendgrid):
 
 
     # Call the method and assert that it prints the error
-    with pytest.raises(Exception):  # Expect an exception to be raised
+    with pytest.raises(Exception):
         sale_mailer.send_notification(recipient, materials)
-
 
 
 def test_enviro_success(mock_sendgrid):
 
     # Initialize TempPasswordMailer with a mock sendgrid service
     enviro_mailer = EnviroWarningMailer(from_addr=verified_email)
-    enviro_mailer.client = mock_sendgrid  # Use the mocked service
+    enviro_mailer.client = mock_sendgrid
 
     # Mock sending an email
     recipient = "recipient@example.com"
     shelf = '1'
     error = 'humidity'
 
-
     response = enviro_mailer.send_notification(recipient, error, shelf )
-
-    # Assert that the send_email method was called once
     mock_sendgrid.send_email.assert_called_once_with(
         recipient,
         "Pantheon Inventory Management: Environmental Warning",
@@ -227,13 +221,12 @@ def test_enviro_success(mock_sendgrid):
 
 
 def test_enviro_email_failure(mock_sendgrid):
-
     # Simulate failure by making send_email raise an exception
     mock_sendgrid.send_email.side_effect = Exception("SendGrid API error")
 
     # Initialize SaleMailer with a mock sendgrid service
     enviro_mailer = EnviroWarningMailer(from_addr=verified_email)
-    enviro_mailer.client = mock_sendgrid  # Use the mocked service
+    enviro_mailer.client = mock_sendgrid
 
     # Mock sending an email
     recipient = "recipient@example.com"
@@ -242,5 +235,5 @@ def test_enviro_email_failure(mock_sendgrid):
 
 
     # Call the method and assert that it prints the error
-    with pytest.raises(Exception):  # Expect an exception to be raised
+    with pytest.raises(Exception):
         enviro_mailer.send_notification(recipient, error, shelf)
