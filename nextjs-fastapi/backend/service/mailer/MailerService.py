@@ -7,7 +7,6 @@ load_dotenv()
 
 
 class _MailerService:
-
     def __init__(self):
         api_key = os.getenv('SENDGRID_API_KEY')
         if not api_key:

@@ -1,6 +1,5 @@
 import sys
 from pathlib import Path
-
 sys.path.append(str(Path().resolve().parent.parent))
 from sqlalchemy.orm import Session
 from backend.controller.dependencies import get_db
@@ -9,7 +8,7 @@ from db.repositories.UserRepository import UserRepository
 from backend.controller import constants
 from backend.controller.schemas.UserUpdateRequest import UserUpdateRequest
 from backend.controller.schemas.UserCreateRequest import UserCreateRequest
-from fastapi import FastAPI, Depends, HTTPException, Response, Request, APIRouter
+from fastapi import Depends, HTTPException, APIRouter
 from backend.service.mailer.PasswordChangeMailer import PasswordChangeMailer
 from backend.service.PasswordHashService import PasswordHashService
 from backend.service.controller_service import access_service
@@ -26,7 +25,6 @@ async def get_all_users(db: Session = Depends(get_db)):
     return repo.get_all_users()
 
 
-
 @router.post("/create_user")
 async def create_user(request: UserCreateRequest, db: Session = Depends(get_db)):
     repo = UserRepository(db)
@@ -34,14 +32,10 @@ async def create_user(request: UserCreateRequest, db: Session = Depends(get_db))
     user = db.query(User).filter_by(email=request.email, username=request.username,
                                     user_type_id=request.user_type_id).first()
 
-    # Check if the entity exists
     if user is not None and repo.user_exists(user.id):
         raise HTTPException(status_code=404, detail="User already exists")
 
-    # Call the update method
-
     try:
-        # Call the setter method to update the material
         repo.create_user(
             username=request.username,
             user_type_id=request.user_type_id,
@@ -59,15 +53,12 @@ async def create_user(request: UserCreateRequest, db: Session = Depends(get_db))
 async def delete_user(entity_id: int, db: Session = Depends(get_db)):
     repo = UserRepository(db)
 
-    # Check if the entity exists
     if not repo.user_exists(entity_id):
         raise HTTPException(status_code=404, detail="User not found")
 
-    # Call the update method
     user = repo.get_user_by_id(entity_id)
 
     try:
-        # Call the setter method to update the material
         repo.delete_user(user)
 
     except Exception as e:
@@ -79,14 +70,13 @@ async def delete_user(entity_id: int, db: Session = Depends(get_db)):
 @router.put("/update_user/{entity_id}")
 async def update_user(entity_id: int, request: UserUpdateRequest, db: Session = Depends(get_db)):
     repo = UserRepository(db)
-    # Check if the entity exists
+
     if not repo.user_exists(entity_id):
         raise HTTPException(status_code=404, detail="User not found")
 
-    # Call the update method
     user = repo.get_user_by_id(entity_id)
+
     try:
-        # Call the setter method to update the user
         password = None
         if request.password is not None:
             password = PasswordHashService.hash_password(request.password)

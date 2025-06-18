@@ -9,7 +9,7 @@ from db.model.base import Base
 from db.repositories.UserTypeRepository import UserTypeRepository
 from backend.controller import constants
 
-# Use an existing database instead of an in-memory one
+
 @pytest.fixture(scope='module')
 def setup_database(request):
     engine = create_engine(constants.DATABASE_URL, echo=True)
@@ -37,9 +37,7 @@ def setup_database(request):
     # Register cleanup to be executed after the test, even if it fails
     request.addfinalizer(cleanup)
 
-    yield session  # Yield the session to the test
-
-    # Cleanup manually after the test has finished (this could be redundant)
+    yield session
     session.close()
 
 

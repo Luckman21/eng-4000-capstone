@@ -5,14 +5,11 @@ sys.path.append(str(Path().resolve().parent.parent))
 from sqlalchemy.orm import Session
 from backend.controller.dependencies import get_db
 from db.schemas import MaterialSchema
-from db.model.Material import Material
-from db.repositories.MaterialRepository import MaterialRepository
 from backend.controller.schemas.MaterialUpdateRequest import MaterialUpdateRequest
 from backend.controller.schemas.MaterialCreateRequest import MaterialCreateRequest
 from backend.controller.schemas.MaterialMutationRequest import MaterialMutationRequest
-from fastapi import FastAPI, Depends, HTTPException, Response, Request, APIRouter
+from fastapi import Depends, HTTPException, APIRouter
 from backend.service.controller_service import material_service
-
 
 router = APIRouter(
     prefix="/materials",
@@ -30,18 +27,13 @@ async def get_Allmaterials(db: Session = Depends(get_db)):
 
 @router.post("/create_material")
 async def create_material(request: MaterialCreateRequest, db: Session = Depends(get_db)):
-
     exists = material_service.check_material_existance(db, supplier_link=request.supplier_link, colour=request.colour,
-                                            material_type_id=request.material_type_id)
+                                                       material_type_id=request.material_type_id)
 
-    # Check if the entity exists
     if exists:
         raise HTTPException(status_code=404, detail="Material already exists")
 
-    # Call the update method
-
     try:
-        # Call the setter method to update the material
         material_service.create_material(
             db,
             colour=request.colour,
@@ -61,17 +53,14 @@ async def create_material(request: MaterialCreateRequest, db: Session = Depends(
 async def delete_material(entity_id: int, db: Session = Depends(get_db)):
     exists = material_service.check_material_existance(db, entity_id=entity_id)
 
-    # Check if the entity exists
     if not exists:
         raise HTTPException(status_code=404, detail="Material not found")
 
-    # Call the update method
     try:
         material_service.delete_material(db, entity_id)
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
 
     return {'message': "Material deleted successfully"}
 
@@ -80,12 +69,10 @@ async def delete_material(entity_id: int, db: Session = Depends(get_db)):
 async def replenish_mass(entity_id: int, request: MaterialMutationRequest, db: Session = Depends(get_db)):
     exists = material_service.check_material_existance(db, entity_id=entity_id)
 
-    # Check if the entity exists
     if not exists:
         raise HTTPException(status_code=404, detail="Material not found")
 
     try:
-        # Call the setter method to update the material
         material_service.replenish_mass(db, entity_id, request.mass_change)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -97,12 +84,10 @@ async def replenish_mass(entity_id: int, request: MaterialMutationRequest, db: S
 async def consume_mass(entity_id: int, request: MaterialMutationRequest, db: Session = Depends(get_db)):
     exists = material_service.check_material_existance(db, entity_id=entity_id)
 
-    # Check if the entity exists
     if not exists:
         raise HTTPException(status_code=404, detail="Material not found")
 
     try:
-        # Call the setter method to update the material
         material_service.consume_mass(db, entity_id, request.mass_change)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -114,22 +99,19 @@ async def consume_mass(entity_id: int, request: MaterialMutationRequest, db: Ses
 async def update_material(entity_id: int, request: MaterialUpdateRequest, db: Session = Depends(get_db)):
     exists = material_service.check_material_existance(db, entity_id=entity_id)
 
-    # Check if the entity exists
     if not exists:
         raise HTTPException(status_code=404, detail="Material not found")
 
     try:
-        # Call the setter method to update the material
         material_service.update_material(
-                             db,
-                             entity_id=entity_id,
-                             mass=request.mass,
-                             colour=request.colour,
-                             material_type_id=request.material_type_id,
-                             supplier_link=request.supplier_link,
-                             shelf_id=request.shelf_id)
+            db,
+            entity_id=entity_id,
+            mass=request.mass,
+            colour=request.colour,
+            material_type_id=request.material_type_id,
+            supplier_link=request.supplier_link,
+            shelf_id=request.shelf_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
     return {'message': "Material updated successfully"}
-

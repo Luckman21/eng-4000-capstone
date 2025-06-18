@@ -10,7 +10,7 @@ from db.model.Shelf import Shelf
 dht11_mqtt_instance = None
 scale_mqtt_instance = None
 
-# Define the MQTT receiver start function
+
 def start_mqtt_receiver():
     global dht11_mqtt_instance
     dht11_mqtt_instance = MQTTReceiver(
@@ -22,8 +22,7 @@ def start_mqtt_receiver():
     )
     dht11_mqtt_instance.start()
 
-#Create a listener that triggers when the Material table is updated, checks for Materials with a mass below the threshold
-# Define the MQTT scale start function
+
 def start_mqtt_scale():
     global scale_mqtt_instance
     scale_mqtt_instance = MQTTscale(
@@ -32,14 +31,13 @@ def start_mqtt_scale():
         mqtt_topic="mass_value"
     )
 
-    # Now the listener is running, and you can retrieve the latest value when needed.
     print(f"Latest value: {scale_mqtt_instance.get_latest_value()}")
     scale_mqtt_instance.start()
 
-def shelf_listener(LOOP):
 
+def shelf_listener(LOOP):
     def shelf_update_listener(mapper, connection, target):
-        print(f"🆔 Manager ID (shelf_listener): {id(manager)}")  # Ensure it's the same instance
+        print(f"🆔 Manager ID (shelf_listener): {id(manager)}")
         try:
             future = asyncio.run_coroutine_threadsafe(listener.shelf_update_listener(mapper, connection, target), LOOP)
             future.result()  # Ensure exceptions are caught
@@ -50,6 +48,6 @@ def shelf_listener(LOOP):
             print(f"❌ Error in shelf_update_listener: {e}")
     event.listen(Shelf, 'after_update', shelf_update_listener)
 
-def get_scale_listener():
 
+def get_scale_listener():
     return scale_mqtt_instance

@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from db.model.UserType import UserType
 from db.model.base import Base
 
+
 # Fixture to setup an in-memory database for testing
 @pytest.fixture(scope='module')
 def session():
@@ -23,6 +24,7 @@ def session():
     # Cleanup after test
     session.close()
     engine.dispose()
+
 
 # Test case for UserType creation and initialization
 def test_user_type_creation(session):
@@ -60,6 +62,7 @@ def test_set_name(session):
 
     session.query(UserType).filter_by(type_name="Dummy").delete()
     session.commit()
+
 
 # Test getAll method for retrieving all user types
 def test_get_all_user_types(session):

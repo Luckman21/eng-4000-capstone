@@ -9,11 +9,9 @@ from db.model.MaterialType import MaterialType
 from db.model.Shelf import Shelf
 from db.model.base import Base
 from db.repositories.MaterialRepository import MaterialRepository
-from db.repositories.MaterialTypeRepository import MaterialTypeRepository
 from backend.controller import constants
-from sqlalchemy import text
 
-# Use an existing database instead of an in-memory one
+
 @pytest.fixture(scope='module')
 def setup_database(request):
     engine = create_engine(constants.DATABASE_URL, echo=True)
@@ -42,19 +40,16 @@ def setup_database(request):
     session.add(dummy_material)
     session.commit()
 
-    # Register a finalizer to clean up the data after the test
     def cleanup():
         session.query(Material).filter_by(supplier_link="Dummy Material").delete()
         session.query(MaterialType).filter_by(type_name="Plastic").delete()
         session.commit()
         assert db_count == session.query(Material).count()
 
-    # Register cleanup to be executed after the test, even if it fails
     request.addfinalizer(cleanup)
 
     yield session  # Yield the session to the test
 
-    # Cleanup manually after the test has finished (this could be redundant)
     session.close()
 
 
@@ -62,7 +57,6 @@ def test_get_material_by_id(setup_database):
     # Get the session from the fixture
     session = setup_database
 
-    # Fetch an existing material and update its data
     material = session.query(Material).filter_by(supplier_link="Dummy Material").first()
 
     repository = MaterialRepository(session)
@@ -73,7 +67,6 @@ def test_get_material_by_id(setup_database):
 
 
 def test_create_material(setup_database):
-    # Get the session from the fixture
     session = setup_database
     repository = MaterialRepository(session)
     material_type = session.query(MaterialType).filter_by(type_name="Plastic").first()
@@ -96,7 +89,6 @@ def test_create_material(setup_database):
 
 
 def test_update_material(setup_database):
-    # Get the session from the fixture
     session = setup_database
     repository = MaterialRepository(session)
     material_type = session.query(MaterialType).filter_by(type_name="Plastic").first()
@@ -132,7 +124,6 @@ def test_update_material(setup_database):
 
 
 def test_material_existance(setup_database):
-    # Get the session from the fixture
     session = setup_database
     repository = MaterialRepository(session)
     material_type = session.query(MaterialType).filter_by(type_name="Plastic").first()
@@ -158,7 +149,6 @@ def test_material_existance(setup_database):
 
 
 def test_delete_material(setup_database):
-    # Get the session from the fixture
     session = setup_database
     repository = MaterialRepository(session)
     material_type = session.query(MaterialType).filter_by(type_name="Plastic").first()

@@ -10,6 +10,7 @@ from db.model.UserType import UserType
 from db.model.base import Base
 from backend.service.PasswordHashService import PasswordHashService
 
+
 # Fixture to setup an in-memory database for testing
 @pytest.fixture(scope='module')
 def session():
@@ -30,6 +31,7 @@ def session():
     # Cleanup after test
     session.close()
     engine.dispose()
+
 
 # Test case for User creation and initialization
 def test_user_creation(session):
@@ -53,6 +55,7 @@ def test_user_creation(session):
     assert PasswordHashService.verify_password(user.password, "hashedpassword123") is True
     assert user.email == 'testuser@example.com'
     assert user.user_type_id == user_type.id
+
 
 # Test setUserTypeID method with valid and invalid inputs
 def test_set_user_type_id(session):
@@ -79,6 +82,7 @@ def test_set_user_type_id(session):
 
     # Rollback the session after the test
     session.rollback()
+
 
 # Test setUserTypeID method with valid and invalid inputs
 def test_set_user_type_id(session):

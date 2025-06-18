@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from db.model.Shelf import Shelf
 from db.model.base import Base
 
+
 # Fixture to setup an in-memory database for testing
 @pytest.fixture(scope='module')
 def session():
@@ -23,6 +24,7 @@ def session():
     # Cleanup after test
     session.close()
     engine.dispose()
+
 
 # Test case for Shelf creation and initialization
 def test_shelf_creation(session):
@@ -40,6 +42,7 @@ def test_shelf_creation(session):
     # Rollback the session after the test
     session.rollback()
 
+
 # Test invalid humidity_pct (negative value) raises IntegrityError
 def test_shelf_invalid_humidity(session):
     shelf = Shelf(humidity_pct=-10.0, temperature_cel=22.0)  # Invalid humidity (negative value)
@@ -52,6 +55,7 @@ def test_shelf_invalid_humidity(session):
     # Rollback the session after the test
     session.rollback()
 
+
 # Test invalid temperature_cel (negative value) raises IntegrityError
 def test_shelf_invalid_temperature(session):
     shelf = Shelf(humidity_pct=60.5, temperature_cel=-273.16)  # Invalid temperature (beyond minimum possible temperature in C)
@@ -63,6 +67,7 @@ def test_shelf_invalid_temperature(session):
 
     # Rollback the session after the test
     session.rollback()
+
 
 # Test getAll method for retrieving all shelves
 def test_get_all_shelves(session):
@@ -85,6 +90,7 @@ def test_get_all_shelves(session):
 
     # Rollback the session after the test
     session.rollback()
+
 
 # Test invalid input types (humidity_pct or temperature_cel must be floats)
 def test_invalid_input_types(session):

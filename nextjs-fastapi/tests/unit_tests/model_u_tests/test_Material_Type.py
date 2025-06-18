@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from db.model.MaterialType import MaterialType
 from db.model.base import Base
 
+
 # Fixture to setup an in-memory database for testing
 @pytest.fixture(scope='module')
 def session():
@@ -24,6 +25,7 @@ def session():
     session.close()
     engine.dispose()
 
+
 # Test case for MaterialType creation and initialization
 def test_material_type_creation(session):
     # Create a valid MaterialType
@@ -35,6 +37,7 @@ def test_material_type_creation(session):
     # Test that the material type was successfully added
     assert material_type.id is not None
     assert material_type.type_name == 'Plastic'
+
 
 # Test case to check unique constraint on type_name
 def test_material_type_unique_constraint(session):
@@ -55,6 +58,7 @@ def test_material_type_unique_constraint(session):
     with pytest.raises(IntegrityError):
         session.commit()
 
+
 # Test setName method with valid and invalid inputs
 def test_set_name(session):
     material_type = MaterialType(type_name='Plastic')
@@ -72,6 +76,7 @@ def test_set_name(session):
     # Test invalid input: should raise ValueError if name is not a string
     with pytest.raises(ValueError):
         material_type.setName(123)  # Passing an integer instead of a string
+
 
 # Test getAll method for retrieving all material types
 def test_get_all_material_types(session):

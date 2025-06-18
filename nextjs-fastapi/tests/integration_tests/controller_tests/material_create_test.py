@@ -1,4 +1,3 @@
-# tests/test_update_mass.py
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
@@ -8,7 +7,6 @@ from backend.controller.main import get_app
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from db.model.Material import Material
-from db.model.MaterialType import MaterialType
 from db.model.base import Base
 from db.repositories.MaterialRepository import MaterialRepository
 from backend.controller import constants
@@ -18,16 +16,13 @@ def setup_database(request):
     DATABASE_URL = constants.DATABASE_URL
     engine = create_engine(constants.DATABASE_URL, echo=True)
 
-    # Bind the Base metadata to the engine
     Base.metadata.create_all(engine)
 
-    # Create a session factory bound to the engine
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    yield session  # Yield the session to the test
+    yield session
 
-    # Cleanup manually after the test has finished (this could be redundant)
     session.close()
 
 # Initialize the TestClient to simulate schemas
@@ -44,17 +39,15 @@ def test_create_material_success(setup_database):
     # Send a PUT request with valid entity_id and new mass
     response = client.post("materials/create_material", json={"mass": 200.0, "supplier_link": "Mickey Mouse", "colour": "red", "material_type_id": 1, "shelf_id" : 2})
 
-    # Assert that the response status code is 200
-    assert response.status_code == 200
 
-    # Assert that the response message and new mass are correct
+    assert response.status_code == 200
     assert response.json() == {"message": "Material successfully created"}
 
     material = session.query(Material).filter_by(supplier_link="Mickey Mouse", mass= 200.0, colour='red').delete()
     session.commit()
     assert db_count == session.query(Material).count()
 
-# Test invalid material_id (material not found)
+
 def test_create_material_not_found(setup_database):
 
     session = setup_database
@@ -74,8 +67,6 @@ def test_create_material_not_found(setup_database):
 
     # Assert that the response status code is 404
     assert response.status_code == 404
-
-    # Assert that the response contains the correct error message
     assert response.json() == {"detail": "Material already exists"}
     session.query(Material).filter_by(supplier_link="Dummy Material").delete()
     session.commit()

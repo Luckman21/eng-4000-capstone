@@ -1,4 +1,3 @@
-# tests/test_update_mass.py
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
@@ -10,8 +9,8 @@ from sqlalchemy.orm import sessionmaker
 from db.model.User import User
 from db.model.UserType import UserType
 from db.model.base import Base
-from db.repositories.MaterialRepository import MaterialRepository
 from backend.controller import constants
+
 
 @pytest.fixture(scope='module')
 def setup_database(request):
@@ -60,6 +59,7 @@ def setup_database(request):
 # Initialize the TestClient to simulate schemas
 client = TestClient(get_app())
 
+
 def test_delete_user_success(setup_database):
     session = setup_database
 
@@ -72,19 +72,16 @@ def test_delete_user_success(setup_database):
     # Send a PUT request with valid entity_id and new mass
     response = client.delete(f"users/delete_user/{user_id}")
 
-    # Assert that the response status code is 200
     assert response.status_code == 200
 
-    # Assert that the response message and new mass are correct
     assert response.json() == {"message": "User deleted successfully"}
+
 
 # Test invalid user_id (user not found)
 def test_update_user_not_found():
     # Send a PUT request with an invalid entity_id
     response = client.delete("users/delete_user/999")
 
-    # Assert that the response status code is 404
     assert response.status_code == 404
 
-    # Assert that the response contains the correct error message
     assert response.json() == {"detail": "User not found"}

@@ -1,11 +1,10 @@
 import pytest
 from unittest.mock import MagicMock
 import paho.mqtt.client as mqtt
-from io import StringIO
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
-from backend.controller.data_receiver import MQTTReceiver  # Adjust this to the correct import
+from backend.controller.data_receiver import MQTTReceiver
 
 # Pytest Fixture to setup MQTTReceiver instance
 @pytest.fixture
@@ -15,7 +14,7 @@ def scale():
     mqtt_port = 1883
     mqtt_temp_topic = "sensor/temperature"
     mqtt_humid_topic = "sensor/humidity"
-    db_url = "sqlite:///:memory:"  # Use an in-memory SQLite database for testing
+    db_url = "sqlite:///:memory:"
     
     scale = MQTTReceiver(mqtt_broker, mqtt_port, mqtt_temp_topic, mqtt_humid_topic, db_url)
     
@@ -96,7 +95,7 @@ def test_process_message_invalid_float(scale, capsys):
     invalid_payloads = ["no_ID|23.1", "0|no_data", "0,23.1"]  # Invalid formats
     
     for payload in invalid_payloads:
-        scale.process_message(scale.mqtt_temp_topic, payload)  # You could test for both temperature and humidity topics
+        scale.process_message(scale.mqtt_temp_topic, payload)
     
     # Verify error message is printed
     output = capsys.readouterr().out

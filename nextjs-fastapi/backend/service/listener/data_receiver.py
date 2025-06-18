@@ -17,7 +17,7 @@ class MQTTReceiver:
         self.session = Session()
 
         # Initialize ShelfRepository
-        self.shelf_repository = ShelfRepository(self.session)  # Proper initialization
+        self.shelf_repository = ShelfRepository(self.session)
 
         # MQTT client setup
         self.client = mqtt.Client()
@@ -50,6 +50,7 @@ class MQTTReceiver:
                 self.temperature = float(data)
                 print(f"Received temperature: {self.temperature}")
                 self.update_shelf(shelf_id, self.temperature, None)
+
             elif topic == self.mqtt_humid_topic:
                 # Received humidity data
                 self.humidity = float(data)
@@ -70,9 +71,7 @@ class MQTTReceiver:
     def update_shelf(self, shelf_id, temperature, humidity):
         """Update the Shelf object in the database."""
         try:
-            # Use ShelfRepository to fetch the shelf
-            shelf = self.shelf_repository.get_shelf_by_id(shelf_id)  # Use the instance here
-
+            shelf = self.shelf_repository.get_shelf_by_id(shelf_id)
             if shelf:
                 # Use ShelfRepository to update the shelf
                 self.shelf_repository.update_shelf(shelf, humidity, temperature)
@@ -82,7 +81,6 @@ class MQTTReceiver:
         except Exception as e:
             print(f"Error updating shelf: {e}")
 
-        # Debug Print Statements
         #print(f"shelf temp: {self.shelf_repository.get_shelf_by_id(shelf_id).temperature_cel}")
         #print(f"shelf humid: {self.shelf_repository.get_shelf_by_id(shelf_id).humidity_pct}")
 

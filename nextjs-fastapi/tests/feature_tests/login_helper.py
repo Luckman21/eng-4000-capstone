@@ -1,8 +1,4 @@
-import pytest
-from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
@@ -80,8 +76,7 @@ def log_super_admin_in(driver):
     set_cookie(driver)
 
 def set_cookie(driver):
-    driver.delete_all_cookies()  # Clear existing cookies
-    # Set cookie after login
+    driver.delete_all_cookies()
     cookie = {
         'name': 'access_token',
         'value': 'your_token_value_here',
@@ -90,7 +85,7 @@ def set_cookie(driver):
     }
     driver.add_cookie(cookie)
 
-    driver.get("http://127.0.0.1:3000/inventory")  # Reload page after setting cookie
+    driver.get("http://127.0.0.1:3000/inventory")
     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "tbody")))
 
 

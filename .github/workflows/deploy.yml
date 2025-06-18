@@ -3,7 +3,7 @@ name: Deploy FastAPI to Azure
 on:
   push:
     branches:
-      - main  # Change this if using a different branch
+      - main
 
 jobs:
   deploy:

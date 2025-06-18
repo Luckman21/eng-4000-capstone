@@ -1,33 +1,28 @@
-import asyncio
 import json
 from db.repositories.MaterialRepository import MaterialRepository
 from db.repositories.ShelfRepository import ShelfRepository
 from backend.controller import constants
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session, Session
+from sqlalchemy.orm import sessionmaker, scoped_session
 from backend.service.listener.manager import manager
-from asyncio import get_running_loop
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from backend.service.mailer.LowStockMailer import LowStockMailer
 from backend.service.mailer.EnviroWarningMailer import EnviroWarningMailer
 from db.repositories.UserRepository import UserRepository
 from backend.controller.ApplicationState import app_state
 
-DATABASE_URL = constants.DATABASE_URL_ASYNC  # Example: "postgresql+asyncpg://user:password@localhost/dbname"
-
-# Create an async engine
+DATABASE_URL = constants.DATABASE_URL_ASYNC
 engine = create_async_engine(
     DATABASE_URL,
-    pool_size=10,  # Adjust as needed
+    pool_size=10,
     max_overflow=20,
     pool_recycle=1800,  # Recycle connections after 30 minutes
     pool_pre_ping=True,
     echo=True
 )
 
-# Create an async session factory
 AsyncSessionLocal = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 SessionLocal = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
+
 
 async def quantity_poll(materials):
     alerts = []
@@ -48,9 +43,8 @@ async def quantity_poll(materials):
 
     return alerts
 
-async def job_complete_listener(mapper, connection, target):
-    """A function triggered by the listener when the Material table is updated. It checks for materials below the threshold value."""
 
+async def job_complete_listener(mapper, connection, target):
     async with AsyncSessionLocal() as session:
         print(f"🆔 Manager ID (listener): {id(manager)}")
         try:
@@ -76,7 +70,6 @@ async def job_complete_listener(mapper, connection, target):
 
     json_data = json.dumps(data)
     if json_data:
-        # Push the alert data into the queue
         await manager.send_alerts(json_data)
 
     return alert_materials
@@ -101,6 +94,7 @@ async def shelf_update_listener(mapper, connection, target):
                  app_state.set_previous_shelf_state(shelf.id, shelf.humidity_pct, shelf.temperature_cel)
 
             for shelf in high_humidity_shelves + high_temp_shelves:
+
                 # Check if shelf state has changed (from acceptable to unacceptable)
                 previous_state = app_state.get_previous_shelf_state(shelf.id)
                 if previous_state is None:
@@ -135,7 +129,6 @@ async def shelf_update_listener(mapper, connection, target):
         json_data = json.dumps(data)
 
         try:
-            # Push the alert data into the queue
             await manager.send_alerts(json_data)
         except Exception as e:
             print(f"❌ Error while scheduling alert: {e}")

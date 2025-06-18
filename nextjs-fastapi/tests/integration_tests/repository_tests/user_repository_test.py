@@ -8,9 +8,9 @@ from db.model.User import User
 from db.model.UserType import UserType
 from db.model.base import Base
 from db.repositories.UserRepository import UserRepository
-from db.repositories.UserTypeRepository import UserTypeRepository
 from backend.controller import constants
 from backend.service.PasswordHashService import PasswordHashService
+
 
 # Use an existing database instead of an in-memory one
 @pytest.fixture(scope='module')
@@ -50,9 +50,7 @@ def setup_database(request):
     # Register cleanup to be executed after the test, even if it fails
     request.addfinalizer(cleanup)
 
-    yield session  # Yield the session to the test
-
-    # Cleanup manually after the test has finished (this could be redundant)
+    yield session
     session.close()
 
 
@@ -69,6 +67,7 @@ def test_get_user_by_id(setup_database):
 
     assert user.id == queried_user.id
 
+
 def test_get_user_by_email(setup_database):
     # Get the session from the fixture
     session = setup_database
@@ -81,6 +80,7 @@ def test_get_user_by_email(setup_database):
     queried_user = repository.get_user_by_email(user.email)
 
     assert user.email == queried_user.email
+
 
 def test_create_user(setup_database):
     # Get the session from the fixture
@@ -125,6 +125,7 @@ def test_update_material(setup_database):
     # Destroy
     session.query(User).filter_by(username="James").delete()
     session.commit()
+
 
 def test_delete_material(setup_database):
     # Get the session from the fixture

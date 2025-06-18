@@ -24,28 +24,28 @@ import re
 
 def init_driver():
     chrome_options = Options()
-    chrome_options.add_argument("--headless") # This means you won't see the actual icon
-    chrome_options.add_argument("--disable-gpu") # Disable GPU acceleration (required in headless mode)
-    chrome_options.add_argument("--no-sandbox")  # Might help in some environments
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument(
         "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
         "Chrome/58.0.3029.110 Safari/537.36")
-    chrome_options.add_argument("--disable-dev-shm-usage")  # Prevent crashes in Docker
-    chrome_options.add_argument("--disable-blink-features=AutomationControlled")  # Bypass bot detection
-    chrome_options.add_argument("--window-size=1920x1080")  # Ensure full page is loaded
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+    chrome_options.add_argument("--window-size=1920x1080")
 
     chromedriver_autoinstaller.install()
     driver = webdriver.Chrome(options=chrome_options)
     return driver
 
+
 def setup_database():
     engine = create_engine(constants.DATABASE_URL, echo=True)
-
-    # Create a session factory bound to the engine
     Session = sessionmaker(bind=engine)
     session = Session()
 
     return session
+
 
 def scrape_amazon_page_for_sale(url, driver):
     driver.get(url)
@@ -68,6 +68,10 @@ def scrape_amazon_page_for_sale(url, driver):
 def scrape_digitkey_page_for_sale(url, driver) -> bool:
     driver.get(url)
     session = setup_database()
+    driver.execute_script("""
+        var dlg = document.querySelector('dialog');
+        dlg.remove();
+    """)
 
     # Let's see if the sale exists. If not return false
     try:

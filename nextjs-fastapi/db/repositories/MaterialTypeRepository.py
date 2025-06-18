@@ -1,6 +1,5 @@
 from sqlalchemy.exc import IntegrityError, DataError, SQLAlchemyError
 from sqlalchemy.orm import Session
-from db.model.Material import Material
 from db.model.MaterialType import MaterialType
 
 

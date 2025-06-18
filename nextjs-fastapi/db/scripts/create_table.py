@@ -1,4 +1,4 @@
-import psycopg  # type: ignore # If this fails, install it using: pip install psycopg
+import psycopg
 
 # Database connection details
 DATABASE_URL = "postgresql://postgres:0000@localhost/capstone_db"
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS users (
 )
 ''')
 
-# Commit and close the connection
+
 conn.commit()
 cursor.close()
 conn.close()
