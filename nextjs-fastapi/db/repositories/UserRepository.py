@@ -5,6 +5,7 @@ from db.model.UserType import UserType
 from sqlalchemy import select
 from sqlalchemy.future import select
 
+
 class UserRepository:
     def __init__(self, session: Session):
         """

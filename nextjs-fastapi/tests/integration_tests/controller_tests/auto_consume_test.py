@@ -5,10 +5,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 import pytest
 from fastapi.testclient import TestClient
 from backend.controller.main import get_app
-from db.model.Material import Material
 from db.repositories.MaterialRepository import MaterialRepository
 from unittest.mock import patch
-import paho.mqtt.publish as publish
+
 
 # Fixture to set up the database
 @pytest.fixture(scope='module')
@@ -21,19 +20,15 @@ def setup_database(request):
     DATABASE_URL = constants.DATABASE_URL
     engine = create_engine(DATABASE_URL, echo=True)
 
-    # Bind the Base metadata to the engine
     Base.metadata.create_all(engine)
 
-    # Create a session factory bound to the engine
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    yield session  # Yield the session to the test
-
-    # Cleanup manually after the test has finished (this could be redundant)
+    yield session
     session.close()
 
-# Initialize the TestClient to simulate schemas
+
 client = TestClient(get_app())
 
 # Test valid QR display success
@@ -57,7 +52,6 @@ def test_qr_display_success(setup_database):
         mock_instance.process_message(payload)
         mock_instance.get_latest_value.return_value = mass
 
-        # Send a GET request to simulate the QR display endpoint
         response = client.get(f"/qr_display/{id}")
         assert response.status_code == 200
 
@@ -67,16 +61,15 @@ def test_qr_display_success(setup_database):
         assert response_as_json['material']['mass'] == mass
         assert response_as_json['material']['id'] == id
 
-# Test invalid material_id (material not found)
+
 def test_material_consume_not_found():
     response = client.get("/qr_display/-1")
     assert response.status_code == 404
     assert response.json() == {"detail": "Material not found"}
 
-# Test mass reading on the scale is ≤ 0.0
+
 @pytest.mark.parametrize("mock_mass", [0.0, -5.0])
 def test_auto_consume_mass_throws_500(mock_mass):
-    """Test that the endpoint returns 500 when mass_on_the_scale is ≤ 0.0"""
     with patch("backend.controller.routers.qr.get_mass_from_scale", return_value=mock_mass):
         response = client.get("/qr_display/1")
         assert response.status_code == 500

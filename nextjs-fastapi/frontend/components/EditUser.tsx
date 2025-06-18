@@ -34,14 +34,11 @@ type EditUserTypes = {
 };
 
 
-
-
 const EditUser: React.FC<EditUserTypes> = ({ user, isOpen, onOpenChange, onSave }) => {
   const [editableUser, setEditableUser] = useState<UserWithRole>(user);
   const [userTypes, setUserTypes] = useState<UserType[]>([]);
   const mat = (user?.user_type_id)?.toString();
   console.log(mat)
-
 
 
   useEffect(() => {
@@ -62,7 +59,6 @@ const EditUser: React.FC<EditUserTypes> = ({ user, isOpen, onOpenChange, onSave 
   const handleChange = (field: keyof User, value: string) => {
     setEditableUser((prev) => ({ ...prev, [field]: value }));
   };
-
 
 
   const handleSave = async () => {

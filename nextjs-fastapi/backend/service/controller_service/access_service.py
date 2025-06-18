@@ -5,7 +5,6 @@ sys.path.append(str(Path().resolve().parent.parent))
 from sqlalchemy.orm import Session
 from db.repositories.UserRepository import UserRepository
 from backend.controller import constants
-from fastapi import FastAPI, Depends, HTTPException, Response, Request, APIRouter
 import jwt
 from datetime import datetime, timedelta
 from typing import Optional

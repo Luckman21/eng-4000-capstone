@@ -85,12 +85,11 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
   };
 
   const handlePasswordModalClose = () => {
-    setPasswordModalOpen(false); // Close password modal
-    setPasswordError(""); // Reset the password error on close
+    setPasswordModalOpen(false);
+    setPasswordError("");
   };
 
   const handlePasswordSave = async () => {
-    // Check if new password and confirm password match
     if (newPassword !== confirmPassword) {
       setPasswordError("Passwords do not match");
       return;
@@ -99,13 +98,12 @@ const UserProfile: React.FC<UserProfileProps> = ({ onSave }) => {
     try {
       if (!user) return;
       const response = await axios.put(`/users/update_user/${user.id}`, {
-        password: newPassword, // Send only the password to the backend
+        password: newPassword,
       });
 
       if (response.status === 200) {
         console.log("Password updated successfully");
-        // Optionally notify the user or refresh the state
-        handlePasswordModalClose(); // Close the modal after saving
+        handlePasswordModalClose();
       }
     } catch (error) {
       console.error("Failed to update password:", error);

@@ -1,4 +1,3 @@
-import subprocess
 import pytest
 import time
 from selenium import webdriver
@@ -13,19 +12,19 @@ import os
 from tests.feature_tests.login_helper import log_admin_in, log_super_admin_in
 
 
-
 TEST_URL = "http://127.0.0.1:3000/inventory"
 
 DOWNLOAD_DIR = os.path.join(os.getcwd(), "downloads")
 if not os.path.exists(DOWNLOAD_DIR):
     os.makedirs(DOWNLOAD_DIR)
 
+
 @pytest.fixture(scope="module")
 def driver():
     chrome_options = Options()
-    chrome_options.add_argument("--headless") # This means you won't see the actual icon
-    chrome_options.add_argument("--disable-gpu") # Disable GPU acceleration (required in headless mode)
-    chrome_options.add_argument("--no-sandbox")  # Might help in some environments
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--no-sandbox")
     chrome_options.add_experimental_option("prefs", {
          "download.default_directory": DOWNLOAD_DIR,
          "download.prompt_for_download": False,
@@ -33,13 +32,13 @@ def driver():
          "safebrowsing.enabled": True
     })
     chrome_options.add_argument("--window-size=1920,1080")
-    # This will change depending on your driver
 
     chromedriver_autoinstaller.install()
     driver = webdriver.Chrome(options=chrome_options)
 
     yield driver
     driver.quit()
+
 
 @pytest.fixture(scope="module")
 def login(driver):
@@ -72,13 +71,13 @@ def test_material_table_buttons(driver, login):
 
     rows = driver.find_elements(By.CLASS_NAME, "relative flex items-center gap-2")
 
-    # Check each row for the presence of two SVG elements
+    # Check each row for the presence of four SVG elements
     for index, row in enumerate(rows):
         WebDriverWait(row, 120).until(EC.visibility_of_all_elements_located((By.TAG_NAME, "svg")))
         svg_elements = row.find_elements(By.TAG_NAME, "svg")
 
-        # Assert that each row has exactly 2 SVGs (or adjust as necessary)
         assert len(svg_elements) == 4, f"Row {index + 1} does not have exactly 4 SVG elements."
+
 
 def test_material_table_order(driver, login):
 
@@ -228,6 +227,7 @@ def test_search_bar(driver, login):
     aria_label_value = input_element.get_attribute('aria-label')
     assert aria_label_value == "Search by colour, status, shelf, or type..."
 
+
 def test_colour_query(driver, login):
     driver.get(TEST_URL)
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))
@@ -245,6 +245,7 @@ def test_colour_query(driver, login):
     # Levenstien Distance
     assert re.search("Re.", first_td.text) or re.search(".ed", first_td.text) or re.search("R.d", first_td.text) or re.search("..d", first_td.text) or re.search("R..", first_td.text) or re.search(".e.", first_td.text)
 
+
 def test_status_query(driver, login):
     driver.get(TEST_URL)
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[aria-label="Search by colour, status, shelf, or type..."]')))
@@ -258,6 +259,7 @@ def test_status_query(driver, login):
 
     first_td = driver.find_element(By.XPATH, "//tbody/tr[1]/td[6]")
     assert first_td.text == 'In Stock'
+
 
 def test_shelf_query(driver, login):
     driver.get(TEST_URL)
@@ -288,6 +290,7 @@ def test_type_query(driver, login):
     # Levenstien Distance
     assert re.search("PL.", first_td.text) or re.search(".LA",first_td.text) or re.search("P.A",first_td.text)
 
+
 def test_export_materials(driver, login):
     driver.get(TEST_URL)
 
@@ -304,6 +307,7 @@ def test_export_materials(driver, login):
 
     for f in matching_files:
         os.remove(os.path.join(DOWNLOAD_DIR, f))
+
 
 def test_popovers(driver, login):
     cell_xpaths = [

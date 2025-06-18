@@ -2,6 +2,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 from db.model.Warning import Warning
 
+
 class WarningRepository:
     def __init__(self, session: Session):
         """

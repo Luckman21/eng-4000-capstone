@@ -4,6 +4,7 @@ sys.path.append(str(Path().resolve().parent.parent))
 from db.model.Material import Material
 from db.repositories.MaterialRepository import MaterialRepository
 
+
 def get_all_materials(db):
     repo = MaterialRepository(db)
     return repo.get_all_materials()
@@ -12,7 +13,6 @@ def get_all_materials(db):
 def create_material(db, colour: str = None, supplier_link: str = None, mass: float = None, material_type_id: int = None, shelf_id: int = None):
     repo = MaterialRepository(db)
 
-    # Call the setter method to update the type
     repo.create_material(
         colour=colour,
         supplier_link=supplier_link,
@@ -77,7 +77,6 @@ def check_material_existance(db, supplier_link: str = None, colour: str = None, 
     material = db.query(Material).filter_by(supplier_link=supplier_link, colour=colour,
                                             material_type_id=material_type_id).first()
 
-    # Check if the entity exists
     if material is not None and repo.material_exists(material.id):
         return True
     elif material is None and repo.material_exists(entity_id):

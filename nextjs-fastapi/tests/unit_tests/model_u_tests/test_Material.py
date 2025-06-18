@@ -10,6 +10,7 @@ from db.model.MaterialType import MaterialType
 from db.model.base import Base
 from db.model.Shelf import Shelf
 
+
 # Use an existing database instead of an in-memory one
 @pytest.fixture(scope='module')
 def session():
@@ -54,6 +55,7 @@ def session():
     session.close()
     engine.dispose()
 
+
 # Test case for Material creation and initialization
 def test_material_creation(session):
     material_type = session.query(MaterialType).first()  # Get the first MaterialType
@@ -85,6 +87,7 @@ def test_material_creation(session):
     session.query(Material).filter_by(supplier_link="Material 1").delete()
     session.commit()
 
+
 # Test invalid mass (negative value) raises IntegrityError
 def test_material_invalid_mass(session):
     material_type = session.query(MaterialType).first()  # Get the first MaterialType
@@ -103,6 +106,7 @@ def test_material_invalid_mass(session):
     with pytest.raises(IntegrityError):
         session.commit()  # This should raise IntegrityError due to the mass constraint
     session.rollback()
+
 
 # Test setColour method with valid and invalid inputs
 def test_set_colours(session):
@@ -123,6 +127,7 @@ def test_set_colours(session):
         material.setColour(123)  # Passing an integer instead of a string
         session.query(Material).filter_by(supplier_link="Material 3").delete()
         session.commit()
+
 
 # Test setName method with valid and invalid inputs
 def test_set_supplier_link(session):
@@ -145,7 +150,6 @@ def test_set_supplier_link(session):
         session.commit()
 
     # The dummy data will be rolled back after the test
-
 
 
 def test_update_material_shelf(session):
@@ -181,6 +185,7 @@ def test_update_material_colour(session):
 
     material_to_update.setColour("Tangarine")
     assert material_to_update.colour == "Tangarine"
+
 
 # Test setMaterialTypeID method with valid and invalid inputs
 def test_set_material_type_id(session):

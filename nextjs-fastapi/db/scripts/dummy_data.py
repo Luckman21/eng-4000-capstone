@@ -1,9 +1,8 @@
 
-import psycopg # type: ignore
+import psycopg
 from argon2 import PasswordHasher
 
 def populate_db():
-    # PostgreSQL connection string (update password and database name if needed)
     DATABASE_URL = "postgresql://postgres:0000@localhost/capstone_db"
 
     # Connect to the PostgreSQL database

@@ -13,9 +13,7 @@ class UserType(Base):
     def __repr__(self):
         return f"<UserType(id={self.id}, type_name={self.type_name})>"
 
-
     # Set Methods
-
     def setName(self, newName):
 
         if type(newName) is not str:

@@ -21,9 +21,7 @@ class User(Base):
     def __repr__(self):
         return f"<User(id={self.id}, username={self.username}, email={self.email})>"
 
-
     # Set Methods
-
     def setUsername(self, newUsername):
 
         if type(newUsername) is not str:

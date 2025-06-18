@@ -197,7 +197,7 @@ const filteredItems = React.useMemo(() => {
     filteredMaterials = filteredMaterials
       .map((material) => {
 
-      const mass = material.mass || 0; // Assuming material.mass is a float
+      const mass = material.mass || 0;
 
         // Differentiate thresholds given common sizes of each category's words
         const levenshteinThresholdColour = 2;
@@ -344,7 +344,7 @@ const filteredItems = React.useMemo(() => {
             </div>
           ) as any;
         case "supplier_link":
-        // Check if there is a link and it's valid
+
         if (cellValue) {
           return (
           <Chip
@@ -359,7 +359,7 @@ const filteredItems = React.useMemo(() => {
             </Chip>
           );
         } else {
-          return <Chip size="sm">No Link</Chip>; // or some default text
+          return <Chip size="sm">No Link</Chip>;
         }
           case "shelf_id":
           return cellValue || "Not Assigned";

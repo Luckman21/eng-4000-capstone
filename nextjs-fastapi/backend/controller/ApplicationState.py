@@ -18,5 +18,4 @@ class ApplicationState:
         self.previous_shelf_states[shelf_id] = {'humidity': humidity, 'temperature': temperature}
 
 
-# Create a global singleton instance of ApplicationState
 app_state = ApplicationState()

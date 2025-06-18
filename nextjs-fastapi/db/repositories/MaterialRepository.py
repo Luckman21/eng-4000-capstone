@@ -6,9 +6,7 @@ from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload
 
 
-
 class MaterialRepository:
-
     def __init__(self, session: Session):
         self.session = session
 

@@ -11,7 +11,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:13  # Use a suitable version of PostgreSQL
+        image: postgres:13
         options: >-
           -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=0000 -e POSTGRES_DB=capstone_db
         ports:

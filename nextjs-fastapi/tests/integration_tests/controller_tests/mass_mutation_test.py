@@ -1,4 +1,3 @@
-# tests/test_update_mass.py
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
@@ -7,8 +6,6 @@ from fastapi.testclient import TestClient
 from backend.controller.main import get_app
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from db.model.Material import Material
-from db.model.MaterialType import MaterialType
 from db.model.base import Base
 from db.repositories.MaterialRepository import MaterialRepository
 from backend.controller import constants
@@ -19,19 +16,14 @@ def setup_database(request):
     DATABASE_URL = constants.DATABASE_URL
     engine = create_engine(DATABASE_URL, echo=True)
 
-    # Bind the Base metadata to the engine
     Base.metadata.create_all(engine)
 
-    # Create a session factory bound to the engine
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    yield session  # Yield the session to the test
-
-    # Cleanup manually after the test has finished (this could be redundant)
+    yield session
     session.close()
 
-# Initialize the TestClient to simulate schemas
 client = TestClient(get_app())
 
 # Test valid mass update
@@ -78,10 +70,7 @@ def test_material_consume_out_of_bounds_error(setup_database):
 
     print(f"Response: {response.json()}")
 
-    # Assert that the response status code is 200
     assert response.status_code == 400
-
-    # Assert that the response message and new mass are correct
     assert response.json() == {"detail": f"Consumed mass greater than material's mass"}
 
     repository.update_material(material, mass=mass, supplier_link=link, material_type_id=id, shelf_id=1)
@@ -93,10 +82,7 @@ def test_material_consume_not_found():
     # Send a PUT request with valid entity_id and new mass
     response = client.patch("materials/consume_mass/-1", json={"mass_change": 5.0})
 
-    # Assert that the response status code is 404
     assert response.status_code == 404
-
-    # Assert that the response contains the correct error message
     assert response.json() == {"detail": "Material not found"}
 
 
@@ -116,10 +102,8 @@ def test_material_replenish_success(setup_database):
     # Send a PUT request with valid entity_id and new mass
     response = client.patch("materials/replenish_mass/1", json={"mass_change": 5.0})
 
-    # Assert that the response status code is 200
-    assert response.status_code == 200
 
-    # Assert that the response message and new mass are correct
+    assert response.status_code == 200
     assert response.json() == {"message": f"{5.0} grams replenished"}
 
     repository.update_material(material, mass=mass, supplier_link=link, material_type_id=id, shelf_id=1)
@@ -131,8 +115,5 @@ def test_material_replenish_not_found():
     # Send a PUT request with valid entity_id and new mass
     response = client.patch("materials/replenish_mass/-1", json={"mass_change": 5.0})
 
-    # Assert that the response status code is 404
     assert response.status_code == 404
-
-    # Assert that the response contains the correct error message
     assert response.json() == {"detail": "Material not found"}

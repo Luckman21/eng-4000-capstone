@@ -3,9 +3,8 @@ import string
 import random
 
 
-
 def create_temp_password() -> str:
-    length = random.randrange(8,16)
+    length = random.randrange(8, 16)
 
     alphabet = string.ascii_letters + string.digits + string.punctuation
 
